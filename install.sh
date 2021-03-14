@@ -10,3 +10,4 @@ bin/grav install
 
 #to install used plugins:
 ./install_plugins.sh
+./remove_plugins.sh

@@ -2,8 +2,8 @@
 
 bin/gpm selfupgrade -f
 
-#this on the final server should be not needed
-#bin/gpm install -y admin
+#this on the final server should be removed
+bin/gpm install -y admin
 
 bin/gpm install -y bibtexify
 
