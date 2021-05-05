@@ -20,6 +20,4 @@ bin/gpm install -y cookieconsent
 
 bin/gpm install -y github
 
-bin/gpm install -y blackhole
-
 bin/gpm update -y
