@@ -3,23 +3,69 @@ title: Publications
 body_classes: modular
 features:
 visible: false
+markdown:
+  auto_url_links: false
 ---
 
 [bibtexify hideMissing=true]
+
 %% This BibTeX bibliography file was created using BibDesk.
 %% http://bibdesk.sourceforge.net/
-
-
-%% Created for Bozzo at 2021-01-16 17:11:52 +0100 
-
-
+%% Created for Bozzo at 2021-05-06 17:21:23 +0200 
 %% Saved with string encoding Unicode (UTF-8) 
-
-
-
+@article{bib:DAMPENature,
+	abstract = {A direct measurement of cosmic-ray electrons and positrons with unprecedentedly high energy resolution reveals a spectral break at about 0.9 teraelectronvolts, confirming the evidence found by previous indirect measurements.},
+	author = {Ambrosi, G. and {...} and {M. Duranti} and {et al.}},
+	da = {2017/12/01},
+	date-added = {2021-05-06 17:20:07 +0200},
+	date-modified = {2021-05-06 17:21:03 +0200},
+	doi = {10.1038/nature24475},
+	id = {Ambrosi2017},
+	isbn = {1476-4687},
+	journal = {Nature},
+	number = {7683},
+	pages = {63--66},
+	title = {Direct detection of a break in the teraelectronvolt cosmic-ray spectrum of electrons and positrons},
+	ty = {JOUR},
+	url = {https://doi.org/10.1038/nature24475},
+	volume = {552},
+	year = {2017},
+	Bdsk-Url-1 = {https://doi.org/10.1038/nature24475}}
+@article{bib:paper18,
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
+	collaboration = {AMS Collaboration},
+	doi = {10.1103/PhysRevLett.126.081102},
+	issue = {8},
+	journal = {Phys. Rev. Lett.},
+	month = {Feb},
+	numpages = {8},
+	pages = {081102},
+	publisher = {American Physical Society},
+	title = {Properties of Heavy Secondary Fluorine Cosmic Rays: Results from the Alpha Magnetic Spectrometer},
+	url = {https://link.aps.org/doi/10.1103/PhysRevLett.126.081102},
+	volume = {126},
+	year = {2021},
+	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.126.081102},
+	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.126.081102}}
+@article{bib:paper19,
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
+	collaboration = {AMS Collaboration},
+	doi = {10.1103/PhysRevLett.126.041104},
+	issue = {4},
+	journal = {Phys. Rev. Lett.},
+	month = {Jan},
+	numpages = {8},
+	pages = {041104},
+	publisher = {American Physical Society},
+	title = {Properties of Iron Primary Cosmic Rays: Results from the Alpha Magnetic Spectrometer},
+	url = {https://link.aps.org/doi/10.1103/PhysRevLett.126.041104},
+	volume = {126},
+	year = {2021},
+	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.126.041104},
+	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.126.041104}}
 @article{bib:AMSPR2,
 	abstract = {The Alpha Magnetic Spectrometer (AMS) is a precision particle physics detector on the International Space Station (ISS) conducting a unique, long-duration mission of fundamental physics research in space. The physics objectives include the precise studies of the origin of dark matter, antimatter, and cosmic rays as well as the exploration of new phenomena. Following a 16-year period of construction and testing, and a precursor flight on the Space Shuttle, AMS was installed on the ISS on May 19, 2011. In this report we present results based on 120 billion charged cosmic ray events up to multi-TeV energies. This includes the fluxes of positrons, electrons, antiprotons, protons, and nuclei. These results provide unexpected information, which cannot be explained by the current theoretical models. The accuracy and characteristics of the data, simultaneously from many different types of cosmic rays, provide unique input to the understanding of origins, acceleration, and propagation of cosmic rays.},
-	author = {M. Aguilar and L. {Ali Cavasonza} and G. Ambrosi and L. Arruda and N. Attig and F. Barao and L. Barrin and A. Bartoloni and S. {Ba{\c s}e{\u g}mez-du Pree} and J. Bates and R. Battiston and M. Behlmann and B. Beischer and J. Berdugo and B. Bertucci and V. Bindi and W. {de Boer} and K. Bollweg and B. Borgia and M.J. Boschini and M. Bourquin and E.F. Bueno and J. Burger and W.J. Burger and S. Burmeister and X.D. Cai and M. Capell and J. Casaus and G. Castellini and F. Cervelli and Y.H. Chang and G.M. Chen and H.S. Chen and Y. Chen and L. Cheng and H.Y. Chou and S. Chouridou and V. Choutko and C.H. Chung and C. Clark and G. Coignet and C. Consolandi and A. Contin and C. Corti and Z. Cui and K. Dadzie and Y.M. Dai and C. Delgado and S. {Della Torre} and M.B. Demirk{\"o}z and L. Derome and S. {Di Falco} and V. {Di Felice} and C. D{\'\i}az and F. Dimiccoli and P. {von Doetinchem} and F. Dong and F. Donnini and M. Duranti and A. Egorov and A. Eline and J. Feng and E. Fiandrini and P. Fisher and V. Formato and C. Freeman and Y. Galaktionov and C. G{\'a}mez and R.J. Garc{\'\i}a-L{\'o}pez and C. Gargiulo and H. Gast and I. Gebauer and M. Gervasi and F. Giovacchini and D.M. G{\'o}mez-Coral and J. Gong and C. Goy and V. Grabski and D. Grandi and M. Graziani and K.H. Guo and S. Haino and K.C. Han and R.K. Hashmani and Z.H. He and B. Heber and T.H. Hsieh and J.Y. Hu and Z.C. Huang and W. Hungerford and M. Incagli and W.Y. Jang and Yi Jia and H. Jinchi and K. Kanishev and B. Khiali and G.N. Kim and Th. Kirn and M. Konyushikhin and O. Kounina and A. Kounine and V. Koutsenko and A. Kuhlman and A. Kulemzin and G. {La Vacca} and E. Laudi and G. Laurenti and I. Lazzizzera and A. Lebedev and H.T. Lee and S.C. Lee and C. Leluc and J.Q. Li and M. Li and Q. Li and S. Li and T.X. Li and Z.H. Li and C. Light and C.H. Lin and T. Lippert and Z. Liu and S.Q. Lu and Y.S. Lu and K. Luebelsmeyer and J.Z. Luo and S.S. Lyu and F. Machate and C. Ma{\~n}{\'a} and J. Mar{\'\i}n and J. Marquardt and T. Martin and G. Mart{\'\i}nez and N. Masi and D. Maurin and A. Menchaca-Rocha and Q. Meng and D.C. Mo and M. Molero and P. Mott and L. Mussolin and J.Q. Ni and N. Nikonov and F. Nozzoli and A. Oliva and M. Orcinha and M. Palermo and F. Palmonari and M. Paniccia and A. Pashnin and M. Pauluzzi and S. Pensotti and H.D. Phan and V. Plyaskin and M. Pohl and S. Porter and X.M. Qi and X. Qin and Z.Y. Qu and L. Quadrani and P.G. Rancoita and D. Rapin and A. {Reina Conde} and S. Rosier-Lees and A. Rozhkov and D. Rozza and R. Sagdeev and S. Schael and S.M. Schmidt and A. {Schulz von Dratzig} and G. Schwering and E.S. Seo and B.S. Shan and J.Y. Shi and T. Siedenburg and C. Solano and J.W. Song and R. Sonnabend and Q. Sun and Z.T. Sun and M. Tacconi and X.W. Tang and Z.C. Tang and J. Tian and Samuel C.C. Ting and S.M. Ting and N. Tomassetti and J. Torsti and C. T{\"u}ys{\"u}z and T. Urban and I. Usoskin and V. Vagelli and R. Vainio and E. Valente and E. Valtonen and M. {V{\'a}zquez Acosta} and M. Vecchi and M. Velasco and J.P. Vialle and L.Q. Wang and N.H. Wang and Q.L. Wang and S. Wang and X. Wang and Z.X. Wang and J. Wei and Z.L. Weng and H. Wu and R.Q. Xiong and W. Xu and Q. Yan and Y. Yang and H. Yi and Y.J. Yu and Z.Q. Yu and M. Zannoni and C. Zhang and F. Zhang and F.Z. Zhang and J.H. Zhang and Z. Zhang and F. Zhao and Z.M. Zheng and H.L. Zhuang and V. Zhukov and A. Zichichi and N. Zimmermann and P. Zuccon},
+	author = {M. Aguilar and {...} and {M. Duranti} and {et al.}},
 	date-added = {2021-01-16 17:11:48 +0100},
 	date-modified = {2021-01-16 17:11:48 +0100},
 	doi = {https://doi.org/10.1016/j.physrep.2020.09.003},
@@ -34,10 +80,9 @@ visible: false
 	year = {2021},
 	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0370157320303434},
 	Bdsk-Url-2 = {https://doi.org/10.1016/j.physrep.2020.09.003}}
-
 @article{bib:TIC_JoI,
 	abstract = {A multi-messenger, space-based cosmic ray detector for gamma rays and charged particles poses several design   challenges due to the different instrumental requirements for the two kind of particles. Gamma-ray detection requires layers of high Z   materials for photon conversion and a tracking device with a long lever arm to achieve the necessary angular resolution to separate point   sources; on the contrary, charge measurements for atomic nuclei requires a thin detector in order to avoid unwanted fragmentation, and a   shallow instrument so to maximize the geometric factor. In this paper, a novel tracking approach for gamma rays which tries to reconcile   these two conflicting requirements is presented. The proposal is based on the Tracker-In-Calorimeter (TIC) design that relies on a   highly-segmented calorimeter to track the incident gamma ray by sampling the lateral development of the electromagnetic shower at different   depths. The effectiveness of this approach has been studied with Monte Carlo simulations and has been validated with test beam data of a   detector prototype.},
-	author = {O. Adriani and G. Ambrosi and P. Azzarello and A. Basti and E. Berti and B. Bertucci and G. Bigongiari and L. Bonechi and M. Bongi and S. Bottai and M. Brianzi and P. Brogi and G. Castellini and E. Catanzani and C. Checchia and R. D{\textquotesingle}Alessandro and S. Detti and M. Duranti and N. Finetti and V. Formato and M. Ionica and P. Maestro and F. Maletta and P.S. Marrocchesi and N. Mori and L. Pacini and P. Papini and S. Ricciarini and G. Silvestre and P. Spillantini and O. Starodubtsev and F. Stolzi and J.E. Suh and A. Sulaj and A. Tiberio and E. Vannuccini},
+	author = {O. Adriani and {...} and {M. Duranti} and {et al.}},
 	doi = {10.1088/1748-0221/15/09/p09034},
 	journal = {Journal of Instrumentation},
 	month = {sep},
@@ -50,9 +95,8 @@ visible: false
 	year = 2020,
 	Bdsk-Url-1 = {https://doi.org/10.1088%2F1748-0221%2F15%2F09%2Fp09034},
 	Bdsk-Url-2 = {https://doi.org/10.1088/1748-0221/15/09/p09034}}
-
 @inproceedings{bib:PAN_IEEE,
-	author = {Ambrosi, Giovanni and others},
+	author = {Ambrosi, Giovanni and {...} and {M. Duranti} and {et al.}},
 	booktitle = {{2019 IEEE Nuclear Science Symposium (NSS) and Medical Imaging Conference (MIC)}},
 	date-modified = {2021-01-10 14:30:46 +0100},
 	doi = {10.1109/NSS/MIC42101.2019.9059946},
@@ -63,10 +107,9 @@ visible: false
 	volume = {63},
 	year = {2019},
 	Bdsk-Url-1 = {https://doi.org/10.1109/NSS/MIC42101.2019.9059946}}
-
 @article{bib:PAN,
 	archiveprefix = {arXiv},
-	author = {Wu, X. and others},
+	author = {Wu, X. and {...} and {M. Duranti} and {et al.}},
 	doi = {10.1016/j.asr.2019.01.012},
 	eprint = {1901.04351},
 	journal = {Adv. Space Res.},
@@ -76,9 +119,8 @@ visible: false
 	volume = {63},
 	year = {2019},
 	Bdsk-Url-1 = {https://doi.org/10.1016/j.asr.2019.01.012}}
-
 @article{bib:PreselDB,
-	author = {{Duranti, Matteo} and {Formato, Valerio} and {Vagelli, Valerio}},
+	author = {{Duranti, Matteo} and {et al.}},
 	doi = {10.1051/epjconf/201921404030},
 	journal = {EPJ Web Conf.},
 	pages = {04030},
@@ -87,9 +129,8 @@ visible: false
 	volume = 214,
 	year = 2019,
 	Bdsk-Url-1 = {https://doi.org/10.1051/epjconf/201921404030}}
-
 @article{bib:DODAS,
-	author = {D. Spiga and M. Antonacci and T. Boccali and D. Ciangottini and A. Costantini and G. Donvito and C. Duma and M. Duranti and V. Formato and L. Gaido and D. Salomoni and M. Tracolli and D. Michelotto},
+	author = {D. Spiga and {...} and {M. Duranti} and {et al.}},
 	booktitle = {{International Symposium on Grids and Clouds 2018 in conjunction with Frontiers in Computational Drug Discovery (ISGC 2018 & FCDD) - Infrastructure Clouds and Virtualisation}},
 	doi = {10.22323/1.327.0024},
 	journal = {PoS},
@@ -97,9 +138,8 @@ visible: false
 	volume = {327},
 	year = {2018},
 	Bdsk-Url-1 = {https://doi.org/10.22323/1.327.0024}}
-
 @article{bib:OpenStackSSDC,
-	author = {M. Mariotti and L. Storchi and D. Spiga and G. Vitillaro and M. Tracolli and D. Ciangottini and M. Ciangottini and V. Formato and M. Duranti and M. Merge and P. D'Angeli and R. Primavera and A. Guerra and L. Fano' and B. Bertucci},
+	author = {M. Mariotti and {...} and {M. Duranti} and {et al.}},
 	booktitle = {{International Symposium on Grids and Clouds 2018 in conjunction with Frontiers in Computational Drug Discovery (ISGC 2018 & FCDD) - Infrastructure Clouds and Virtualisation}},
 	doi = {10.22323/1.327.0009},
 	journal = {PoS},
@@ -107,10 +147,9 @@ visible: false
 	volume = {327},
 	year = {2018},
 	Bdsk-Url-1 = {https://doi.org/10.22323/1.327.0009}}
-
 @article{bib:DAMPECharge,
 	abstract = {The DArk Matter Particle Explorer (DAMPE) can detect electrons and photons from 5 GeV to 10 TeV and charged nuclei from a few tens of GeV to 100 TeV. The silicon--tungstentracker (STK), which is composed of 768 singled-sided silicon microstrip detectors, is one of four subdetectors in DAMPE providing photon conversion, track reconstruction, and charge identification for relativistic charged particles. This paper focuses on the charge identification performance of the STK detector. The charge response depends mainly on the incident angle and the impact position of the incoming particle. To improve the charge resolution, a reconstruction algorithm to correct for these parameters was tested during a test beam campaign conducted with a high-intensity ion beam at CERN. This algorithm was successfully applied to the ion test beam and the ion charge of Z=4∼10 and was successfully reconstructed for both normal and 9$\,^{\circ}$incident beams.},
-	author = {Rui Qiao and Wen-Xi Peng and G. Ambrosi and R. Asfandiyarov and P. Azzarello and P. Bernardini and B. Bertucci and A. Bolognini and F. Cadoux and M. Caprai and Xing-Zhu Cui and Guang-Qi Dai and M. Domenjoz and Yi-Fan Dong and M. Duranti and Rui-Rui Fan and P. Fusco and V. Gallo and Min Gao and F. Gargano and S. Garrappa and Ke Gong and Dong-Ya Guo and C. Husi and M. Ionica and Xiao-Hua Liang and Ya-Qing Liu and F. Loparco and D. La Marra and G. Marsella and M.N. Mazziotta and I. De Mitri and A. Nardinocchi and L. Nicola and G. Pelleriti and M. Pohl and V. Postolache and A. Surdo and A. Tykhonov and S. Vitillo and Huan-Yu Wang and Jin-Zhou Wang and M. Weber and Di Wu and X. Wu and Jia-Wei Yang and Fei Zhang and Hao Zhao},
+	author = {Rui Qiao and {...} and {M. Duranti} and {et al.}},
 	doi = {https://doi.org/10.1016/j.nima.2019.04.036},
 	issn = {0168-9002},
 	journal = {Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment},
@@ -122,10 +161,9 @@ visible: false
 	year = {2019},
 	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S016890021930484X},
 	Bdsk-Url-2 = {https://doi.org/10.1016/j.nima.2019.04.036}}
-
 @article{bib:AMS100,
 	abstract = {The next generation magnetic spectrometer in space, AMS-100, is designed to have a geometrical acceptance of 100 m 2 sr and to be operated for at least ten years at the Sun--Earth Lagrange Point 2. Compared to existing experiments, it will improve the sensitivity for the observation of new phenomena in cosmic rays, and in particular in cosmic antimatter, by at least a factor of 1000. The magnet design is based on high temperature superconductor tapes, which allow the construction of a thin solenoid with a homogeneous magnetic field of 1 Tesla inside. The inner volume is instrumented with a silicon tracker reaching a maximum detectable rigidity of 100 TV and a calorimeter system that is 70 radiation lengths deep, equivalent to four nuclear interaction lengths, which extends the energy reach for cosmic-ray nuclei up to the PeV scale, i.e. beyond the cosmic-ray knee. Covering most of the sky continuously, AMS-100 will detect high-energy gamma-rays in the calorimeter system and by pair conversion in the thin solenoid, reconstructed with excellent angular resolution in the silicon tracker.},
-	author = {S. Schael and A. Atanasyan and J. Berdugo and T. Bretz and M. Czupalla and B. Dachwald and P. von Doetinchem and M. Duranti and H. Gast and W. Karpinski and T. Kirn and K. L{\"u}belsmeyer and C. Ma{\~n}a and P.S. Marrocchesi and P. Mertsch and I.V. Moskalenko and T. Schervan and M. Schluse and K.-U. Schr{\"o}der and A. Schultz von Dratzig and C. Senatore and L. Spies and S.P. Wakely and M. Wlochal and D. Uglietti and J. Zimmermann},
+	author = {S. Schael and {...} and {M. Duranti} and {et al.}},
 	doi = {https://doi.org/10.1016/j.nima.2019.162561},
 	issn = {0168-9002},
 	journal = {Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment},
@@ -137,9 +175,8 @@ visible: false
 	year = {2019},
 	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900219310848},
 	Bdsk-Url-2 = {https://doi.org/10.1016/j.nima.2019.162561}}
-
 @article{bib:paper17,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Ambrosi, G. and Arruda, L. and Attig, N. and Barao, F. and Barrin, L. and Bartoloni, A. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindi, V. and De Boer, W. and Bollweg, K. and Borgia, B. and Boschini, M.J. and Bourquin, M. and Bueno, E.F. and Burger, J. and Burger, W.J. and Burmeister, S. and Cai, X.D. and Capell, M. and Casaus, J. and Castellini, G. and Cervelli, F. and Chang, Y.H. and Chen, G.M. and Chen, H.S. and Chen, Y. and Cheng, L. and Chou, H.Y. and Chouridou, S. and Choutko, V. and Chung, C.H. and Clark, C. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Cui, Z. and Dadzie, K. and Dai, Y.M. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M.B. and Derome, L. and Di Falco, S. and Di Felice, V. and D\'{\i}az, C. and Dimiccoli, F. and Von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and Egorov, A. and Eline, A. and Feng, J. and Fiandrini, E. and Fisher, P. and Formato, V. and Freeman, C. and Galaktionov, Y. and G\'amez, C. and Garc\'{\i}a-L\'opez, R.J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Giovacchini, F. and G\'omez-Coral, D.M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K.H. and Haino, S. and Han, K.C. and Hashmani, R.K. and He, Z.H. and Heber, B. and Hsieh, T.H. and Hu, J.Y. and Huang, Z.C. and Incagli, M. and Jang, W.Y. and Jia, Y. and Jinchi, H. and Kanishev, K. and Khiali, B. and Kim, G.N. and Kirn, T. and Konyushikhin, M. and Kounina, O. and Kounine, A. and Koutsenko, V. and Kuhlman, A. and Kulemzin, A. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H.T. and Lee, S.C. and Li, J.Q. and Li, M. and Li, Q. and Li, S. and Li, T.X. and Li, Z.H. and Light, C. and Lin, C.H. and Lippert, T. and Liu, Z. and Lu, S.Q. and Lu, Y.S. and Luebelsmeyer, K. and Luo, J.Z. and Lyu, S.S. and MacHate, F. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Marquardt, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D.C. and Molero, M. and Mott, P. and Mussolin, L. and Ni, J.Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palermo, M. and Palmonari, F. and Paniccia, M. and Pashnin, A. and Pauluzzi, M. and Pensotti, S. and Phan, H.D. and Piandani, R. and Plyaskin, V. and Poluianov, S. and Qi, X.M. and Qin, X. and Qu, Z.Y. and Quadrani, L. and Rancoita, P.G. and Rapin, D. and Reina Conde, A. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Schael, S. and Schmidt, S.M. and Schulz Von Dratzig, A. and Schwering, G. and Seo, E.S. and Shan, B.S. and Shi, J.Y. and Siedenburg, T. and Solano, C. and Sonnabend, R. and Song, J.W. and Sun, Q. and Sun, Z.T. and Tacconi, M. and Tang, X.W. and Tang, Z.C. and Tian, J. and Ting, S.C.C. and Ting, S.M. and Tomassetti, N. and Torsti, J. and T{\"}uys{\"}uz, C. and Urban, T. and Usoskin, I. and Vagelli, V. and Vainio, R. and Valente, E. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J.P. and Wallmann, C. and Wang, L.Q. and Wang, N.H. and Wang, Q.L. and Wang, S. and Wang, X. and Wang, Z.X. and Wei, J. and Weng, Z.L. and Wu, H. and Xiong, R.Q. and Xu, W. and Yan, Q. and Yang, Y. and Yi, H. and Yu, Y.J. and Yu, Z.Q. and Zannoni, M. and Zhang, C. and Zhang, F. and Zhang, F.Z. and Zhang, J.H. and Zhang, Z. and Zhao, F. and Zheng, Z.M. and Zhuang, H.L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS},
 	doi = {10.1103/PhysRevLett.124.211102},
 	journal = {Physical Review Letters},
@@ -149,9 +186,8 @@ visible: false
 	volume = {124},
 	year = {2020},
 	Bdsk-Url-1 = {https://doi.org/10.1103/PhysRevLett.124.211102}}
-
 @article{bib:paper16,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Ambrosi, G. and Arruda, L. and Attig, N. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindi, V. and de Boer, W. and Bollweg, K. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Burger, W. J. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cervelli, F. and Chang, Y. H. and Chen, G. M. and Chen, H. S. and Chen, Y. and Cheng, L. and Chou, H. Y. and Choutko, V. and Chung, C. H. and Clark, C. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Cui, Z. and Dadzie, K. and Dai, Y. M. and Datta, A. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Di Felice, V. and D\'{\i}az, C. and Dimiccoli, F. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and Egorov, A. and Eline, A. and Feng, J. and Fiandrini, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and G\'amez, C. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Giovacchini, F. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K. H. and Haino, S. and Han, K. C. and He, Z. H. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Incagli, M. and Jang, W. Y. and Jia, Yi and Jinchi, H. and Kanishev, K. and Khiali, B. and Kim, G. N. and Kirn, Th. and Konyushikhin, M. and Kounina, O. and Kounine, A. and Koutsenko, V. and Kulemzin, A. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Li, J. Q. and Li, Q. and Li, T. X. and Li, Z. H. and Light, C. and Lin, C. H. and Lippert, T. and Liu, Z. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Luo, Xi and Lyu, S. S. and Machate, F. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D. C. and Molero, M. and Mott, P. and Mussolin, L. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palermo, M. and Palmonari, F. and Paniccia, M. and Pashnin, A. and Pauluzzi, M. and Pensotti, S. and Phan, H. D. and Plyaskin, V. and Poireau, V. and Poluianov, S. and Popkow, A. and Qi, X. M. and Qin, X. and Qu, Z. Y. and Quadrani, L. and Rancoita, P. G. and Rapin, D. and Reina Conde, A. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Schael, S. and Schmidt, S. M. and Schulz von Dratzig, A. and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Solano, C. and Song, J. W. and Sun, Z. T. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tian, J. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}uys{\"}uz, C. and Urban, T. and Usoskin, I. and Vagelli, V. and Vainio, R. and Valente, E. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, J. and Weng, Z. L. and Wu, H. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zannoni, M. and Zeissler, S. and Zhang, C. and Zhang, F. and Zhang, J. H. and Zhang, Z. and Zhao, F. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.123.181102},
 	issue = {18},
@@ -166,9 +202,8 @@ visible: false
 	year = {2019},
 	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.123.181102},
 	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.123.181102}}
-
 @article{bib:paper15,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Alpat, B. and Ambrosi, G. and Arruda, L. and Attig, N. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindi, V. and de Boer, W. and Bollweg, K. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Burger, W. J. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cervelli, F. and Chang, Y. H. and Chen, G. M. and Chen, H. S. and Chen, Y. and Cheng, L. and Chou, H. Y. and Choutko, V. and Chung, C. H. and Clark, C. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Crispoltoni, M. and Cui, Z. and Dadzie, K. and Dai, Y. M. and Datta, A. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Di Felice, V. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and Egorov, A. and Eline, A. and Eronen, T. and Feng, J. and Fiandrini, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Giovacchini, F. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K. H. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Incagli, M. and Jia, Yi and Jinchi, H. and Kanishev, K. and Khiali, B. and Kirn, Th. and Konak, C. and Kounina, O. and Kounine, A. and Koutsenko, V. and Kulemzin, A. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, J. Q. and Li, Q. and Li, T. X. and Li, Z. H. and Light, C. and Lin, C. H. and Lippert, T. and Liu, F. Z. and Liu, Hu and Liu, Z. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Luo, Xi and Lyu, S. S. and Machate, F. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D. C. and Molero, M. and Mott, P. and Mussolin, L. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palermo, M. and Palmonari, F. and Paniccia, M. and Pashnin, A. and Pauluzzi, M. and Pensotti, S. and Perrina, C. and Phan, H. D. and Picot-Clemente, N. and Plyaskin, V. and Pohl, M. and Poireau, V. and Popkow, A. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and Rancoita, P. G. and Rapin, D. and Conde, A. Reina and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Solano, C. and Schael, S. and Schmidt, S. M. and von Dratzig, A. Schulz and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Song, J. W. and Sun, Z. T. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tian, J. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and Urban, T. and Vagelli, V. and Valente, E. and Valtonen, E. and Acosta, M. V\'azquez and Vecchi, M. and Velasco, M. and Vialle, J. P. and Viz\'an, J. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, J. and Weng, Z. L. and Wu, H. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zannoni, M. and Zeissler, S. and Zhang, C. and Zhang, F. and Zhang, J. H. and Zhang, Z. and Zhao, F. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.122.101101},
 	issue = {10},
@@ -183,10 +218,9 @@ visible: false
 	year = {2019},
 	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.122.101101},
 	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.122.101101}}
-
 @article{bib:CaloCube_proceeding,
 	abstract = {Given the good performances in terms of geometrical acceptance and energy resolution, calorimeters are the best suited detectors to measure high energy cosmic rays directly in space. However, in order to exploit this potential, the design of calorimeters must be carefully optimized to take into account all limitations related to space missions, due mainly to the mass of the experimental apparatus. CaloCube is a three years R&D project, approved and financed by INFN in 2014, aiming to optimize the design of a space-borne calorimeter by the use of a cubic, homogeneous and isotropic geometry. In order to maximize detector performances with respect to the total mass of the apparatus, comparative studies on different scintillating materials, different sizes of crystals and different spacings among them have been performed making use of Monte Carlo simulations. In parallel to this activity, several prototypes instrumented with CsI:Tl cubic crystals have been constructed and tested with particle beams (muons, electrons, protons and ions). Both simulations and prototypes showed that the CaloCube design leads to a good particle energy resolution ( 3:5 m2 sr for electromagnetic showers, > 2:5 m2 sr for hadronic showers). Thanks to these performances, in 5 years of operation it would be possible to measure the ux of electrons+positrons up to some tens of TeV and the uxes of protons and nuclei up to some units of PeV/nucleon, hence extending these measurements by at least one order of magnitude in energy compared to the experiments currently operating in space.},
-	author = {E Berti and O Adriani and S Albergo and G Ambrosi and L Auditore and A Basti and G Bigongiari and L Bonechi and S Bonechi and M Bongi and V Bonvicini and S Bottai and P Brogi and G Cappello and P W Cattaneo and R D Alessandro and S Detti and M Duranti and M Fasoli and N Finetti and V Formato and M Ionica and A Italiano and P Lenzi and P Maestro and P S Marrocchesi and N Mori and G Orzan and M Olmi and L Pacini and P Papini and A Rappoldi and S Ricciarini and A Sciuto and G Silvestre and O Starodubtsev and F Stolzi and J E Suh and A Sulaj and A Tiberio and A Tricomi and A Trifir{\`{o}} and M Trimarchi and E Vannuccini and A Vedda and G Zampa and N Zampa},
+	author = {E Berti and {...} and {M. Duranti} and {et al.}},
 	date-added = {2019-05-17 12:27:13 +0200},
 	date-modified = {2019-05-17 12:29:18 +0200},
 	doi = {10.1088/1742-6596/1162/1/012042},
@@ -200,7 +234,6 @@ visible: false
 	year = 2019,
 	Bdsk-Url-1 = {https://doi.org/10.1088%2F1742-6596%2F1162%2F1%2F012042},
 	Bdsk-Url-2 = {https://doi.org/10.1088/1742-6596/1162/1/012042}}
-
 @article{bib:RICAP2018,
 	author = {{Duranti, Matteo}},
 	date-added = {2019-05-17 11:31:43 +0200},
@@ -213,9 +246,8 @@ visible: false
 	volume = 209,
 	year = 2019,
 	Bdsk-Url-1 = {https://doi.org/10.1051/epjconf/201920901014}}
-
 @article{bib:paper14,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Ambrosi, G. and Arruda, L. and Attig, N. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindi, V. and de Boer, W. and Bollweg, K. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Burger, W. J. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cervelli, F. and Chang, Y. H. and Chen, G. M. and Chen, H. S. and Chen, Y. and Cheng, L. and Chou, H. Y. and Choutko, V. and Chung, C. H. and Clark, C. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Crispoltoni, M. and Cui, Z. and Dadzie, K. and Dai, Y. M. and Datta, A. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and Egorov, A. and Eline, A. and Eronen, T. and Feng, J. and Fiandrini, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Giovacchini, F. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K. H. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Incagli, M. and Jia, Yi and Jinchi, H. and Kanishev, K. and Khiali, B. and Kirn, Th. and Konak, C. and Kounina, O. and Kounine, A. and Koutsenko, V. and Kulemzin, A. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, J. Q. and Li, Q. and Li, T. X. and Li, Z. H. and Light, C. and Lin, C. H. and Lippert, T. and Liu, F. Z. and Liu, Hu and Liu, Z. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Luo, Xi and Lyu, S. S. and Machate, F. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D. C. and Molero, M. and Mott, P. and Mussolin, L. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palermo, M. and Palmonari, F. and Paniccia, M. and Pashnin, A. and Pauluzzi, M. and Pensotti, S. and Perrina, C. and Phan, H. D. and Picot-Clemente, N. and Plyaskin, V. and Pohl, M. and Poireau, V. and Popkow, A. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and Rancoita, P. G. and Rapin, D. and Conde, A. Reina and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Solano, C. and Schael, S. and Schmidt, S. M. and Schulz von Dratzig, A. and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Song, J. W. and Sun, Z. T. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tian, J. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and Urban, T. and Vagelli, V. and Valente, E. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Viz\'an, J. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, J. and Weng, Z. L. and Wu, H. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zannoni, M. and Zeissler, S. and Zhang, C. and Zhang, F. and Zhang, J. H. and Zhang, Z. and Zhao, F. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.122.041102},
 	issue = {4},
@@ -230,9 +262,8 @@ visible: false
 	year = {2019},
 	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.122.041102},
 	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.122.041102}}
-
 @article{bib:TIC_proceeding,
-	author = {Bigongiari, Gabriele and Adriani, Oscar and Albergo, Sebastiano and Ambrosi, Giovanni and Auditore, Lucrezia and Basti, Andrea and Berti, Eugenio and Bonechi, Lorenzo and Bonechi, Simone and Bongi, Massimo and Bonvicini, Valter and Bottai, Sergio and Brogi, Paolo and Cappello, Gigi and Cattaneo, Paolo Walter and D'Alessandro, Raffaello and Detti, Sebastiano and Duranti, Matteo and Fasoli, Mauro and Zampa, Nicola},
+	author = {Bigongiari, Gabriele and {...} and {M. Duranti} and {et al.}},
 	date-modified = {2019-05-17 12:29:26 +0200},
 	doi = {10.3390/universe5030072},
 	journal = {Universe},
@@ -242,10 +273,9 @@ visible: false
 	volume = {5},
 	year = {2019},
 	Bdsk-Url-1 = {https://doi.org/10.3390/universe5030072}}
-
 @article{bib:DAMPETrackerAlignment,
 	abstract = {The DArk Matter Particle Explorer (DAMPE) is a space-borne particle detector designed to probe electrons and gamma-rays in the few GeV to 10 TeV energy range, as well as cosmic-ray proton and nuclei components between 10 GeV and 100 TeV. The silicon--tungsten tracker--converter is a crucial component of DAMPE. It allows the direction of incoming photons converting into electron--positron pairs to be estimated, and the trajectory and charge (Z) of cosmic-ray particles to be identified. It consists of 768 silicon micro-strip sensors assembled in 6 double layers with a total active area of 6.6 m2. Silicon planes are interleaved with three layers of tungsten plates, resulting in about one radiation length of material in the tracker. Internal alignment parameters of the tracker have been determined on orbit, with non-showering protons and helium nuclei. We describe the alignment procedure and present the position resolution and alignment stability measurements.},
-	author = {A. Tykhonov and G. Ambrosi and R. Asfandiyarov and P. Azzarello and P. Bernardini and B. Bertucci and A. Bolognini and F. Cadoux and A. D'Amone and A. De Benedittis and I. De Mitri and M. Di Santo and Y.F. Dong and M. Duranti and D. D'Urso and R.R. Fan and P. Fusco and V. Gallo and M. Gao and F. Gargano and S. Garrappa and K. Gong and M. Ionica and D. La Marra and S.J. Lei and X. Li and F. Loparco and G. Marsella and M.N. Mazziotta and W.X. Peng and R. Qiao and M.M. Salinas and A. Surdo and V. Vagelli and S. Vitillo and H.Y. Wang and J.Z. Wang and Z.M. Wang and D. Wu and X. Wu and F. Zhang and J.Y. Zhang and H. Zhao and S. Zimmer},
+	author = {A. Tykhonov and {...} and {M. Duranti} and {et al.}},
 	doi = {https://doi.org/10.1016/j.nima.2018.02.105},
 	issn = {0168-9002},
 	journal = {Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment},
@@ -257,9 +287,8 @@ visible: false
 	year = {2018},
 	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900218302936},
 	Bdsk-Url-2 = {https://doi.org/10.1016/j.nima.2018.02.105}}
-
 @article{bib:DAMPETrackerNIM,
-	author = {A. Tykhonov and G. Ambrosi and R. Asfandiyarov and P. Azzarello and P. Bernardini and B. Bertucci and A. Bolognini and F. Cadoux and A. D'Amone and A. De Benedittis and I. De Mitri and M. Di Santo and Y.F. Dong and M. Duranti and D. D'Urso and R.R. Fan and P. Fusco and V. Gallo and M. Gao and F. Gargano and S. Garrappa and K. Gong and M. Ionica and D. La Marra and F. Loparco and G. Marsella and M.N. Mazziotta and W.X. Peng and R. Qiao and M.M. Salinas and A. Surdo and V. Vagelli and S. Vitillo and H.Y. Wang and J.Z. Wang and Z.M. Wang and D. Wu and X. Wu and F. Zhang and J.Y. Zhang and H. Zhao and S. Zimmer},
+	author = {A. Tykhonov and {...} and {M. Duranti} and {et al.}},
 	date-modified = {2021-01-10 14:22:39 +0100},
 	doi = {https://doi.org/10.1016/j.nima.2018.06.036},
 	issn = {0168-9002},
@@ -272,9 +301,8 @@ visible: false
 	year = {2019},
 	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900218307575},
 	Bdsk-Url-2 = {https://doi.org/10.1016/j.nima.2018.06.036}}
-
 @article{bib:paper13,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Alpat, B. and Ambrosi, G. and Arruda, L. and Attig, N. and Aupetit, S. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battarbee, M. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindel, K. F. and Bindi, V. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Burger, W. J. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cervelli, F. and Chang, Y. H. and Chen, A. I. and Chen, G. M. and Chen, H. S. and Chen, Y. and Cheng, L. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Creus, W. and Crispoltoni, M. and Cui, Z. and Dadzie, K. and Dai, Y. M. and Datta, A. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and Egorov, A. and Eline, A. and Eronen, T. and Feng, J. and Fiandrini, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Gallucci, G. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Giovacchini, F. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K. H. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Incagli, M. and Jia, Yi and Jinchi, H. and Kanishev, K. and Khiali, B. and Kirn, Th. and Konak, C. and Kounina, O. and Kounine, A. and Koutsenko, V. and Kulemzin, A. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. S. and Li, J. Q. and Li, Q. and Li, T. X. and Li, Z. H. and Li, Z. Y. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, Hu and Liu, Z. and Lordello, V. D. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lyu, S. S. and Machate, F. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mikuni, V. M. and Mo, D. C. and Mott, P. and Mussolin, L. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palermo, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Pauluzzi, M. and Pensotti, S. and Perrina, C. and Phan, H. D. and Picot-Clemente, N. and Pilo, F. and Plyaskin, V. and Pohl, M. and Poireau, V. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Schael, S. and Schmidt, S. M. and Schulz von Dratzig, A. and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Song, J. W. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tescaro, D. and Tian, J. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and Urban, T. and Vagelli, V. and Valente, E. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, C. C. and Wei, J. and Weng, Z. L. and Whitman, K. and Wu, H. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, M. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zannoni, M. and Zeissler, S. and Zhang, C. and Zhang, F. and Zhang, J. and Zhang, J. H. and Zhang, S. W. and Zhang, Z. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.121.051103},
 	issue = {5},
@@ -289,9 +317,8 @@ visible: false
 	year = {2018},
 	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051103},
 	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.121.051103}}
-
 @article{bib:paper12,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Alpat, B. and Ambrosi, G. and Arruda, L. and Attig, N. and Aupetit, S. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battarbee, M. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindel, K. F. and Bindi, V. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, G. M. and Chen, H. S. and Chen, Y. and Cheng, L. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Creus, W. and Crispoltoni, M. and Cui, Z. and Dadzie, K. and Dai, Y. M. and Datta, A. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and D'Urso, D. and Egorov, A. and Eline, A. and Eronen, T. and Feng, J. and Fiandrini, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Gallucci, G. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Giovacchini, F. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K. H. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hoffman, J. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jia, Yi and Jinchi, H. and Kang, S. C. and Kanishev, K. and Khiali, B. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Konak, C. and Kounina, O. and Kounine, A. and Koutsenko, V. and Kulemzin, A. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. S. and Li, J. Q. and Li, Q. and Li, T. X. and Li, Z. H. and Li, Z. Y. and Light, C. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, Hu and Lordello, V. D. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Luo, X. and Lyu, S. S. and Machate, F. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mikuni, V. M. and Mo, D. C. and Mott, P. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palermo, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Pauluzzi, M. and Pensotti, S. and Perrina, C. and Phan, H. D. and Picot-Clemente, N. and Pilo, F. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Popkow, A. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Schael, S. and Schmidt, S. M. and Schulz von Dratzig, A. and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Son, D. and Song, J. W. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, C. C. and Weng, Z. L. and Whitman, K. and Wu, H. and Wu, X. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zannoni, M. and Zeissler, S. and Zhang, C. and Zhang, F. and Zhang, J. and Zhang, J. H. and Zhang, S. W. and Zhang, Z. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.121.051101},
 	issue = {5},
@@ -306,9 +333,8 @@ visible: false
 	year = {2018},
 	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051101},
 	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.121.051101}}
-
 @article{bib:paper11,
-	author = {Aguilar, M. and Cavasonza, L. Ali and Ambrosi, G. and Arruda, L. and Attig, N. and Aupetit, S. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battarbee, M. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindel, K. F. and Bindi, V. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, G. M. and Chen, H. S. and Chen, Y. and Cheng, L. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Creus, W. and Crispoltoni, M. and Cui, Z. and Dadzie, K. and Dai, Y. M. and Datta, A. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and D'Urso, D. and Egorov, A. and Eline, A. and Eronen, T. and Feng, J. and Fiandrini, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Gallucci, G. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Giovacchini, F. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K. H. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jia, Yi and Jinchi, H. and Kang, S. C. and Kanishev, K. and Khiali, B. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Konak, C. and Kounina, O. and Kounine, A. and Koutsenko, V. and Kulemzin, A. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. S. and Li, J. Q. and Li, Q. and Li, T. X. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, Hu and Lordello, V. D. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lyu, S. S. and Machate, F. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mikuni, V. M. and Mo, D. C. and Mott, P. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palermo, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Pauluzzi, M. and Pensotti, S. and Perrina, C. and Phan, H. D. and Picot-Clemente, N. and Pilo, F. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Schael, S. and Schmidt, S. M. and von Dratzig, A. Schulz and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Son, D. and Song, J. W. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, C. C. and Weng, Z. L. and Whitman, K. and Wu, H. and Wu, X. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zannoni, M. and Zeissler, S. and Zhang, C. and Zhang, F. and Zhang, J. and Zhang, J. H. and Zhang, S. W. and Zhang, Z. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.121.051102},
 	issue = {5},
@@ -323,9 +349,8 @@ visible: false
 	year = {2018},
 	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051102},
 	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.121.051102}}
-
 @article{bib:paper10,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Ambrosi, G. and Arruda, L. and Attig, N. and Aupetit, S. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battarbee, M. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindel, K. F. and Bindi, V. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Burger, W. J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, G. M. and Chen, H. S. and Cheng, L. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Creus, W. and Crispoltoni, M. and Cui, Z. and Dadzie, K. and Dai, Y. M. and Datta, A. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and D'Urso, D. and Egorov, A. and Eline, A. and Eronen, T. and Feng, J. and Fiandrini, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Gallucci, G. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Giovacchini, F. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K. H. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jia, Yi and Jinchi, H. and Kang, S. C. and Kanishev, K. and Khiali, B. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Konak, C. and Kounina, O. and Kounine, A. and Koutsenko, V. and Kulemzin, A. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. S. and Li, J. Q. and Li, Q. and Li, T. X. and Li, Y. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, Hu and Lordello, V. D. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lyu, S. S. and Machate, F. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mikuni, V. M. and Mo, D. C. and Mott, P. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palermo, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Pauluzzi, M. and Pensotti, S. and Perrina, C. and Phan, H. D. and Picot-Clemente, N. and Pilo, F. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Schael, S. and Schmidt, S. M. and Schulz von Dratzig, A. and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Son, D. and Song, J. W. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Vitale, V. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, C. C. and Weng, Z. L. and Whitman, K. and Wu, H. and Wu, X. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zannoni, M. and Zeissler, S. and Zhang, C. and Zhang, F. and Zhang, J. and Zhang, J. H. and Zhang, S. W. and Zhang, Z. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.120.021101},
 	issue = {2},
@@ -340,9 +365,8 @@ visible: false
 	year = {2018},
 	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.120.021101},
 	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.120.021101}}
-
 @article{bib:paper9,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Alpat, B. and Ambrosi, G. and Arruda, L. and Attig, N. and Aupetit, S. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battarbee, M. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindel, K. F. and Bindi, V. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Burger, W. J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, G. M. and Chen, H. S. and Cheng, L. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Creus, W. and Crispoltoni, M. and Cui, Z. and Dadzie, K. and Dai, Y. M. and Datta, A. and Delgado, C. and Della Torre, S. and Demakov, O. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and D'Urso, D. and Egorov, A. and Eline, A. and Eronen, T. and Feng, J. and Fiandrini, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Gallucci, G. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Giovacchini, F. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K. H. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hoffman, J. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jia, Yi and Jinchi, H. and Kang, S. C. and Kanishev, K. and Khiali, B. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Konak, C. and Kounina, O. and Kounine, A. and Koutsenko, V. and Kulemzin, A. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. S. and Li, J. Q. and Li, Q. and Li, T. X. and Li, Y. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, Hu and Lordello, V. D. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lyu, S. S. and Machate, F. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mikuni, V. M. and Mo, D. C. and Mott, P. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Pauluzzi, M. and Pensotti, S. and Perrina, C. and Phan, H. D. and Picot-Clemente, N. and Pilo, F. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Schael, S. and Schmidt, S. M. and Schulz von Dratzig, A. and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Son, D. and Song, J. W. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Vitale, V. and Vitillo, S. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, C. C. and Weng, Z. L. and Whitman, K. and Wu, H. and Wu, X. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zannoni, M. and Zeissler, S. and Zhang, C. and Zhang, F. and Zhang, J. and Zhang, J. H. and Zhang, S. W. and Zhang, Z. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.119.251101},
 	issue = {25},
@@ -357,9 +381,8 @@ visible: false
 	year = {2017},
 	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.119.251101},
 	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.119.251101}}
-
 @article{bib:HERDICRC2,
-	author = {Dong, Yongwei and others},
+	author = {Dong, Yongwei and {...} and {M. Duranti} and {et al.}},
 	booktitle = {{The Fluorescence detector Array of Single-pixel Telescopes: Contributions to the 35th International Cosmic Ray Conference (ICRC 2017)}},
 	date-modified = {2021-01-10 14:24:34 +0100},
 	doi = {10.22323/1.301.0253},
@@ -370,9 +393,8 @@ visible: false
 	volume = {301 - ICRC2017},
 	year = {2018},
 	Bdsk-Url-1 = {https://doi.org/10.22323/1.301.0253}}
-
 @article{bib:HERDICRC1,
-	author = {Zhang, Shuang-Nan and others},
+	author = {Zhang, Shuang-Nan and {...} and {M. Duranti} and {et al.}},
 	booktitle = {{The Fluorescence detector Array of Single-pixel Telescopes: Contributions to the 35th International Cosmic Ray Conference (ICRC 2017)}},
 	date-modified = {2021-01-10 14:24:51 +0100},
 	doi = {10.22323/1.301.1077},
@@ -383,27 +405,8 @@ visible: false
 	volume = {301 - ICRC2017},
 	year = {2018},
 	Bdsk-Url-1 = {https://doi.org/10.22323/1.301.1077}}
-
-@article{bib:DAMPENature,
-	author = {{DAMPE Collaboration}},
-	date = {2017/11/29/online},
-	date-added = {2018-01-23 17:34:20 +0000},
-	date-modified = {2018-01-23 17:34:20 +0000},
-	day = {29},
-	journal = {Nature},
-	l3 = {10.1038/nature24475;},
-	month = {11},
-	pages = {63-66},
-	publisher = {Macmillan Publishers Limited, part of Springer Nature. All rights reserved. SN -},
-	title = {Direct detection of a break in the teraelectronvolt cosmic-ray spectrum of electrons and positrons},
-	ty = {JOUR},
-	url = {http://dx.doi.org/10.1038/nature24475},
-	volume = {552},
-	year = {2017},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1038/nature24475}}
-
 @article{bib:paper8,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Ambrosi, G. and Arruda, L. and Attig, N. and Aupetit, S. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \breve{g}\else \u{g}\fi{}mez-du Pree, S. and Battarbee, M. and Battiston, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindel, K. F. and Bindi, V. and Boella, G. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, G. M. and Chen, H. S. and Cheng, L. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Creus, W. and Crispoltoni, M. and Cui, Z. and Dai, Y. M. and Delgado, C. and Della Torre, S. and Demakov, O. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and D'Urso, D. and Egorov, A. and Eline, A. and Eronen, T. and Feng, J. and Fiandrini, E. and Finch, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Gallucci, G. and Garc\'{\i}a, B. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Giovacchini, F. and Goglov, P. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guo, K. H. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hoffman, J. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jinchi, H. and Kang, S. C. and Kanishev, K. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Konak, C. and Kounina, O. and Kounine, A. and Koutsenko, V. and Krafczyk, M. S. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. S. and Li, J. Q. and Li, J. Q. and Li, Q. and Li, T. X. and Li, W. and Li, Y. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, Hu and Lordello, V. D. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lv, S. S. and Machate, F. and Majka, R. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mikuni, V. M. and Mo, D. C. and Morescalchi, L. and Mott, P. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Oliva, A. and Orcinha, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Pauluzzi, M. and Pensotti, S. and Pereira, R. and Picot-Clemente, N. and Pilo, F. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Putze, A. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Sandweiss, J. and Saouter, P. and Schael, S. and Schmidt, S. M. and Schulz von Dratzig, A. and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Son, D. and Song, J. W. and Sun, W. H. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tao, L. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Vannini, C. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Vitale, V. and Vitillo, S. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, C. C. and Weng, Z. L. and Whitman, K. and Wienkenh{\"}over, J. and Wu, H. and Wu, X. and Xia, X. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zeissler, S. and Zhang, C. and Zhang, J. and Zhang, J. H. and Zhang, S. D. and Zhang, S. W. and Zhang, Z. and Zheng, Z. M. and Zhu, Z. Q. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	date-added = {2017-01-13 16:10:24 +0000},
 	date-modified = {2017-01-13 16:10:33 +0000},
@@ -420,12 +423,11 @@ visible: false
 	year = {2016},
 	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.117.231102},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.117.231102}}
-
 @inproceedings{bib:HERDBT,
 	abstract = {
 The High Energy cosmic-Radiation Detection (HERD) facility is one of several space astronomy payloads of the cosmic light house program onboard China's Space Station, which is planned for operation starting around 2020 for about 10 years. Beam test with a HERD prototype, to verify the HERD specifications and the reading out method of wavelength shifting fiber and image intensified CCD, was taken at CERN SPS in November, 2015. The prototype is composed of an array of 5*5*10 LYSO crystals, which is 1/40th of the scale of HERD calorimeter. Experimental results on the performances of the calorimeter are discussed.
 },
-	author = {Dong, Yongwei and Quan, Zheng and Wang, Junjing and Xu, Ming and Albergo, Sebastiano and Ambroglini, Filippo and Ambrosi, Giovanni and Azzarello, Philippe and Bai, Yonglin and Bao, Tianwei and Baldini, Luca and Battiston, Roberto and Bernardini, Paolo and Chen, Zhen and D'Alessandro, Raffaello and Duranti, Matteo and D'Urso, Domenico and Fusco, Piergiorgio and Gao, Jiarui and Gao, Xiaohui and Gargano, Fabio and Giglietto, Nicola and Hu, Bingliang and Li, Ran and Li, Yong and Liu, Xin and Loparco, Francesco and Lu, Junguang and Marsella, Giovanni and Mazziotta, Mario N. and De Mitri, Ivan and Mori, Nicola and Orsi, Silvio and Oscar, Adriani and Pearce, Mark and Pohl, Martin and Ryde, Felix and Shi, Dalian and Spillantini, Piero and Su, Meng and Sun, Xin and Surdo, Antonio and Walter, Roland and Wang, Bo and Wang, Le and Wang, Ruijie and Wang, Zhigang and Wu, Bobing and Wu, Xin and Yan, Peng and Zhang, Li and Zhang, Shuangnan},
+	author = {Dong, Yongwei and {...} and {M. Duranti} and {et al.}},
 	booktitle = {{Proc. SPIE 9905, Space Telescopes and Instrumentation 2016: Ultraviolet to Gamma Ray}},
 	doi = {10.1117/12.2231804},
 	journal = {Proc. SPIE},
@@ -435,9 +437,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {9905},
 	year = {2016},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1117/12.2231804}}
-
 @article{bib:DAMPEmission,
-	author = {J. Chang and G. Ambrosi and Q. An and R. Asfandiyarov and P. Azzarello and P. Bernardini and B. Bertucci and M.S. Cai and M. Caragiulo and D.Y. Chen and H.F. Chen and J.L. Chen and W. Chen and M.Y. Cui and T.S. Cui and A. D'Amone and A. De Benedittis and I. De Mitri and M. Di Santo and J.N. Dong and T.K. Dong and Y.F. Dong and Z.X. Dong and G. Donvito and D. Droz and K.K. Duan and J.L. Duan and M. Duranti and D. D'Urso and R.R. Fan and Y.Z. Fan and F. Fang and C.Q. Feng and L. Feng and P. Fusco and V. Gallo and F.J. Gan and W.Q. Gan and M. Gao and S.S. Gao and F. Gargano and K. Gong and Y.Z. Gong and J.H. Guo and Y.M. Hu and G.S. Huang and Y.Y. Huang and M. Ionica and D. Jiang and W. Jiang and X. Jin and J. Kong and S.J. Lei and S. Li and X. Li and W.L. Li and Y. Li and Y.F. Liang and Y.M. Liang and N.H. Liao and Q.Z. Liu and H. Liu and J. Liu and S.B. Liu and Q.Z. Liu and W.Q. Liu and Y. Liu and F. Loparco and J. L{\"u} and M. Ma and P.X. Ma and S.Y. Ma and T. Ma and X.Q. Ma and X.Y. Ma and G. Marsella and M.N. Mazziotta and D. Mo and T.T. Miao and X.Y. Niu and M. Pohl and X.Y. Peng and W.X. Peng and R. Qiao and J.N. Rao and M.M. Salinas and G.Z. Shang and W.H. Shen and Z.Q. Shen and Z.T. Shen and J.X. Song and H. Su and M. Su and Z.Y. Sun and A. Surdo and X.J. Teng and X.B. Tian and A. Tykhonov and V. Vagelli and S. Vitillo and C. Wang and Chi Wang and H. Wang and H.Y. Wang and J.Z. Wang and L.G. Wang and Q. Wang and S. Wang and X.H. Wang and X.L. Wang and Y.F. Wang and Y.P. Wang and Y.Z. Wang and S.C. Wen and Z.M. Wang and D.M. Wei and J.J. Wei and Y.F. Wei and D. Wu and J. Wu and S.S. Wu and X. Wu and K. Xi and Z.Q. Xia and Y.L. Xin and H.T. Xu and Z.L. Xu and Z.Z. Xu and G.F. Xue and H.B. Yang and J. Yang and P. Yang and Y.Q. Yang and Z.L. Yang and H.J. Yao and Y.H. Yu and Q. Yuan and C. Yue and J.J. Zang and C. Zhang and D.L. Zhang and F. Zhang and J.B. Zhang and J.Y. Zhang and J.Z. Zhang and L. Zhang and P.F. Zhang and S.X. Zhang and W.Z. Zhang and Y. Zhang and Y.J. Zhang and Y.Q. Zhang and Y.L. Zhang and Y.P. Zhang and Z. Zhang and Z.Y. Zhang and H. Zhao and H.Y. Zhao and X.F. Zhao and C.Y. Zhou and Y. Zhou and X. Zhu and Y. Zhu and S. Zimmer},
+	author = {J. Chang and {...} and {M. Duranti} and {et al.}},
 	doi = {https://doi.org/10.1016/j.astropartphys.2017.08.005},
 	issn = {0927-6505},
 	journal = {Astroparticle Physics},
@@ -449,9 +450,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	year = {2017},
 	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0927650517300841},
 	Bdsk-Url-2 = {https://doi.org/10.1016/j.astropartphys.2017.08.005}}
-
 @article{bib:DAMPETracker2,
-	author = {Gallo, Valentina and others},
+	author = {Gallo, Valentina and {...} and {M. Duranti} and {et al.}},
 	booktitle = {{Proceedings, 25th International Workshop on Vertex Detectors (Vertex 2016): La Biodola, Elba Island, Livorno, Italy, September 26-30, 2016}},
 	date-modified = {2021-01-10 14:27:02 +0100},
 	doi = {https://doi.org/10.22323/1.287.0010},
@@ -462,9 +462,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {287 - Vertex2016},
 	year = {2017},
 	Bdsk-Url-1 = {https://doi.org/10.22323/1.287.0010}}
-
 @article{bib:DAMPETracker,
-	author = {P. Azzarello and G. Ambrosi and R. Asfandiyarov and P. Bernardini and B. Bertucci and A. Bolognini and F. Cadoux and M. Caprai and I. De Mitri and M. Domenjoz and Y. Dong and M. Duranti and R. Fan and P. Fusco and V. Gallo and F. Gargano and K. Gong and D. Guo and C. Husi and M. Ionica and D. La Marra and F. Loparco and G. Marsella and M.N. Mazziotta and J. Mesa and A. Nardinocchi and L. Nicola and G. Pelleriti and W. Peng and M. Pohl and V. Postolache and R. Qiao and A. Surdo and A. Tykhonov and S. Vitillo and H. Wang and M. Weber and D. Wu and X. Wu and F. Zhang},
+	author = {P. Azzarello and {...} and {M. Duranti} and {et al.}},
 	date-modified = {2021-01-10 14:27:57 +0100},
 	doi = {10.1016/j.nima.2016.02.077},
 	journal = {Nucl. Instrum. Meth.},
@@ -475,9 +474,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {831},
 	year = {2016},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.nima.2016.02.077}}
-
 @article{bib:ICRC2015_DAMPETrackerWu,
-	author = {Wu, X. and Ambrosi, G. and Asfandiyarov, R. and Azzarello, P. and Bernardini, P. and Bertucci, B. and Bolognini, A. and Cadoux, F. and Caprai, M. and De Mitri, I. and Dong, Y. and Duranti, M. and Fan, R. and Fusco, P. and Gallo, V. and Gargano, F. and Guo, D. and Husi, C. and Ionica, M. and Ke, G. and La Marra, D. and Loparco, F. and Marsella, G. and Mazziotta, M.N. and Nardinocchi, A. and Nicola, L. and Pelleriti, G. and Peng, W. and Postolache, V. and Pohl, M. and Qiao, R. and Surdo, A. and Tykhonov, A. and Vitillo, S. and Wang, H. and Weber, M. and Wu, D. and Zhang, F.},
+	author = {Wu, X. and {...} and {M. Duranti} and {et al.}},
 	booktitle = {Proceedings of The 34th International Cosmic Ray Conference {\textemdash} PoS(ICRC2015)},
 	document_type = {Conference Paper},
 	doi = {10.22323/1.236.1192},
@@ -489,9 +487,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	year = 2016,
 	Bdsk-Url-1 = {https://pos.sissa.it/236/1192/},
 	Bdsk-Url-2 = {https://doi.org/10.22323/1.236.1192}}
-
 @article{bib:ICRC2015_DAMPETrackerGallo,
-	author = {Gallo, V. and Ambrosi, G. and Asfandiyarov, R. and Azzarello, P. and Bernardini, P. and Bertucci, B. and Bolognini, A. and Cadoux, F. and Caprai, M. and De Mitri, I. and Domenjoz, M. and Dong, Y. and Duranti, M. and Fan, R. and Fusco, P. and Gargano, F. and Gong, K. and Guo, D. and Husi, C. and Ionica, M. and La Marra, D. and Loparco, F. and Marsella, G. and Mazziotta, M.N. and Nardinocchi, A. and Nicola, L. and Pelleriti, G. and Peng, W. and Pohl, M. and Postolache, V. and Qiao, R. and Surdo, A. and Tykhonov, A. and Vitillo, S. and Wang, H. and Weber, M. and Wu, D. and Wu, X. and Zhang, F.},
+	author = {Gallo, V. and {...} and {M. Duranti} and {et al.}},
 	booktitle = {Proceedings of The 34th International Cosmic Ray Conference {\textemdash} PoS(ICRC2015)},
 	document_type = {Conference Paper},
 	doi = {10.22323/1.236.1199},
@@ -503,9 +500,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	year = 2016,
 	Bdsk-Url-1 = {https://pos.sissa.it/236/1199/},
 	Bdsk-Url-2 = {https://doi.org/10.22323/1.236.1199}}
-
 @article{bib:paper7,
-	author = {Aguilar, M. and Ali Cavasonza, L. and Alpat, B. and Ambrosi, G. and Arruda, L. and Attig, N. and Aupetit, S. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Ba\ifmmode \mbox{\c{s}}\else \c{s}\fi{}e\ifmmode \check{g}\else \v{g}\fi{}mez-du Pree, S. and Battarbee, M. and Battiston, R. and Bazo, J. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindi, V. and Boella, G. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Boschini, M. J. and Bourquin, M. and Bueno, E. F. and Burger, J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cernuda, I. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, G. M. and Chen, H. S. and Cheng, L. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Coste, B. and Creus, W. and Crispoltoni, M. and Cui, Z. and Dai, Y. M. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Dong, F. and Donnini, F. and Duranti, M. and D'Urso, D. and Egorov, A. and Eline, A. and Eronen, T. and Feng, J. and Fiandrini, E. and Finch, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Gallucci, G. and Garc\'{\i}a, B. and Garc\'{\i}a-L\'opez, R. J. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Giovacchini, F. and Goglov, P. and G\'omez-Coral, D. M. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guerri, I. and Guo, K. H. and Habiby, M. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hoffman, J. and Hsieh, T. H. and Huang, H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jinchi, H. and Kang, S. C. and Kanishev, K. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Konak, C. and Kounina, O. and Kounine, A. and Koutsenko, V. and Krafczyk, M. S. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. S. and Li, J. Q. and Li, J. Q. and Li, Q. and Li, T. X. and Li, W. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, Hu and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lv, S. S. and Majka, R. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D. C. and Morescalchi, L. and Mott, P. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Nunes, P. and Oliva, A. and Orcinha, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Pauluzzi, M. and Pensotti, S. and Pereira, R. and Picot-Clemente, N. and Pilo, F. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Putze, A. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rodr\'{\i}guez, I. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Sandweiss, J. and Saouter, P. and Schael, S. and Schmidt, S. M. and Schulz von Dratzig, A. and Schwering, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Siedenburg, T. and Son, D. and Song, J. W. and Sun, W. H. and Tacconi, M. and Tang, X. W. and Tang, Z. C. and Tao, L. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Vannini, C. and Valtonen, E. and V\'azquez Acosta, M. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Vitale, V. and Vitillo, S. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, X. and Wang, X. Q. and Wang, Z. X. and Wei, C. C. and Weng, Z. L. and Whitman, K. and Wienkenh{\"}over, J. and Willenbrock, M. and Wu, H. and Wu, X. and Xia, X. and Xiong, R. Q. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Yang, Y. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zeissler, S. and Zhang, C. and Zhang, J. and Zhang, J. H. and Zhang, S. D. and Zhang, S. W. and Zhang, Z. and Zheng, Z. M. and Zhu, Z. Q. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.117.091103},
 	issue = {9},
@@ -520,9 +516,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	year = {2016},
 	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.117.091103},
 	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.117.091103}}
-
 @article{bib:paper6,
-	author = {Aguilar, M. and Aisa, D. and Alpat, B. and Alvino, A. and Ambrosi, G. and Andeen, K. and Arruda, L. and Attig, N. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Battarbee, M. and Battiston, R. and Bazo, J. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bindi, V. and Bizzaglia, S. and Bizzarri, M. and Boella, G. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Borsini, S. and Boschini, M. J. and Bourquin, M. and Burger, J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Castellini, G. and Cernuda, I. and Cerreta, D. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, G. M. and Chen, H. and Chen, H. S. and Cheng, L. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Gil, E. Cortina and Coste, B. and Creus, W. and Crispoltoni, M. and Cui, Z. and Dai, Y. M. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Di Masso, L. and Dimiccoli, F. and D\'{\i}az, C. and von Doetinchem, P. and Donnini, F. and Duranti, M. and D'Urso, D. and Egorov, A. and Eline, A. and Eppling, F. J. and Eronen, T. and Fan, Y. Y. and Farnesini, L. and Feng, J. and Fiandrini, E. and Fiasson, A. and Finch, E. and Fisher, P. and Formato, V. and Galaktionov, Y. and Gallucci, G. and Garc\'{\i}a, B. and Garc\'{\i}a-L\'opez, R. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Giovacchini, F. and Goglov, P. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guandalini, C. and Guerri, I. and Guo, K. H. and Haas, D. and Habiby, M. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hoffman, J. and Hsieh, T. H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jinchi, H. and Kanishev, K. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Korkmaz, M. A. and Kossakowski, R. and Kounina, O. and Kounine, A. and Koutsenko, V. and Krafczyk, M. S. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. L. and Li, J. Q. and Li, J. Q. and Li, Q. and Li, Q. and Li, T. X. and Li, W. and Li, Y. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, H. and Liu, Hu and Lolli, M. and Lomtadze, T. and Lu, M. J. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lv, S. S. and Majka, R. and Ma\~n\'a, C. and Mar\'{\i}n, J. and Martin, T. and Mart\'{\i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D. C. and Morescalchi, L. and Mott, P. and M{\"}uller, M. and Nelson, T. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Nunes, P. and Obermeier, A. and Oliva, A. and Orcinha, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Papi, A. and Pauluzzi, M. and Pedreschi, E. and Pensotti, S. and Pereira, R. and Picot-Clemente, N. and Pilo, F. and Piluso, A. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Putze, A. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rodr\'{\i}guez, I. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Sandweiss, J. and Saouter, P. and Schael, S. and Schmidt, S. M. and von Dratzig, A. Schulz and Schwering, G. and Scolieri, G. and Seo, E. S. and Shan, B. S. and Shan, Y. H. and Shi, J. Y. and Shi, X. Y. and Shi, Y. M. and Siedenburg, T. and Son, D. and Song, J. W. and Spada, F. and Spinella, F. and Sun, W. and Sun, W. H. and Tacconi, M. and Tang, C. P. and Tang, X. W. and Tang, Z. C. and Tao, L. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Vannini, C. and Valtonen, E. and Vaurynovich, S. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Vitale, V. and Vitillo, S. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, R. S. and Wang, X. and Wang, Z. X. and Weng, Z. L. and Whitman, K. and Wienkenh{\"}over, J. and Willenbrock, M. and Wu, H. and Wu, X. and Xia, X. and Xie, M. and Xie, S. and Xiong, R. Q. and Xu, N. S. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Yang, Y. and Ye, Q. H. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zeissler, S. and Zhang, C. and Zhang, J. H. and Zhang, M. T. and Zhang, S. D. and Zhang, S. W. and Zhang, X. B. and Zhang, Z. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.115.211101},
 	issue = {21},
@@ -537,9 +532,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	year = {2015},
 	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.115.211101},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.115.211101}}
-
 @article{bib:paper5,
-	author = {Aguilar, M. and Aisa, D. and Alpat, B. and Alvino, A. and Ambrosi, G. and Andeen, K. and Arruda, L. and Attig, N. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Battarbee, M. and Battiston, R. and Bazo, J. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bigongiari, G. and Bindi, V. and Bizzaglia, S. and Bizzarri, M. and Boella, G. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Borsini, S. and Boschini, M. J. and Bourquin, M. and Burger, J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Cascioli, V. and Castellini, G. and Cernuda, I. and Cerreta, D. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, H. and Cheng, G. M. and Chen, H. S. and Cheng, L. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Gil, E. Cortina and Coste, B. and Creus, W. and Crispoltoni, M. and Cui, Z. and Dai, Y. M. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Di Masso, L. and Dimiccoli, F. and D\'{i}az, C. and von Doetinchem, P. and Donnini, F. and Du, W. J. and Duranti, M. and D'Urso, D. and Eline, A. and Eppling, F. J. and Eronen, T. and Fan, Y. Y. and Farnesini, L. and Feng, J. and Fiandrini, E. and Fiasson, A. and Finch, E. and Fisher, P. and Galaktionov, Y. and Gallucci, G. and Garc\'{i}a, B. and Garc\'{i}a-L\'opez, R. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Gillard, W. and Giovacchini, F. and Goglov, P. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guandalini, C. and Guerri, I. and Guo, K. H. and Haas, D. and Habiby, M. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hoffman, J. and Hsieh, T. H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jinchi, H. and Kanishev, K. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Kossakowski, R. and Kounina, O. and Kounine, A. and Koutsenko, V. and Krafczyk, M. S. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Levi, G. and Li, H. L. and Li, J. Q. and Li, Q. and Li, Q. and Li, T. X. and Li, W. and Li, Y. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, H. and Lolli, M. and Lomtadze, T. and Lu, M. J. and Lu, S. Q. and Lu, Y. S. and Luebelsmeyer, K. and Luo, J. Z. and Lv, S. S. and Majka, R. and Ma\~n\'a, C. and Mar\'{i}n, J. and Martin, T. and Mart\'{i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D. C. and Morescalchi, L. and Mott, P. and M{\"}uller, M. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Nunes, P. and Obermeier, A. and Oliva, A. and Orcinha, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Papi, A. and Pauluzzi, M. and Pedreschi, E. and Pensotti, S. and Pereira, R. and Picot-Clemente, N. and Pilo, F. and Piluso, A. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Postaci, E. and Putze, A. and Quadrani, L. and Qi, X. M. and Qin, X. and Qu, Z. Y. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rodr\'{i}guez, I. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Sandweiss, J. and Saouter, P. and Sbarra, C. and Schael, S. and Schmidt, S. M. and von Dratzig, A. Schulz and Schwering, G. and Scolieri, G. and Seo, E. S. and Shan, B. S. and Shan, Y. H. and Shi, J. Y. and Shi, X. Y. and Shi, Y. M. and Siedenburg, T. and Son, D. and Spada, F. and Spinella, F. and Sun, W. and Sun, W. H. and Tacconi, M. and Tang, C. P. and Tang, X. W. and Tang, Z. C. and Tao, L. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Vannini, C. and Valtonen, E. and Vaurynovich, S. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Vitale, V. and Vitillo, S. and Wang, L. Q. and Wang, N. H. and Wang, Q. L. and Wang, R. S. and Wang, X. and Wang, Z. X. and Weng, Z. L. and Whitman, K. and Wienkenh{\"}over, J. and Wu, H. and Wu, X. and Xia, X. and Xie, M. and Xie, S. and Xiong, R. Q. and Xin, G. M. and Xu, N. S. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Ye, Q. H. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zeissler, S. and Zhang, J. H. and Zhang, M. T. and Zhang, X. B. and Zhang, Z. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P. and Zurbach, C.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	doi = {10.1103/PhysRevLett.114.171103},
 	issue = {17},
@@ -554,9 +548,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	year = {2015},
 	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.114.171103},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.114.171103}}
-
 @article{bib:paper4,
-	author = {Aguilar, M. and Aisa, D. and Alpat, B. and Alvino, A. and Ambrosi, G. and Andeen, K. and Arruda, L. and Attig, N. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Battarbee, M. and Battiston, R. and Bazo, J. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bigongiari, G. and Bindi, V. and Bizzaglia, S. and Bizzarri, M. and Boella, G. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Borsini, S. and Boschini, M. J. and Bourquin, M. and Burger, J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Cascioli, V. and Castellini, G. and Cernuda, I. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, H. and Cheng, G. M. and Chen, H. S. and Cheng, L. and Chikanian, A. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Coste, B. and Crispoltoni, M. and Cui, Z. and Dai, M. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Di Masso, L. and Dimiccoli, F. and D\'{i}az, C. and von Doetinchem, P. and Donnini, F. and Du, W. J. and Duranti, M. and D'Urso, D. and Eline, A. and Eppling, F. J. and Eronen, T. and Fan, Y. Y. and Farnesini, L. and Feng, J. and Fiandrini, E. and Fiasson, A. and Finch, E. and Fisher, P. and Galaktionov, Y. and Gallucci, G. and Garc\'{i}a, B. and Garc\'{i}a-L\'opez, R. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Gillard, W. and Giovacchini, F. and Goglov, P. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guandalini, C. and Guerri, I. and Guo, K. H. and Habiby, M. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hoffman, J. and Hsieh, T. H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jinchi, H. and Kanishev, K. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Kossakowski, R. and Kounina, O. and Kounine, A. and Koutsenko, V. and Krafczyk, M. S. and Kunz, S. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. L. and Li, J. Q. and Li, Q. and Li, Q. and Li, T. X. and Li, W. and Li, Y. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, H. and Lomtadze, T. and Lu, M. J. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lv, S. S. and Majka, R. and Malinin, A. and Ma\~n\'a, C. and Mar\'{i}n, J. and Martin, T. and Mart\'{i}nez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D. C. and Morescalchi, L. and Mott, P. and M{\"}uller, M. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Nunes, P. and Obermeier, A. and Oliva, A. and Orcinha, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Papi, A. and Pauluzzi, M. and Pedreschi, E. and Pensotti, S. and Pereira, R. and Pilo, F. and Piluso, A. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Postaci, E. and Putze, A. and Quadrani, L. and Qi, X. M. and R{\"}aih{\"}a, T. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rodr\'{i}guez, I. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Sandweiss, J. and Saouter, P. and Sbarra, C. and Schael, S. and Schmidt, S. M. and Schuckardt, D. and Schulz von Dratzig, A. and Schwering, G. and Scolieri, G. and Seo, E. S. and Shan, B. S. and Shan, Y. H. and Shi, J. Y. and Shi, X. Y. and Shi, Y. M. and Siedenburg, T. and Son, D. and Spada, F. and Spinella, F. and Sun, W. and Sun, W. H. and Tacconi, M. and Tang, C. P. and Tang, X. W. and Tang, Z. C. and Tao, L. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Vannini, C. and Valtonen, E. and Vaurynovich, S. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Wang, L. Q. and Wang, Q. L. and Wang, R. S. and Wang, X. and Wang, Z. X. and Weng, Z. L. and Whitman, K. and Wienkenh{\"}over, J. and Wu, H. and Xia, X. and Xie, M. and Xie, S. and Xiong, R. Q. and Xin, G. M. and Xu, N. S. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Ye, Q. H. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zeissler, S. and Zhang, J. H. and Zhang, M. T. and Zhang, X. B. and Zhang, Z. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P. and Zurbach, C.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {(AMS Collaboration)},
 	doi = {10.1103/PhysRevLett.113.221102},
 	issue = {22},
@@ -571,9 +564,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	year = {2014},
 	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.113.221102},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.113.221102}}
-
 @article{bib:paper3,
-	author = {Aguilar, M. and Aisa, D. and Alvino, A. and Ambrosi, G. and Andeen, K. and Arruda, L. and Attig, N. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Battarbee, M. and Battiston, R. and Bazo, J. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bigongiari, G. and Bindi, V. and Bizzaglia, S. and Bizzarri, M. and Boella, G. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Borsini, S. and Boschini, M. J. and Bourquin, M. and Burger, J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Casaus, J. and Cascioli, V. and Castellini, G. and Cernuda, I. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, H. and Cheng, G. M. and Chen, H. S. and Cheng, L. and Chikanian, A. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Coste, B. and Cui, Z. and Dai, M. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Di Masso, L. and Dimiccoli, F. and D\'\iaz, C. and von Doetinchem, P. and Du, W. J. and Duranti, M. and D'Urso, D. and Eline, A. and Eppling, F. J. and Eronen, T. and Fan, Y. Y. and Farnesini, L. and Feng, J. and Fiandrini, E. and Fiasson, A. and Finch, E. and Fisher, P. and Galaktionov, Y. and Gallucci, G. and Garc\'\ia, B. and Garc\'\ia-L\'opez, R. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Gillard, W. and Giovacchini, F. and Goglov, P. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guandalini, C. and Guerri, I. and Guo, K. H. and Habiby, M. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Hoffman, J. and Hsieh, T. H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jinchi, H. and Kanishev, K. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Kossakowski, R. and Kounina, O. and Kounine, A. and Koutsenko, V. and Krafczyk, M. S. and Kunz, S. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Li, H. L. and Li, J. Q. and Li, Q. and Li, Q. and Li, T. X. and Li, W. and Li, Y. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, H. and Lomtadze, T. and Lu, M. J. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lv, S. S. and Majka, R. and Malinin, A. and Ma\~n\'a, C. and Mar\'\in, J. and Martin, T. and Mart\'\inez, G. and Masi, N. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D. C. and Morescalchi, L. and Mott, P. and M{\"}uller, M. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Nunes, P. and Obermeier, A. and Oliva, A. and Orcinha, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Papi, A. and Pedreschi, E. and Pensotti, S. and Pereira, R. and Pilo, F. and Piluso, A. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Postaci, E. and Putze, A. and Quadrani, L. and Qi, X. M. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rodr\'\iguez, I. and Rosier-Lees, S. and Rozhkov, A. and Rozza, D. and Sagdeev, R. and Sandweiss, J. and Saouter, P. and Sbarra, C. and Schael, S. and Schmidt, S. M. and Schuckardt, D. and von Dratzig, A. Schulz and Schwering, G. and Scolieri, G. and Seo, E. S. and Shan, B. S. and Shan, Y. H. and Shi, J. Y. and Shi, X. Y. and Shi, Y. M. and Siedenburg, T. and Son, D. and Spada, F. and Spinella, F. and Sun, W. and Sun, W. H. and Tacconi, M. and Tang, C. P. and Tang, X. W. and Tang, Z. C. and Tao, L. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Vannini, C. and Valtonen, E. and Vaurynovich, S. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Wang, L. Q. and Wang, Q. L. and Wang, R. S. and Wang, X. and Wang, Z. X. and Weng, Z. L. and Whitman, K. and Wienkenh{\"}over, J. and Wu, H. and Xia, X. and Xie, M. and Xie, S. and Xiong, R. Q. and Xin, G. M. and Xu, N. S. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Ye, Q. H. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zeissler, S. and Zhang, J. H. and Zhang, M. T. and Zhang, X. B. and Zhang, Z. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P. and Zurbach, C.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {(AMS Collaboration)},
 	doi = {10.1103/PhysRevLett.113.121102},
 	issue = {12},
@@ -588,9 +580,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	year = {2014},
 	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.113.121102},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.113.121102}}
-
 @article{bib:paper2,
-	author = {Accardo, L. and Aguilar, M. and Aisa, D. and Alpat, B. and Alvino, A. and Ambrosi, G. and Andeen, K. and Arruda, L. and Attig, N. and Azzarello, P. and Bachlechner, A. and Barao, F. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Battarbee, M. and Battiston, R. and Bazo, J. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Bertucci, B. and Bigongiari, G. and Bindi, V. and Bizzaglia, S. and Bizzarri, M. and Boella, G. and de Boer, W. and Bollweg, K. and Bonnivard, V. and Borgia, B. and Borsini, S. and Boschini, M. J. and Bourquin, M. and Burger, J. and Cadoux, F. and Cai, X. D. and Capell, M. and Caroff, S. and Carosi, G. and Casaus, J. and Cascioli, V. and Castellini, G. and Cernuda, I. and Cerreta, D. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, H. and Cheng, G. M. and Chen, H. S. and Cheng, L. and Chikanian, A. and Chou, H. Y. and Choumilov, E. and Choutko, V. and Chung, C. H. and Cindolo, F. and Clark, C. and Clavero, R. and Coignet, G. and Consolandi, C. and Contin, A. and Corti, C. and Coste, B. and Cui, Z. and Dai, M. and Delgado, C. and Della Torre, S. and Demirk{\"}oz, M. B. and Derome, L. and Di Falco, S. and Di Masso, L. and Dimiccoli, F. and D\'\iaz, C. and von Doetinchem, P. and Du, W. J. and Duranti, M. and D'Urso, D. and Eline, A. and Eppling, F. J. and Eronen, T. and Fan, Y. Y. and Farnesini, L. and Feng, J. and Fiandrini, E. and Fiasson, A. and Finch, E. and Fisher, P. and Galaktionov, Y. and Gallucci, G. and Garc\'\ia, B. and Garc\'\ia-L\'opez, R. and Gast, H. and Gebauer, I. and Gervasi, M. and Ghelfi, A. and Gillard, W. and Giovacchini, F. and Goglov, P. and Gong, J. and Goy, C. and Grabski, V. and Grandi, D. and Graziani, M. and Guandalini, C. and Guerri, I. and Guo, K. H. and Haas, D. and Habiby, M. and Haino, S. and Han, K. C. and He, Z. H. and Heil, M. and Henning, R. and Hoffman, J. and Hsieh, T. H. and Huang, Z. C. and Huh, C. and Incagli, M. and Ionica, M. and Jang, W. Y. and Jinchi, H. and Kanishev, K. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Kossakowski, R. and Kounina, O. and Kounine, A. and Koutsenko, V. and Krafczyk, M. S. and Kunz, S. and La Vacca, G. and Laudi, E. and Laurenti, G. and Lazzizzera, I. and Lebedev, A. and Lee, H. T. and Lee, S. C. and Leluc, C. and Levi, G. and Li, H. L. and Li, J. Q. and Li, Q. and Li, Q. and Li, T. X. and Li, W. and Li, Y. and Li, Z. H. and Li, Z. Y. and Lim, S. and Lin, C. H. and Lipari, P. and Lippert, T. and Liu, D. and Liu, H. and Lolli, M. and Lomtadze, T. and Lu, M. J. and Lu, Y. S. and Luebelsmeyer, K. and Luo, F. and Luo, J. Z. and Lv, S. S. and Majka, R. and Malinin, A. and Ma\~n\'a, C. and Mar\'\in, J. and Martin, T. and Mart\'\inez, G. and Masi, N. and Massera, F. and Maurin, D. and Menchaca-Rocha, A. and Meng, Q. and Mo, D. C. and Monreal, B. and Morescalchi, L. and Mott, P. and M{\"}uller, M. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Nunes, P. and Obermeier, A. and Oliva, A. and Orcinha, M. and Palmonari, F. and Palomares, C. and Paniccia, M. and Papi, A. and Pauluzzi, M. and Pedreschi, E. and Pensotti, S. and Pereira, R. and Pilastrini, R. and Pilo, F. and Piluso, A. and Pizzolotto, C. and Plyaskin, V. and Pohl, M. and Poireau, V. and Postaci, E. and Putze, A. and Quadrani, L. and Qi, X. M. and Rancoita, P. G. and Rapin, D. and Ricol, J. S. and Rodr\'\iguez, I. and Rosier-Lees, S. and Rossi, L. and Rozhkov, A. and Rozza, D. and Rybka, G. and Sagdeev, R. and Sandweiss, J. and Saouter, P. and Sbarra, C. and Schael, S. and Schmidt, S. M. and Schuckardt, D. and Schulz von Dratzig, A. and Schwering, G. and Scolieri, G. and Seo, E. S. and Shan, B. S. and Shan, Y. H. and Shi, J. Y. and Shi, X. Y. and Shi, Y. M. and Siedenburg, T. and Son, D. and Spada, F. and Spinella, F. and Sun, W. and Sun, W. H. and Tacconi, M. and Tang, C. P. and Tang, X. W. and Tang, Z. C. and Tao, L. and Tescaro, D. and Ting, Samuel C. C. and Ting, S. M. and Tomassetti, N. and Torsti, J. and T{\"}urko\ifmmode \breve{g}\else \u{g}\fi{}lu, C. and Urban, T. and Vagelli, V. and Valente, E. and Vannini, C. and Valtonen, E. and Vaurynovich, S. and Vecchi, M. and Velasco, M. and Vialle, J. P. and Vitale, V. and Volpini, G. and Wang, L. Q. and Wang, Q. L. and Wang, R. S. and Wang, X. and Wang, Z. X. and Weng, Z. L. and Whitman, K. and Wienkenh{\"}over, J. and Wu, H. and Wu, K. Y. and Xia, X. and Xie, M. and Xie, S. and Xiong, R. Q. and Xin, G. M. and Xu, N. S. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Ye, Q. H. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zeissler, S. and Zhang, J. H. and Zhang, M. T. and Zhang, X. B. and Zhang, Z. and Zheng, Z. M. and Zhou, F. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zimmermann, N. and Zuccon, P. and Zurbach, C.},
+	author = {Accardo, L. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {(AMS Collaboration)},
 	doi = {10.1103/PhysRevLett.113.121101},
 	issue = {12},
@@ -605,9 +596,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	year = {2014},
 	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.113.121101},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.113.121101}}
-
 @article{bib:paper1,
-	author = {Aguilar, M. and Alberti, G. and Alpat, B. and Alvino, A. and Ambrosi, G. and Andeen, K. and Anderhub, H. and Arruda, L. and Azzarello, P. and Bachlechner, A. and Barao, F. and Baret, B. and Barrau, A. and Barrin, L. and Bartoloni, A. and Basara, L. and Basili, A. and Batalha, L. and Bates, J. and Battiston, R. and Bazo, J. and Becker, R. and Becker, U. and Behlmann, M. and Beischer, B. and Berdugo, J. and Berges, P. and Bertucci, B. and Bigongiari, G. and Biland, A. and Bindi, V. and Bizzaglia, S. and Boella, G. and de Boer, W. and Bollweg, K. and Bolmont, J. and Borgia, B. and Borsini, S. and Boschini, M. J. and Boudoul, G. and Bourquin, M. and Brun, P. and Bu\'enerd, M. and Burger, J. and Burger, W. and Cadoux, F. and Cai, X. D. and Capell, M. and Casadei, D. and Casaus, J. and Cascioli, V. and Castellini, G. and Cernuda, I. and Cervelli, F. and Chae, M. J. and Chang, Y. H. and Chen, A. I. and Chen, C. R. and Chen, H. and Cheng, G. M. and Chen, H. S. and Cheng, L. and Chernoplyiokov, N. and Chikanian, A. and Choumilov, E. and Choutko, V. and Chung, C. H. and Clark, C. and Clavero, R. and Coignet, G. and Commichau, V. and Consolandi, C. and Contin, A. and Corti, C. and Costado Dios, M. T. and Coste, B. and Crespo, D. and Cui, Z. and Dai, M. and Delgado, C. and Della Torre, S. and Demirkoz, B. and Dennett, P. and Derome, L. and Di Falco, S. and Diao, X. H. and Diago, A. and Djambazov, L. and D\'\iaz, C. and von Doetinchem, P. and Du, W. J. and Dubois, J. M. and Duperay, R. and Duranti, M. and D'Urso, D. and Egorov, A. and Eline, A. and Eppling, F. J. and Eronen, T. and van Es, J. and Esser, H. and Falvard, A. and Fiandrini, E. and Fiasson, A. and Finch, E. and Fisher, P. and Flood, K. and Foglio, R. and Fohey, M. and Fopp, S. and Fouque, N. and Galaktionov, Y. and Gallilee, M. and Gallin-Martel, L. and Gallucci, G. and Garc\'\ia, B. and Garc\'\ia, J. and Garc\'\ia-L\'opez, R. and Garc\'\ia-Tabares, L. and Gargiulo, C. and Gast, H. and Gebauer, I. and Gentile, S. and Gervasi, M. and Gillard, W. and Giovacchini, F. and Girard, L. and Goglov, P. and Gong, J. and Goy-Henningsen, C. and Grandi, D. and Graziani, M. and Grechko, A. and Gross, A. and Guerri, I. and de la Gu\'\ia, C. and Guo, K. H. and Habiby, M. and Haino, S. and Hauler, F. and He, Z. H. and Heil, M. and Heilig, J. and Hermel, R. and Hofer, H. and Huang, Z. C. and Hungerford, W. and Incagli, M. and Ionica, M. and Jacholkowska, A. and Jang, W. Y. and Jinchi, H. and Jongmanns, M. and Journet, L. and Jungermann, L. and Karpinski, W. and Kim, G. N. and Kim, K. S. and Kirn, Th. and Kossakowski, R. and Koulemzine, A. and Kounina, O. and Kounine, A. and Koutsenko, V. and Krafczyk, M. S. and Laudi, E. and Laurenti, G. and Lauritzen, C. and Lebedev, A. and Lee, M. W. and Lee, S. C. and Leluc, C. and Le\'on Vargas, H. and Lepareur, V. and Li, J. Q. and Li, Q. and Li, T. X. and Li, W. and Li, Z. H. and Lipari, P. and Lin, C. H. and Liu, D. and Liu, H. and Lomtadze, T. and Lu, Y. S. and Lucidi, S. and L{\"}ubelsmeyer, K. and Luo, J. Z. and Lustermann, W. and Lv, S. and Madsen, J. and Majka, R. and Malinin, A. and Ma\~n\'a, C. and Mar\'\in, J. and Martin, T. and Mart\'\inez, G. and Masciocchi, F. and Masi, N. and Maurin, D. and McInturff, A. and McIntyre, P. and Menchaca-Rocha, A. and Meng, Q. and Menichelli, M. and Mereu, I. and Millinger, M. and Mo, D. C. and Molina, M. and Mott, P. and Mujunen, A. and Natale, S. and Nemeth, P. and Ni, J. Q. and Nikonov, N. and Nozzoli, F. and Nunes, P. and Obermeier, A. and Oh, S. and Oliva, A. and Palmonari, F. and Palomares, C. and Paniccia, M. and Papi, A. and Park, W. H. and Pauluzzi, M. and Pauss, F. and Pauw, A. and Pedreschi, E. and Pensotti, S. and Pereira, R. and Perrin, E. and Pessina, G. and Pierschel, G. and Pilo, F. and Piluso, A. and Pizzolotto, C. and Plyaskin, V. and Pochon, J. and Pohl, M. and Poireau, V. and Porter, S. and Pouxe, J. and Putze, A. and Quadrani, L. and Qi, X. N. and Rancoita, P. G. and Rapin, D. and Ren, Z. L. and Ricol, J. S. and Riihonen, E. and Rodr\'\iguez, I. and Roeser, U. and Rosier-Lees, S. and Rossi, L. and Rozhkov, A. and Rozza, D. and Sabellek, A. and Sagdeev, R. and Sandweiss, J. and Santos, B. and Saouter, P. and Sarchioni, M. and Schael, S. and Schinzel, D. and Schmanau, M. and Schwering, G. and Schulz von Dratzig, A. and Scolieri, G. and Seo, E. S. and Shan, B. S. and Shi, J. Y. and Shi, Y. M. and Siedenburg, T. and Siedling, R. and Son, D. and Spada, F. and Spinella, F. and Steuer, M. and Stiff, K. and Sun, W. and Sun, W. H. and Sun, X. H. and Tacconi, M. and Tang, C. P. and Tang, X. W. and Tang, Z. C. and Tao, L. and Tassan-Viol, J. and Ting, Samuel C. C. and Ting, S. M. and Titus, C. and Tomassetti, N. and Toral, F. and Torsti, J. and Tsai, J. R. and Tutt, J. C. and Ulbricht, J. and Urban, T. and Vagelli, V. and Valente, E. and Vannini, C. and Valtonen, E. and Vargas Trevino, M. and Vaurynovich, S. and Vecchi, M. and Vergain, M. and Verlaat, B. and Vescovi, C. and Vialle, J. P. and Viertel, G. and Volpini, G. and Wang, D. and Wang, N. H. and Wang, Q. L. and Wang, R. S. and Wang, X. and Wang, Z. X. and Wallraff, W. and Weng, Z. L. and Willenbrock, M. and Wlochal, M. and Wu, H. and Wu, K. Y. and Wu, Z. S. and Xiao, W. J. and Xie, S. and Xiong, R. Q. and Xin, G. M. and Xu, N. S. and Xu, W. and Yan, Q. and Yang, J. and Yang, M. and Ye, Q. H. and Yi, H. and Yu, Y. J. and Yu, Z. Q. and Zeissler, S. and Zhang, J. G. and Zhang, Z. and Zhang, M. M. and Zheng, Z. M. and Zhuang, H. L. and Zhukov, V. and Zichichi, A. and Zuccon, P. and Zurbach, C.},
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
 	collaboration = {AMS Collaboration},
 	date-modified = {2014-07-30 13:30:08 +0000},
 	doi = {10.1103/PhysRevLett.110.141102},
@@ -622,36 +612,32 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {110},
 	year = {2013},
 	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.110.141102}}
-
 @unpublished{bib:note1,
-	author = {M.Duranti and V.Vagelli and K.Andeen and J.Bazo and B.Bertucci and M.Crispoltoni and I.Gebauer and M.Graziani and M.Incagli and D.D'Urso and F.Nozzoli and C.Pizzolotto},
+	author = {M.Duranti and {et al.}},
 	month = 7,
 	note = {\textbf{AMS Note 2014-06-09}},
 	title = {AMS-02 $e^+$ + $e^-$ flux measurement: part 1 - signal selection},
 	url = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(1).pdf},
 	year = 2014,
 	Bdsk-Url-1 = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(1).pdf}}
-
 @unpublished{bib:note2,
-	author = {M.Duranti and V.Vagelli and M,Graziani and K.Andeen and J.Bazo and B.Bertucci and M.Crispoltoni and I.Gebauer and M.Incagli and D.D'Urso and F.Nozzoli and C.Pizzolotto},
+	author = {M.Duranti and {et al.}},
 	month = 7,
 	note = {\textbf{AMS Note 2014-06-09}},
 	title = {AMS-02 $e^+$ + $e^-$ flux measurement: part 2 - detector acceptance and efficiencies},
 	url = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(2).pdf},
 	year = 2014,
 	Bdsk-Url-1 = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(2).pdf}}
-
 @unpublished{bib:note3,
-	author = {M.Duranti and V.Vagelli and K.Andeen and J.Bazo and B.Bertucci and M.Crispoltoni and I.Gebauer and M.Graziani and M.Incagli and D.D'Urso and F.Nozzoli and C.Pizzolotto},
+	author = {M.Duranti and {et al.}},
 	month = 7,
 	note = {\textbf{AMS Note 2014-06-09}},
 	title = {AMS-02 $e^+$ + $e^-$ flux measurement: part 3 - flux evaluation},
 	url = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(3).pdf},
 	year = 2014,
 	Bdsk-Url-1 = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(3).pdf}}
-
 @article{bib:IsotopicComposition,
-	author = {M. Aguilar and J. Alcaraz and J. Allaby and B. Alpat and G. Ambrosi and H. Anderhub and L. Ao and A. Arefiev and L. Arruda and P. Azzarello and M. Basile and F. Barao and G. Barreira and A. Bartoloni and R. Battiston and R. Becker and U. Becker and L. Bellagamba and J. Berdugo and P. Berges and B. Bertucci and A. Biland and V. Bindi and G. Boella and M. Boschini and M. Bourquin and G. Bruni and M. Bu{\'e}nerd and J. D. Burger and W. J. Burger and X. D. Cai and P. Cannarsa and M. Capell and D. Casadei and J. Casaus and G. Castellini and I. Cernuda and Y. H. Chang and H. F. Chen and H. S. Chen and Z. G. Chen and N. A. Chernoplekov and T. H. Chiueh and Y. Y. Choi and F. Cindolo and V. Commichau and A. Contin and E. Cortina-Gil and D. Crespo and M. Cristinziani and T. S. Dai and C. Dela Guia and C. Delgado and S. Di Falco and L. Djambazov and I. D'antone and Z. R. Dong and Duranti M. and J. Engelberg and F. J. Eppling and T. Eronen and P. Extermann and J. Favier and E. Fiandrini and P. H. Fisher and G. Fl{\"u}gge and N. Fouque and Y. Galaktionov and M. Gervasi and F. Giovacchini and P. Giusti and D. Grandi and O. Grimm and W. Q. Gu and S. Haino and K. Hangarter and A. Hasan and V. Herme and H. Hofer and W. Hungerford and M. Ionica and M. Jongmanns and K. Karlamaa and W. Karpinski and G. Kenney and D. H. Kim and G. N. Kim and K. S. Kim and T. Kirn and A. Klimentov and R. Kossakowski and A. Kounine and V. Koutsenko and M. Kraeber and G. Laborie and T. Laitinen and G. Lamanna and G. Laurenti and A. Lebedev and C. Lechanoine-Leluc and M. W. Lee and S. C. Lee and G. Levi and C. H. Lin and H. T. Liu and G. Lu and Y. S. Lu and K. L{\"u}belsmeyer and D. Luckey and W. Lustermann and C. Ma{\~n}a and A. Margotti and F. Mayet and R. R. Mcneil and M. Menichelli and A. Mihul and A. Mujunen and S. Natale and A. Oliva and F. Palmonari and M. Paniccia and H. B. Park and W. H. Park and M. Pauluzzi and F. Pauss and R. Pereira and E. Perrin and A. Pevsner and F. Pilo and M. Pimenta and V. Plyaskin and V. Pojidaev and M. Pohl and N. Produit and L. Quadrani and P. G. Rancoita and D. Rapin and D. Ren and Z. Ren and M. Ribordy and E. Riihonen and J. Ritakari and S. Ro and U. Roeser and R. Sagdeev and D. Santos and G. Sartorelli and P. Saouter and C. Sbarra and S. Schael and A. Schultz Von Dratzig and G. Schwering and E. S. Seo and J. W. Shin and E. Shoumilov and V. Shoutko and T. Siedenburg and R. Siedling and D. Son and T. Song and F. R. Spada and F. Spinella and M. Steuer and G. S. Sun and H. Suter and X. W. Tang and Samuel C. C. Ting and S. M. Ting and N. Tomassetti and M. Tornikoski and J. Torsti and J. Tr{\"u}mper and J. Ulbricht and S. Urpo and E. Valtonen and J. Vandenhirtz and E. Velikhov and B. Verlaat and I. Vetlitsky and F. Vezzu and J. P. Vialle and G. Vierte and D. Vit{\'e} and H. Von Gunten and S. Waldmeier Wicki and W. Wallraff and J. Z. Wang and K. Wiik and C. Williams and S. X. Wu and P. C. Xia and S. Xu and Z. Z. Xu and J. L. Yan and L. G. Yan and C. G. Yang and J. Yang and M. Yang and S. W. Ye and H. Y. Zhang and Z. P. Zhang and D. X. Zhao and F. Zhou and Y. Zhou and G. Y. Zhu and W. Z. Zhu and H. L. Zhuang and A. Zichichi and B. Zimmermann and P. Zuccon},
+	author = {M. Aguilar and {...} and {M. Duranti} and {et al.}},
 	date-modified = {2014-07-30 13:29:54 +0000},
 	doi = {10.1088/0004-637X/736/2/105},
 	issn = {0004-637X},
@@ -662,9 +648,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = 736,
 	year = 2011,
 	Bdsk-Url-1 = {http://dx.medra.org/10.1088/0004-637X/736/2/105}}
-
 @article{bib:RelativeComposition,
-	author = {M. Aguilar and J. Alcaraz and J. Allaby and B. Alpat and G. Ambrosi and H. Anderhub and L. Ao and A. Arefiev and L. Arruda and P. Azzarello and M. Basile and F. Barao and G. Barreira and A. Bartoloni and R. Battiston and R. Becker and U. Becker and L. Bellagamba and P. B{\'e}n{\'e} and J. Berdugo and P. Berges and B. Bertucci and A. Biland and V. Bindi and G. Boella and M. Boschini and M. Bourquin and G. Bruni and M. Bu{\'e}nerd and J. D. Burger and W. J. Burger and X. D. Cai and P. Cannarsa and M. Capell and D. Casadei and J. Casaus and G. Castellini and I. Cernuda and Y. H. Chang and H. F. Chen and H. S. Chen and Z. G. Chen and N. A. Chernoplekov and T. H. Chiueh and Y. Y. Choi and F. Cindolo and V. Commichau and A. Contin and E. Cortina-Gil and D. Crespo and M. Cristinziani and T. S. Dai and C. Dela Guia and C. Delgado and S. Di Falco and L. Djambazov and I. D'antone and Z. R. Dong and Duranti M. and J. Engelberg and F. J. Eppling and T. Eronen and P. Extermann and J. Favier and E. Fiandrini and P. H. Fisher and G. Fl{\"u}gge and N. Fouque and Y. Galaktionov and M. Gervasi and F. Giovacchini and P. Giusti and D. Grandi and O. Grimm and W. Q. Gu and S. Haino and K. Hangarter and A. Hasan and V. Hermel and H. Hofer and W. Hungerford and M. Ionica and M. Jongmanns and K. Karlamaa and W. Karpinski and G. Kenney and D. H. Kim and G. N. Kim and K. S. Kim and T. Kirn and A. Klimentov and R. Kossakowski and A. Kounine and V. Koutsenko and M. Kraeber and G. Laborie and T. Laitinen and G. Lamanna and G. Laurenti and A. Lebedev and C. Lechanoine-Leluc and M. W. Lee and S. C. Lee and G. Levi and C. H. Lin and H. T. Liu and G. Lu and Y. S. Lu and K. L{\"u}belsmeyer and D. Luckey and W. Lustermann and C. Ma{\~n}a and A. Margotti and F. Mayet and R. R. Mcneil and M. Menichelli and A. Mihul and A. Mujunen and A. Oliva and F. Palmonari and H. B. Park and W. H. Park and M. Pauluzzi and F. Pauss and R. Pereira and E. Perrin and A. Pevsner and F. Pilo and M. Pimenta and V. Plyaskin and V. Pojidaev and M. Pohl and N. Produit and L. Quadrani and P. G. Rancoita and D. Rapin and D. Ren and Z. Ren and M. Ribordy and J. P. Richeux and E. Riihonen and J. Ritakari and S. Ro and U. Roeser and R. Sagdeev and D. Santos and G. Sartorelli and C. Sbarra and S. Schael and A. Schultz Von Dratzig and G. Schwering and E. S. Seo and J. W. Shin and E. Shoumilov and V. Shoutko and T. Siedenburg and R. Siedling and D. Son and T. Song and F. R. Spada and F. Spinella and M. Steuer and G. S. Sun and H. Suter and X. W. Tang and Samuel C. C. Ting and S. M. Ting and N. Tomassetti and M. Tornikoski and J. Torsti and J. Tr{\"u}Mper and J. Ulbricht and S. Urpo and E. Valtonen and J. Vandenhirtz and E. Velikhov and B. Verlaat and I. Vetlitsky and F. Vezzu and J. P. Vialle and G. Viertel and D. Vit{\'e} and H. Von Gunten and S. Waldmeier Wicki and W. Wallraff and J. Z. Wang and K. Wiik and C. Williams and S. X. Wu and P. C. Xia and S. Xu and Z. Z. Xu and J. L. Yan and L. G. Yan and C. G. Yang and J. Yang and M. Yang and S. W. Ye and H. Y. Zhang and Z. P. Zhang and D. X. Zhao and F. Zhou and Y. Zhou and G. Y. Zhu and W. Z. Zhu and H. L. Zhuang and A. Zichichi and B. Zimmermann and P. Zuccon},
+	author = {M. Aguilar and {...} and {M. Duranti} and {et al.}},
 	date-modified = {2014-07-30 13:29:43 +0000},
 	doi = {10.1088/0004-637X/724/1/329},
 	issn = {0004-637X},
@@ -675,9 +660,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {724 and Number 1},
 	year = 2010,
 	Bdsk-Url-1 = {http://dx.medra.org/10.1088/0004-637X/724/1/329}}
-
 @article{bib:TrackerAlignment,
-	author = {B. Alpat and G. Ambrosi and Ph. Azzarello and R. Battiston and B. Bertucci and M. Bourquin and W.J. Burger and F. Cadoux and C.F. Da Silva Costa and V. Choutko and Duranti M. and E. Fiandrini and D. Haas and S. Haino and M. Ionica and R. Ionica and C. Lechanoine-Leluc and M. Menichelli and S. Natale and A. Oliva and M. Paniccia and E. Perrin and M. Pohl and D. Rapin and N. Tomassetti and P. Zuccon and C. Zurbach},
+	author = {B. Alpat and {...} and {M. Duranti} and {et al.}},
 	date-modified = {2014-07-30 13:27:50 +0000},
 	doi = {10.1016/j.nima.2009.11.065},
 	issn = {0168-9002},
@@ -688,9 +672,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {613 and Issue 2},
 	year = 2010,
 	Bdsk-Url-1 = {http://dx.medra.org/10.1016/j.nima.2009.11.065}}
-
 @article{bib:TrackerUpgrade,
-	author = {K. L{\"u}belsmeyer and A. Schultz Von Dratzig and M. Wlochal and G. Ambrosi and P. Azzarello and R. Battiston and R. Becker and U. Becker and B. Bertucci and K. Bollweg and J.D. Burger and F. Cadoux and X.D. Cai and M. Capell and V. Choutko and M. Duranti and C. Gargiulo and C. Guandalini and S. Haino and M. Ionica and A. Koulemzine and A. Kounine and V. Koutsenko and G. Laurenti and A. Lebedev and T. Martin and A. Oliva and M. Paniccia and E. Perrin and D. Rapin and A. Rozhkov and St. Schael and H. Tholen and S.C.C. Ting and P. Zuccon},
+	author = {K. L{\"u}belsmeyer and {...} and {M. Duranti} and {et al.}},
 	date-added = {2013-02-13 16:28:16 +0000},
 	date-modified = {2014-07-30 13:29:29 +0000},
 	doi = {10.1016/j.nima.2011.06.051},
@@ -702,7 +685,6 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = 654,
 	year = 2011,
 	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900211011752}}
-
 @inproceedings{bib:RICAP2016,
 	author = {{Duranti, Matteo}},
 	booktitle = {{RICAP2016}},
@@ -714,7 +696,6 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = 136,
 	year = 2017,
 	Bdsk-Url-1 = {https://doi.org/10.1051/epjconf/201713602004}}
-
 @inproceedings{bib:Moriond2014,
 	author = {Duranti, M.},
 	booktitle = {{Proceedings, 49th Rencontres de Moriond on Electroweak Interactions and Unified Theories}},
@@ -724,7 +705,6 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://inspirehep.net/record/1338142/files/Pages_from_C14-03-15--1_169.pdf},
 	year = {2014},
 	Bdsk-Url-1 = {http://inspirehep.net/record/1338142/files/Pages_from_C14-03-15--1_169.pdf}}
-
 @inproceedings{bib:IFAE13,
 	author = {Duranti, M.},
 	booktitle = {IFAE2013 (C037)},
@@ -738,7 +718,6 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1393/ncc/i2014-11682-9},
 	year = {2014},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1393/ncc/i2014-11682-9}}
-
 @inproceedings{bib:RD11,
 	author = {Duranti, Matteo},
 	booktitle = {RD11},
@@ -750,7 +729,6 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://inspirehep.net/record/1206749/files/RD11_011.pdf},
 	year = {2011},
 	Bdsk-Url-1 = {http://inspirehep.net/record/1206749/files/RD11_011.pdf}}
-
 @inproceedings{bib:Vertex2012,
 	author = {Duranti, Matteo},
 	booktitle = {Vertex2012},
@@ -762,11 +740,10 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://inspirehep.net/record/1247108/files/Vertex\%202012_052.pdf},
 	year = {2013},
 	Bdsk-Url-1 = {http://inspirehep.net/record/1247108/files/Vertex%5C%202012_052.pdf}}
-
 @inproceedings{bib:ICRC2013TrackerAlignment,
 	adsnote = {Provided by the SAO/NASA Astrophysics Data System},
 	adsurl = {https://ui.adsabs.harvard.edu/abs/2013ICRC...33..570A},
-	author = {{Ambrosi}, G. and {Azzarello}, P. and {Battiston}, R. and {Bazo}, J. and {Bertucci}, B. and {Choumilov}, E. and {Choutko}, V. and {Delgado-Mendez}, C. and {Duranti}, M. and {D'Urso}, D. and {Fiandrini}, E. and {Graziani}, M. and {Habiby}, M. and {Haino}, S. and {Ionica}, M. and {Mereu}, I. and {Natale}, S. and {Nozzoli}, F. and {Oliva}, A. and {Paniccia}, M. and {Pizzolotto}, C. and {Pohl}, M. and {Rapin}, D. and {Saouter}, P. and {Tomassetti}, N. and {Wu}, K. and {Zhang}, Z. and {Zuccon}, P.},
+	author = {{Ambrosi}, G. and {...} and {M. Duranti} and {et al.}},
 	booktitle = {International Cosmic Ray Conference},
 	keywords = {Silicon Tracker, Cosmic Ray Detector, Alignment},
 	month = jan,
@@ -775,11 +752,10 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	title = {{Alignment of the AMS-02 Silicon Tracker}},
 	volume = {33},
 	year = 2013}
-
 @inproceedings{bib:ICRC2013TrackerCharge,
 	adsnote = {Provided by the SAO/NASA Astrophysics Data System},
 	adsurl = {https://ui.adsabs.harvard.edu/abs/2013ICRC...33.2102A},
-	author = {{Ambrosi}, G. and {Azzarello}, P. and {Battiston}, R. and {Bazo}, J. and {Bertucci}, B. and {Choumilov}, E. and {Choutko}, V. and {Delgado-Mendez}, C. and {Duranti}, M. and {D'Urso}, D. and {Fiandrini}, E. and {Graziani}, M. and {Habiby}, M. and {Haino}, S. and {Ionica}, M. and {Mereu}, I. and {Natale}, S. and {Nozzoli}, F. and {Oliva}, A. and {Paniccia}, M. and {Pizzolotto}, C. and {Pohl}, M. and {Rapin}, D. and {Saouter}, P. and {Tomassetti}, N. and {Wu}, K. and {Zhang}, Z. and {Zuccon}, P.},
+	author = {{Ambrosi}, G. and {...} and {M. Duranti} and {et al.}},
 	booktitle = {International Cosmic Ray Conference},
 	keywords = {Charged Particles, Cosmic Ray Detector, Silicon Tracker.},
 	month = jan,
@@ -788,11 +764,10 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	title = {{Nuclear Charge Measurement with the AMS-02 Silicon Tracker}},
 	volume = {33},
 	year = 2013}
-
 @inproceedings{bib:ICRC2013TrackerOperations,
 	adsnote = {Provided by the SAO/NASA Astrophysics Data System},
 	adsurl = {https://ui.adsabs.harvard.edu/abs/2013ICRC...33.2121A},
-	author = {{Ambrosi}, G. and {Azzarello}, P. and {Battiston}, R. and {Bazo}, J. and {Bertucci}, B. and {Choumilov}, E. and {Choutko}, V. and {Delgado-Mendez}, C. and {Duranti}, M. and {D'Urso}, D. and {Fiandrini}, E. and {Graziani}, M. and {Habiby}, M. and {Haino}, S. and {Ionica}, M. and {Mereu}, I. and {Natale}, S. and {Nozzoli}, F. and {Oliva}, A. and {Paniccia}, M. and {Pizzolotto}, C. and {Pohl}, M. and {Rapin}, D. and {Saouter}, P. and {Tomassetti}, N. and {Wu}, K. and {Zhang}, Z. and {Zuccon}, P.},
+	author = {{Ambrosi}, G. and {...} and {M. Duranti} and {et al.}},
 	booktitle = {International Cosmic Ray Conference},
 	keywords = {AMS-02, silicon Tracker, calibration, performance.},
 	month = jan,
@@ -801,11 +776,10 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	title = {{In-flight Operations and Efficiency of the AMS-02 Silicon Tracker}},
 	volume = {33},
 	year = 2013}
-
 @inproceedings{bib:ICRC2013TrackerReconstruction,
 	adsnote = {Provided by the SAO/NASA Astrophysics Data System},
 	adsurl = {https://ui.adsabs.harvard.edu/abs/2013ICRC...33.2306A},
-	author = {{Ambrosi}, G. and {Azzarello}, P. and {Battiston}, R. and {Bazo}, J. and {Bertucci}, B. and {Chikanian}, A. and {Choumilov}, E. and {Choutko}, V. and {Delgado-Mendez}, C. and {Duranti}, M. and {D'urso}, D. and {Fiandrini}, E. and {Graziani}, M. and {Habiby}, M. and {Haino}, S. and {Ionica}, M. and {Mereu}, I. and {Natale}, S. and {Nozzoli}, F. and {Oliva}, A. and {Paniccia}, M. and {Pizzolotto}, C. and {Pohl}, M. and {Rapin}, D. and {Saouter}, P. and {Tomassetti}, N. and {Wu}, K. and {Zhang}, Z. and {Zuccon}, P.},
+	author = {{Ambrosi}, G. and {...} and {M. Duranti} and {et al.}},
 	booktitle = {International Cosmic Ray Conference},
 	keywords = {AMS, silicon tracker, resolution},
 	month = jan,
@@ -814,7 +788,6 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	title = {{AMS-02 Track Reconstruction and Rigidity Measurement}},
 	volume = {33},
 	year = 2013}
-
 @inproceedings{bib:ICRC2015,
 	author = {Duranti, Matteo},
 	booktitle = {ICRC2015},
@@ -827,9 +800,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {ICRC2015},
 	year = {2015},
 	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/273/ICRC2015%5C_273.pdf}}
-
 @inproceedings{bib:ICRC2015Fiandra,
-	author = {E. Fiandrini and M. Duranti and B. Bertucci and M. Boschini and M. Crispoltoni and S. Della Torre and F. Donnini and D. D'Urso and V. Formato and M. Gervasi and D. Grandi and M. Graziani and G. La Vacca and F. Nozzoli and S. Pensotti and C. Pizzolotto and P.G. Rancoita and D. Rozza and M. Tacconi and V. Vitale and M. Zannoni},
+	author = {E. Fiandrini and {...} and {M. Duranti} and {et al.}},
 	booktitle = {ICRC2015},
 	date-modified = {2021-01-10 14:35:21 +0100},
 	journal = {PoS},
@@ -839,9 +811,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {ICRC2015},
 	year = {2015},
 	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/095/ICRC2015%5C_095.pdf}}
-
 @inproceedings{bib:ICRC2015Grandi,
-	author = {D. Grandi and B. Bertucci and M.J. Boschini and M. Crispoltoni and S. Della Torre and F. Donnini and M. Duranti and D. D'Urso and E. Fiandrini and V. Formato and G. La Vacca and M. Gervasi and M. Graziani and F. Nozzoli and S. Pensotti and C. Pizzolotto and P.G. Rancoita and D. Rozza and M. Tacconi and V. Vitale and M. Zannoni},
+	author = {D. Grandi and {...} and {M. Duranti} and {et al.}},
 	booktitle = {ICRC2015},
 	date-modified = {2021-01-10 14:35:28 +0100},
 	journal = {PoS},
@@ -851,9 +822,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {ICRC2015},
 	year = {2015},
 	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/116/ICRC2015%5C_116.pdf}}
-
 @inproceedings{bib:ICRC2015Vitillo,
-	author = {G. Ambrosi and P. Azzarello and R. Battiston and J. Bazo and B. Bertucci and E. Choumilov and V. Choutko and M. Crispoltoni and C. Delgado and M. Duranti and F. Donnini and D. D'Urso and E. Fiandrini and V. Formato and M. Graziani and M. Habiby and S. Haino and M. Ionica and K. Kanishchev and F. Nozzoli and A. Oliva and M. Paniccia and C. Pizzolotto and M. Pohl and X. Qin and D. Rapin and P. Saouter and N. Tomassetti and V. Vitale and S. Vitillo and X.Wu and Z. Zhang and P. Zuccon},
+	author = {G. Ambrosi and {...} and {M. Duranti} and {et al.}},
 	booktitle = {ICRC2015},
 	date-modified = {2021-01-10 14:35:35 +0100},
 	journal = {PoS},
@@ -863,9 +833,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {ICRC2015},
 	year = {2015},
 	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/429/ICRC2015%5C_429.pdf}}
-
 @inproceedings{bib:ICRC2015Qin,
-	author = {G. Ambrosi and P. Azzarello and R. Battiston and J. Bazo and B. Bertucci and E. Choumilov and V. Choutko and M. Crispoltoni and C. Delgado and M. Duranti and F. Donnini and D. D'Urso and E. Fiandrini and V. Formato and M. Graziani and M. Habiby and S. Haino and M. Ionica and K. Kanishchev and F. Nozzoli and A. Oliva and M. Paniccia and C. Pizzolotto and M. Pohl and X. Qin and D. Rapin and P. Saouter and N. Tomassetti and V. Vitale and S. Vitillo and X.Wu and Z. Zhang and P. Zuccon},
+	author = {G. Ambrosi and {...} and {M. Duranti} and {et al.}},
 	booktitle = {ICRC2015},
 	date-modified = {2021-01-10 14:35:40 +0100},
 	journal = {PoS},
@@ -875,9 +844,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {ICRC2015},
 	year = {2015},
 	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/690/ICRC2015%5C_690.pdf}}
-
 @inproceedings{bib:CHEP2015,
-	author = {D'Urso, Domenico and Duranti, Matteo},
+	author = {D'Urso, Domenico and {...} and {M. Duranti} and {et al.}},
 	booktitle = {{Proceedings, 21st International Conference on Computing in High Energy and Nuclear Physics (CHEP 2015)}},
 	doi = {10.1088/1742-6596/664/7/072016},
 	journal = {J. Phys. Conf. Ser.},
@@ -888,10 +856,9 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {664},
 	year = {2015},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1088/1742-6596/664/7/072016}}
-
 @inproceedings{bib:CHEP2015Sapunenko,
 	abstract = {Data management constitutes one of the major challenges that a geographically- distributed e-Infrastructure has to face, especially when remote data access is involved. We discuss an integrated solution which enables transparent and efficient access to on-line and near-line data through high latency networks. The solution is based on the joint use of the General Parallel File System (GPFS) and of the Tivoli Storage Manager (TSM). Both products, developed by IBM, are well known and extensively used in the HEP computing community. Owing to a new feature introduced in GPFS 3.5, so-called Active File Management (AFM), the definition of a single, geographically-distributed namespace, characterised by automated data flow management between different locations, becomes possible. As a practical example, we present the implementation of AFM-based remote data access between two data centres located in Bologna and Rome, demonstrating the validity of the solution for the use case of the AMS experiment, an astro-particle experiment supported by the INFN CNAF data centre with the large disk space requirements (more than 1.5 PB).},
-	author = {Vladimir Sapunenko and Domenico D'Urso and Luca dell'Agnello and Vincenzo Vagnoni and Matteo Duranti},
+	author = {Vladimir Sapunenko and {...} and {M. Duranti} and {et al.}},
 	booktitle = {{Proceedings, 21st International Conference on Computing in High Energy and Nuclear Physics (CHEP 2015)}},
 	date-modified = {2021-01-10 14:41:13 +0100},
 	journal = {J. Phys. Conf. Ser.},
@@ -901,9 +868,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = {664},
 	year = {2015},
 	Bdsk-Url-1 = {http://stacks.iop.org/1742-6596/664/i=4/a=042047}}
-
 @article{bib:MultipleVolumeReflection,
-	author = {W. Scandale and A. Vomiero and S. Baricordi and P. Dalpiaz and M. Fiorini and V. Guidi and A. Mazzolari and G. Della Mea and R. Milan and G. Ambrosi and P. Zuccon and B. Bertucci and W. Burger and Duranti M. and G. Cavoto and R. Santacesaria and P. Valente and C. Luci and F. Iacoangeli and E. Vallazza and A. G. Afonin and Yu. A. Chesnokov and V. I. Kotov and V. A. Maisheev and I. A. Yazynin and A. D. Kovalenko and A. M. Taratin and A. S. Denisov and Y. A and Gavrikov and Yu. M. Ivanov and L. P. Lapina and L. G. Malyarenko and V. V. Skorogobogatov and V. M. Suvorov and And S. A. Vavilov and D. Bolognini and S. Hasan and A. Mozzanica and M. Prest},
+	author = {W. Scandale and {...} and {M. Duranti} and {et al.}},
 	date-modified = {2014-07-30 13:30:35 +0000},
 	doi = {10.1103/PhysRevLett.102.084801},
 	issn = {0031-9007},
@@ -913,9 +879,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = 102,
 	year = 2009,
 	Bdsk-Url-1 = {http://dx.medra.org/10.1103/PhysRevLett.102.084801}}
-
 @article{bib:RadiationFromVolumeReflection,
-	author = {W. Scandale and A. Vomiero and S. Baricordi and P. Dalpiaz and M. Fiorini and V. Guidi and A. Mazzolari and R. Milan and G. Della Mea and G. Ambrosi and B. Bertucci and W. J. Burger and Duranti M. and P. Zuccon and G. Cavoto and F. Iacoangeli and C. Luci and S. Pisano and R. Santacesaria and P. Valente and E. Vallazza and A. G. Afonin and Yu. A. Chesnokov and V. A. Maisheev and I. A. Yazynin and A. D. Kovalenko and A. M. Taratin and A. S. Denisov and Yu. A. Gavrikov and Yu. M. Ivanov and L. P. Lapina and L. G. Malyarenko and V. V. Skorobogatov and V. M. Suvarov and S. A. Vavilov and D. Bolognini and S. Hasan and D. Lietti and A. Mattera and M. Prest},
+	author = {W. Scandale and {...} and {M. Duranti} and {et al.}},
 	date-modified = {2014-07-30 13:30:55 +0000},
 	doi = {10.1103/PhysRevA.79.012903},
 	issn = {1050-2947},
@@ -925,9 +890,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = 79,
 	year = 2009,
 	Bdsk-Url-1 = {http://dx.medra.org/10.1103/PhysRevA.79.012903}}
-
 @article{bib:VolumeReflection,
-	author = {W. Scandale and A. Vomiero and S. Baricordi and P. Dalpiaz and M. Fiorini and V. Guidi and A. Mazzolari and R. Milan and Gianantonio Della Mea and G. Ambrosi and B. Bertucci and W. J. Burger and Duranti M. and P. Zuccon and G. Cavoto and F. Iacoangeli and C. Luci and S. Pisano and R. Santacesaria and P. Valente and E. Vallazza and A. G. Afonin and Yu. A. Chesnokov and V. I. Kotov and V. A. Maisheev and I. A. Yazynin and A. D. Kovalenko and A. M. Taratin and A. S. Denisov and Yu. A. Gavrikov and Yu. M. Ivanov and L. P. Lapina and L. G. Malyarenko and V. V. Skorobogatov and V. M. Suvorov and S. A. Vavilov and D. Bolognini and S. Hasan and D. Lietti and A. Mozzanica and M. Prest},
+	author = {W. Scandale and {...} and {M. Duranti} and {et al.}},
 	date-modified = {2014-07-30 13:30:18 +0000},
 	doi = {10.1103/PhysRevLett.101.234801},
 	issn = {0031-9007},
@@ -937,4 +901,5 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	volume = 101,
 	year = 2008,
 	Bdsk-Url-1 = {http://dx.medra.org/10.1103/PhysRevLett.101.234801}}
+
 [/bibtexify]
