@@ -1,6 +1,7 @@
 #!/bin/bash -l
 
-bin/gpm selfupgrade -f
+# this tries to upgrade the grav version itself, that maybe is better to avoid
+#bin/gpm selfupgrade -f
 
 #this on the final server should be removed
 #bin/gpm install -y admin
