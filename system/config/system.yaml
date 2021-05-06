@@ -75,9 +75,9 @@ pages:
   last_modified: false                           # Set the last modified date header based on file modification timestamp
   etag: true                                     # Set the etag header tag
   vary_accept_encoding: false                    # Add `Vary: Accept-Encoding` header
-  redirect_default_route: false                  # Automatically redirect to a page's default route
-  redirect_default_code: 302                     # Default code to use for redirects
-  redirect_trailing_slash: true                  # Handle automatically or 302 redirect a trailing / URL
+  redirect_default_code: 302                     # Default code to use for redirects: 301|302|303
+  redirect_trailing_slash: 1                     # Always redirect trailing slash with redirect code 0|1|301|302 (0: no redirect, 1: use default code)
+  redirect_default_route: 0                      # Always redirect to page's default route using code 0|1|301|302, also removes .htm and .html extensions
   ignore_files: [.DS_Store]                      # Files to ignore in Pages
   ignore_folders: [.git, .idea]                  # Folders to ignore in Pages
   ignore_hidden: true                            # Ignore all Hidden files and folders
@@ -113,6 +113,8 @@ twig:
   autoescape: true                               # Autoescape Twig vars (DEPRECATED, always enabled in strict mode)
   undefined_functions: true                      # Allow undefined functions
   undefined_filters: true                        # Allow undefined filters
+  safe_functions: []                             # List of PHP functions which are allowed to be used as Twig functions
+  safe_filters: []                               # List of PHP functions which are allowed to be used as Twig filters
   umask_fix: false                               # By default Twig creates cached files as 755, fix switches this to 775
 
 assets:                                          # Configuration for Assets Manager (JS, CSS)
@@ -127,6 +129,7 @@ assets:                                          # Configuration for Assets Mana
   js_pipeline_before_excludes: true              # Render the pipeline before any excluded files
   js_minify: true                                # Minify the JS during pipelining
   enable_asset_timestamp: false                  # Enable asset timestamps
+  enable_asset_sri: false                        # Enable asset SRI
   collections:
     jquery: system://assets/jquery/jquery-2.x.min.js
 
@@ -153,6 +156,10 @@ images:
   debug: false                                   # Show an overlay over images indicating the pixel depth of the image when working with retina for example
   auto_fix_orientation: true                     # Automatically fix the image orientation based on the Exif data
   seofriendly: false                             # SEO-friendly processed image names
+  cls:                                           # Cumulative Layout Shift: See https://web.dev/optimize-cls/
+    auto_sizes: false                            # Automatically add height/width to image
+    aspect_ratio: false                          # Reserve space with aspect ratio style
+    retina_scale: 1                              # scale to adjust auto-sizes for better handling of HiDPI resolutions
   defaults:
     loading: auto                                # Let browser pick [auto|lazy|eager]
 

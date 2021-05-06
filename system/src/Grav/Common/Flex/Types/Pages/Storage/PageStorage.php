@@ -110,6 +110,9 @@ class PageStorage extends FolderStorage
             }
         } catch (RuntimeException $e) {
             $frontmatter = 'ERROR: ' . $e->getMessage();
+        } finally {
+            $file->free();
+            unset($file);
         }
 
         return $frontmatter;
@@ -127,6 +130,9 @@ class PageStorage extends FolderStorage
             $raw = $file->raw();
         } catch (RuntimeException $e) {
             $raw = 'ERROR: ' . $e->getMessage();
+        } finally {
+            $file->free();
+            unset($file);
         }
 
         return $raw;
@@ -367,7 +373,7 @@ class PageStorage extends FolderStorage
 
         try {
             if ($key === '' && empty($row['root'])) {
-                throw new RuntimeException('No storage key given');
+                throw new RuntimeException('Page has no path');
             }
 
             $grav = Grav::instance();
@@ -388,9 +394,17 @@ class PageStorage extends FolderStorage
                 if ($oldFolder !== $newFolder && file_exists($oldFolder)) {
                     $isCopy = $row['__META']['copy'] ?? false;
                     if ($isCopy) {
+                        if (strpos($newFolder, $oldFolder . '/') === 0) {
+                            throw new RuntimeException(sprintf('Page /%s cannot be copied to itself', $oldKey));
+                        }
+
                         $this->copyRow($oldKey, $newKey);
                         $debugger->addMessage("Page copied: {$oldFolder} => {$newFolder}", 'debug');
                     } else {
+                        if (strpos($newFolder, $oldFolder . '/') === 0) {
+                            throw new RuntimeException(sprintf('Page /%s cannot be moved to itself', $oldKey));
+                        }
+
                         $this->renameRow($oldKey, $newKey);
                         $debugger->addMessage("Page moved: {$oldFolder} => {$newFolder}", 'debug');
                     }
@@ -407,7 +421,7 @@ class PageStorage extends FolderStorage
                     if (!$isClone && $file->exists()) {
                         /** @var UniformResourceLocator $locator */
                         $locator = $grav['locator'];
-                        $toPath = $locator->isStream($newFilepath) ? $locator->findResource($newFilepath, true, true) : $newFilepath;
+                        $toPath = $locator->isStream($newFilepath) ? $locator->findResource($newFilepath, true, true) : GRAV_ROOT . "/{$newFilepath}";
                         $success = $file->rename($toPath);
                         if (!$success) {
                             throw new RuntimeException("Changing page template failed: {$oldFilepath} => {$newFilepath}");
@@ -439,16 +453,19 @@ class PageStorage extends FolderStorage
             } else {
                 $debugger->addMessage('Page content has not been changed, do not update the file', 'debug');
             }
-
-            /** @var UniformResourceLocator $locator */
-            $locator = Grav::instance()['locator'];
-            if ($locator->isStream($newFolder)) {
-                $locator->clearCache();
-            }
         } catch (RuntimeException $e) {
             $name = isset($file) ? $file->filename() : $newKey;
 
             throw new RuntimeException(sprintf('Flex saveRow(%s): %s', $name, $e->getMessage()));
+        } finally {
+            /** @var UniformResourceLocator $locator */
+            $locator = Grav::instance()['locator'];
+            $locator->clearCache();
+
+            if (isset($file)) {
+                $file->free();
+                unset($file);
+            }
         }
 
         $row['__META'] = $this->getObjectMeta($newKey, true);
@@ -457,17 +474,28 @@ class PageStorage extends FolderStorage
     }
 
     /**
+     * Check if page folder should be deleted.
+     *
+     * Deleting page can be done either by deleting everything or just a single language.
+     * If key contains the language, delete only it, unless it is the last language.
+     *
      * @param string $key
      * @return bool
      */
     protected function canDeleteFolder(string $key): bool
     {
+        // Return true if there's no language in the key.
         $keys = $this->extractKeysFromStorageKey($key);
-        if ($keys['lang']) {
-            return false;
+        if (!$keys['lang']) {
+            return true;
         }
 
-        return true;
+        // Get the main key and reload meta.
+        $key = $this->buildStorageKey($keys);
+        $meta = $this->getObjectMeta($key, true);
+
+        // Return true if there aren't any markdown files left.
+        return empty($meta['markdown'] ?? []);
     }
 
     /**
@@ -512,7 +540,11 @@ class PageStorage extends FolderStorage
             $locator = Grav::instance()['locator'];
             if (mb_strpos($key, '@@') === false) {
                 $path = $this->getStoragePath($key);
-                $path = $path ? $locator->findResource($path) : null;
+                if (is_string($path)) {
+                    $path = $locator->isStream($path) ? $locator->findResource($path) : GRAV_ROOT . "/{$path}";
+                } else {
+                    $path = null;
+                }
             } else {
                 $path = null;
             }
@@ -521,7 +553,7 @@ class PageStorage extends FolderStorage
             $markdown = [];
             $children = [];
 
-            if (is_string($path) && file_exists($path)) {
+            if (is_string($path) && is_dir($path)) {
                 $modified = filemtime($path);
                 $iterator = new FilesystemIterator($path, $this->flags);
 

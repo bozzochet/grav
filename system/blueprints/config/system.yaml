@@ -177,39 +177,47 @@ form:
               label: PLUGIN_ADMIN.APPEND_URL_EXT
               help: PLUGIN_ADMIN.APPEND_URL_EXT_HELP
 
-            pages.redirect_default_route:
-              type: toggle
-              label: PLUGIN_ADMIN.REDIRECT_DEFAULT_ROUTE
-              help: PLUGIN_ADMIN.REDIRECT_DEFAULT_ROUTE_HELP
-              highlight: 0
-              options:
-                1: PLUGIN_ADMIN.YES
-                0: PLUGIN_ADMIN.NO
-              validate:
-                type: bool
-
             pages.redirect_default_code:
               type: select
               size: medium
               classes: fancy
               label: PLUGIN_ADMIN.REDIRECT_DEFAULT_CODE
               help: PLUGIN_ADMIN.REDIRECT_DEFAULT_CODE_HELP
+              default: 302
               options:
-                301: 301 - Permanent
-                302: 302 - Found
-                303: 303 - Other
-                304: 304 - Not Modified
+                301: PLUGIN_ADMIN.REDIRECT_OPTION_301
+                302: PLUGIN_ADMIN.REDIRECT_OPTION_302
+                303: PLUGIN_ADMIN.REDIRECT_OPTION_303
+
+            pages.redirect_default_route:
+              type: select
+              size: medium
+              classes: fancy
+              label: PLUGIN_ADMIN.REDIRECT_DEFAULT_ROUTE
+              help: PLUGIN_ADMIN.REDIRECT_DEFAULT_ROUTE_HELP
+              default: 0
+              options:
+                0: PLUGIN_ADMIN.REDIRECT_OPTION_NO_REDIRECT
+                1: PLUGIN_ADMIN.REDIRECT_OPTION_DEFAULT_REDIRECT
+                301: PLUGIN_ADMIN.REDIRECT_OPTION_301
+                302: PLUGIN_ADMIN.REDIRECT_OPTION_302
+              validate:
+                type: int
 
             pages.redirect_trailing_slash:
-              type: toggle
+              type: select
+              size: medium
+              classes: fancy
               label: PLUGIN_ADMIN.REDIRECT_TRAILING_SLASH
               help: PLUGIN_ADMIN.REDIRECT_TRAILING_SLASH_HELP
-              highlight: 1
+              default: 1
               options:
-                1: PLUGIN_ADMIN.YES
-                0: PLUGIN_ADMIN.NO
+                0: PLUGIN_ADMIN.REDIRECT_OPTION_NO_REDIRECT
+                1: PLUGIN_ADMIN.REDIRECT_OPTION_DEFAULT_REDIRECT
+                301: PLUGIN_ADMIN.REDIRECT_OPTION_301
+                302: PLUGIN_ADMIN.REDIRECT_OPTION_302
               validate:
-                type: bool
+                type: int
 
             pages.ignore_hidden:
               type: toggle
@@ -1006,6 +1014,17 @@ form:
               validate:
                 type: bool
 
+            assets.enable_asset_sri:
+              type: toggle
+              label: PLUGIN_ADMIN.ENABLED_SRI_ON_ASSETS
+              help: PLUGIN_ADMIN.ENABLED_SRI_ON_ASSETS_HELP
+              highlight: 0
+              options:
+                1: PLUGIN_ADMIN.YES
+                0: PLUGIN_ADMIN.NO
+              validate:
+                type: bool
+
             assets.collections:
               type: multilevel
               label: PLUGIN_ADMIN.COLLECTIONS
@@ -1262,6 +1281,45 @@ form:
               classes: fancy
               validate:
                 type: commalist
+
+            section_images_cls:
+              type: section
+              title: PLUGIN_ADMIN.IMAGES_CLS_TITLE
+              underline: true
+
+            images.cls.auto_sizes:
+              type: toggle
+              label: PLUGIN_ADMIN.IMAGES_CLS_AUTO_SIZES
+              help: PLUGIN_ADMIN.IMAGES_CLS_AUTO_SIZES_HELP
+              highlight: 0
+              options:
+                1: PLUGIN_ADMIN.YES
+                0: PLUGIN_ADMIN.NO
+              validate:
+                type: bool
+
+            images.cls.aspect_ratio:
+              type: toggle
+              label: PLUGIN_ADMIN.IMAGES_CLS_ASPECT_RATIO
+              help: PLUGIN_ADMIN.IMAGES_CLS_ASPECT_RATIO_HELP
+              highlight: 0
+              options:
+                1: PLUGIN_ADMIN.YES
+                0: PLUGIN_ADMIN.NO
+              validate:
+                type: bool
+
+            images.cls.retina_scale:
+              type: select
+              label: PLUGIN_ADMIN.IMAGES_CLS_RETINA_SCALE
+              help: PLUGIN_ADMIN.IMAGES_CLS_RETINA_SCALE_HELP
+              size: small
+              highlight: 1
+              options:
+                1: 1X
+                2: 2X
+                3: 3X
+                4: 4X
 
         session:
           type: tab

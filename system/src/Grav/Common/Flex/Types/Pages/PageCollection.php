@@ -35,7 +35,7 @@ use function is_string;
  * Class GravPageCollection
  * @package Grav\Plugin\FlexObjects\Types\GravPages
  *
- * @extends FlexPageCollection<string,PageObject>
+ * @extends FlexPageCollection<PageObject>
  *
  * Incompatibilities with Grav\Common\Page\Collection:
  *     $page = $collection->key()       will not work at all
@@ -744,6 +744,16 @@ class PageCollection extends FlexPageCollection implements PageCollectionInterfa
         $list = array_keys(array_filter($this->call('hasTranslation', [$languageCode, $fallback])));
 
         return $bool ? $this->select($list) : $this->unselect($list);
+    }
+
+    /**
+     * @param string|null $languageCode
+     * @param bool|null $fallback
+     * @return PageIndex
+     */
+    public function withTranslated(string $languageCode = null, bool $fallback = null)
+    {
+        return $this->getIndex()->withTranslated($languageCode, $fallback);
     }
 
     /**

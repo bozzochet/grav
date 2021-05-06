@@ -18,16 +18,20 @@ use Grav\Common\File\CompiledYamlFile;
 use Grav\Common\Flex\Traits\FlexGravTrait;
 use Grav\Common\Flex\Traits\FlexIndexTrait;
 use Grav\Common\Grav;
+use Grav\Common\Language\Language;
 use Grav\Common\Page\Header;
 use Grav\Common\Page\Interfaces\PageCollectionInterface;
 use Grav\Common\Page\Interfaces\PageInterface;
+use Grav\Common\User\Interfaces\UserInterface;
 use Grav\Common\Utils;
 use Grav\Framework\Flex\FlexDirectory;
-use Grav\Framework\Flex\Interfaces\FlexCollectionInterface;
 use Grav\Framework\Flex\Interfaces\FlexStorageInterface;
 use Grav\Framework\Flex\Pages\FlexPageIndex;
 use InvalidArgumentException;
 use RuntimeException;
+use function array_slice;
+use function count;
+use function in_array;
 use function is_array;
 use function is_string;
 
@@ -35,7 +39,7 @@ use function is_string;
  * Class GravPageObject
  * @package Grav\Plugin\FlexObjects\Types\GravPages
  *
- * @extends FlexPageIndex<string,PageObject,PageCollection>
+ * @extends FlexPageIndex<PageObject,PageCollection>
  *
  * @method PageIndex withModules(bool $bool = true)
  * @method PageIndex withPages(bool $bool = true)
@@ -162,6 +166,31 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
     }
 
     /**
+     * @param string|null $languageCode
+     * @param bool|null $fallback
+     * @return PageIndex
+     */
+    public function withTranslated(string $languageCode = null, bool $fallback = null)
+    {
+        if (null === $languageCode) {
+            return $this;
+        }
+
+        $entries = $this->translateEntries($this->getEntries(), $languageCode, $fallback);
+        $params = ['language' => $languageCode, 'language_fallback' => $fallback] + $this->getParams();
+
+        return $this->createFrom($entries)->setParams($params);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLanguage(): ?string
+    {
+        return $this->_params['language'] ?? null;
+    }
+
+    /**
      * Get the collection params
      *
      * @return array
@@ -169,6 +198,17 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
     public function getParams(): array
     {
         return $this->_params ?? [];
+    }
+
+    /**
+     * Get the collection param
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getParam(string $name)
+    {
+        return $this->_params[$name] ?? null;
     }
 
     /**
@@ -185,6 +225,20 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
     }
 
     /**
+     * Set a parameter to the Collection
+     *
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    public function setParam(string $name, $value)
+    {
+        $this->_params[$name] = $value;
+
+        return $this;
+    }
+
+    /**
      * Get the collection params
      *
      * @return array
@@ -192,6 +246,15 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
     public function params(): array
     {
         return $this->getParams();
+    }
+
+        /**
+     * {@inheritdoc}
+     * @see FlexCollectionInterface::getCacheKey()
+     */
+    public function getCacheKey(): string
+    {
+        return $this->getTypePrefix() . $this->getFlexType() . '.' . sha1(json_encode($this->getKeys()) . $this->getKeyField() . $this->getLanguage());
     }
 
     /**
@@ -299,7 +362,33 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
             'type' => ['root', 'dir'],
         ];
 
-        return $this->getLevelListingRecurse($options);
+        $key = 'page.idx.lev.' . sha1(json_encode($options, JSON_THROW_ON_ERROR) . $this->getCacheKey());
+        $checksum = $this->getCacheChecksum();
+
+        $cache = $this->getCache('object');
+
+        /** @var Debugger $debugger */
+        $debugger = Grav::instance()['debugger'];
+
+        $result = null;
+        try {
+            $cached = $cache->get($key);
+            $test = $cached[0] ?? null;
+            $result = $test === $checksum ? ($cached[1] ?? null) : null;
+        } catch (\Psr\SimpleCache\InvalidArgumentException $e) {
+            $debugger->addException($e);
+        }
+
+        try {
+            if (null === $result) {
+                $result = $this->getLevelListingRecurse($options);
+                $cache->set($key, [$checksum, $result]);
+            }
+        } catch (\Psr\SimpleCache\InvalidArgumentException $e) {
+            $debugger->addException($e);
+        }
+
+        return $result;
     }
 
     /**
@@ -314,6 +403,96 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
         $index->_root = $this->getRoot();
 
         return $index;
+    }
+
+    /**
+     * @param array $entries
+     * @param string $lang
+     * @param bool|null $fallback
+     * @return array
+     */
+    protected function translateEntries(array $entries, string $lang, bool $fallback = null): array
+    {
+        $languages = $this->getFallbackLanguages($lang, $fallback);
+        foreach ($entries as $key => &$entry) {
+            // Find out which version of the page we should load.
+            $translations = $this->getLanguageTemplates((string)$key);
+            if (!$translations) {
+                // No translations found, is this a folder?
+                continue;
+            }
+
+            // Find a translation.
+            $template = null;
+            foreach ($languages as $code) {
+                if (isset($translations[$code])) {
+                    $template = $translations[$code];
+                    break;
+                }
+            }
+
+            // We couldn't find a translation, remove entry from the list.
+            if (!isset($code, $template)) {
+                unset($entries['key']);
+                continue;
+            }
+
+            // Get the main key without template and langauge.
+            [$main_key,] = explode('|', $entry['storage_key'] . '|', 2);
+
+            // Update storage key and language.
+            $entry['storage_key'] = $main_key . '|' . $template . '.' . $code;
+            $entry['lang'] = $code;
+        }
+        unset($entry);
+
+        return $entries;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getLanguageTemplates(string $key): array
+    {
+        $meta = $this->getMetaData($key);
+        $template = $meta['template'] ?? 'folder';
+        $translations = $meta['markdown'] ?? [];
+        $list = [];
+        foreach ($translations as $code => $search) {
+            if (isset($search[$template])) {
+                // Use main template if possible.
+                $list[$code] = $template;
+            } elseif (!empty($search)) {
+                // Fall back to first matching template.
+                $list[$code] = key($search);
+            }
+        }
+
+        return $list;
+    }
+
+    /**
+     * @param string|null $languageCode
+     * @param bool|null $fallback
+     * @return array
+     */
+    protected function getFallbackLanguages(string $languageCode = null, bool $fallback = null): array
+    {
+        $fallback = $fallback ?? true;
+        if (!$fallback && null !== $languageCode) {
+            return [$languageCode];
+        }
+
+        $grav = Grav::instance();
+
+        /** @var Language $language */
+        $language = $grav['language'];
+        $languageCode = $languageCode ?? '';
+        if ($languageCode === '' && $fallback) {
+            return $language->getFallbackLanguages(null, true);
+        }
+
+        return $fallback ? $language->getFallbackLanguages($languageCode, true) : [$languageCode];
     }
 
     /**
@@ -429,6 +608,9 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
                 $selectedChildren = $selectedChildren->order($sortby, $order, $custom ?? null);
             }
 
+            /** @var UserInterface|null $user */
+            $user = Grav::instance()['user'] ?? null;
+
             /** @var PageObject $child */
             foreach ($selectedChildren as $child) {
                 $selected = $child->path() === $extra;
@@ -482,7 +664,7 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
                         'visible' => $child->visible(),
                         'routable' => $child->routable(),
                         'tags' => $tags,
-                        'actions' => $this->getListingActions($child),
+                        'actions' => $this->getListingActions($child, $user),
                     ];
                     $extras = array_filter($extras, static function ($v) {
                         return $v !== null;
@@ -490,12 +672,13 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
                     $tmp = $child->children()->getIndex();
                     $child_count = $tmp->count();
                     $count = $filters ? $tmp->filterBy($filters, true)->count() : null;
+                    $route = $child->getRoute();
                     $payload = [
                         'item-key' => basename($child->rawRoute() ?? $child->getKey()),
                         'icon' => $icon,
                         'title' => htmlspecialchars($child->menu()),
                         'route' => [
-                            'display' => $child->getRoute()->toString(false) ?: '/',
+                            'display' => ($route ? ($route->toString(false) ?: '/') : null) ?? '',
                             'raw' => $child->rawRoute(),
                         ],
                         'modified' => $this->jsDate($child->modified()),
@@ -535,20 +718,21 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
 
     /**
      * @param PageObject $object
+     * @param UserInterface $user
      * @return array
      */
-    protected function getListingActions(PageObject $object): array
+    protected function getListingActions(PageObject $object, UserInterface $user): array
     {
         $actions = [];
-        if ($object->isAuthorized('read')) {
+        if ($object->isAuthorized('read', null, $user)) {
             $actions[] = 'preview';
             $actions[] = 'edit';
         }
-        if ($object->isAuthorized('update')) {
+        if ($object->isAuthorized('update', null, $user)) {
             $actions[] = 'copy';
             $actions[] = 'move';
         }
-        if ($object->isAuthorized('delete')) {
+        if ($object->isAuthorized('delete', null, $user)) {
             $actions[] = 'delete';
         }
 

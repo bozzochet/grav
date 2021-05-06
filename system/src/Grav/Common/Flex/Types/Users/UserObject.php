@@ -22,7 +22,6 @@ use Grav\Common\Grav;
 use Grav\Common\Media\Interfaces\MediaCollectionInterface;
 use Grav\Common\Media\Interfaces\MediaUploadInterface;
 use Grav\Common\Page\Media;
-use Grav\Common\Page\Medium\Medium;
 use Grav\Common\Page\Medium\MediumFactory;
 use Grav\Common\User\Access;
 use Grav\Common\User\Authentication;
@@ -78,16 +77,12 @@ class UserObject extends FlexObject implements UserInterface, Countable
 
     /** @var array|null */
     protected $_uploads_original;
-
     /** @var FileInterface|null */
     protected $_storage;
-
     /** @var UserGroupIndex */
     protected $_groups;
-
     /** @var Access */
     protected $_access;
-
     /** @var array|null */
     protected $access;
 
@@ -538,13 +533,18 @@ class UserObject extends FlexObject implements UserInterface, Countable
             }
         }
 
-        $password = $this->getProperty('password');
-        if (null !== $password) {
-            $this->unsetProperty('password');
-            $this->unsetProperty('password1');
-            $this->unsetProperty('password2');
+        $password = $this->getProperty('password') ?? $this->getProperty('password1');
+        if (null !== $password && '' !== $password) {
+            $password2 = $this->getProperty('password2');
+            if (!\is_string($password) || ($password2 && $password !== $password2)) {
+                throw new \RuntimeException('Passwords did not match.');
+            }
+
             $this->setProperty('hashed_password', Authentication::create($password));
         }
+        $this->unsetProperty('password');
+        $this->unsetProperty('password1');
+        $this->unsetProperty('password2');
 
         // Backwards compatibility with older plugins.
         $fireEvents = $this->isAdminSite() && $this->getFlexDirectory()->getConfig('object.compat.events', true);

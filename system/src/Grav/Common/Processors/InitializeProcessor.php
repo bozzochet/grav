@@ -101,25 +101,26 @@ class InitializeProcessor extends ProcessorBase
         // Load pages.
         $this->initializePages($config);
 
-        // Initialize URI.
-        $this->initializeUri($config);
-
-        // Grav may return redirect response right away.
-        if ($config->get('system.pages.redirect_trailing_slash', false)) {
-            $response = $this->handleRedirectRequest($request);
-            if ($response) {
-                $this->stopTimer('_init');
-
-                return $response;
-            }
-        }
-
         // Load accounts (decides class to be used).
         // TODO: remove in 2.0.
         $this->container['accounts'];
 
         // Initialize session.
         $this->initializeSession($config);
+
+        // Initialize URI (uses session, see issue #3269).
+        $this->initializeUri($config);
+
+        // Grav may return redirect response right away.
+        $redirectCode = (int)$config->get('system.pages.redirect_trailing_slash', 1);
+        if ($redirectCode) {
+            $response = $this->handleRedirectRequest($request, $redirectCode > 300 ? $redirectCode : null);
+            if ($response) {
+                $this->stopTimer('_init');
+
+                return $response;
+            }
+        }
 
         $this->stopTimer('_init');
 
@@ -177,7 +178,7 @@ class InitializeProcessor extends ProcessorBase
         $grav['plugins']->setup();
 
         if (defined('GRAV_SCHEMA') && $config->get('versions') === null) {
-            $filename = GRAV_ROOT . '/user/config/versions.yaml';
+            $filename = USER_DIR . 'config/versions.yaml';
             if (!is_file($filename)) {
                 $versions = [
                     'core' => [
@@ -413,7 +414,7 @@ class InitializeProcessor extends ProcessorBase
         $this->stopTimer('_init_uri');
     }
 
-    protected function handleRedirectRequest(RequestInterface $request): ?ResponseInterface
+    protected function handleRedirectRequest(RequestInterface $request, int $code = null): ?ResponseInterface
     {
         if (!in_array($request->getMethod(), ['GET', 'HEAD'])) {
             return null;
@@ -426,7 +427,7 @@ class InitializeProcessor extends ProcessorBase
 
         if ($path !== $root && $path !== $root . '/' && Utils::endsWith($path, '/')) {
             // Use permanent redirect for SEO reasons.
-            return $this->container->getRedirectResponse((string)$uri->withPath(rtrim($path, '/')), 301);
+            return $this->container->getRedirectResponse((string)$uri->withPath(rtrim($path, '/')), $code);
         }
 
         return null;

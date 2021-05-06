@@ -33,11 +33,10 @@ use function in_array;
 /**
  * Class FlexIndex
  * @package Grav\Framework\Flex
- * @template TKey
  * @template T of FlexObjectInterface
  * @template C of FlexCollectionInterface
- * @extends ObjectIndex<TKey,T>
- * @implements FlexIndexInterface<TKey,T>
+ * @extends ObjectIndex<string,T>
+ * @implements FlexIndexInterface<T>
  * @mixin C
  */
 class FlexIndex extends ObjectIndex implements FlexCollectionInterface, FlexIndexInterface
@@ -54,7 +53,7 @@ class FlexIndex extends ObjectIndex implements FlexCollectionInterface, FlexInde
     /**
      * @param FlexDirectory $directory
      * @return static
-     * @phpstan-return static<TKey,T,C>
+     * @phpstan-return static<T,C>
      */
     public static function createFromStorage(FlexDirectory $directory)
     {
@@ -343,7 +342,6 @@ class FlexIndex extends ObjectIndex implements FlexCollectionInterface, FlexInde
     /**
      * @param string $key
      * @return array
-     * @phpstan-param TKey $key
      */
     public function getMetaData($key): array
     {
@@ -370,7 +368,7 @@ class FlexIndex extends ObjectIndex implements FlexCollectionInterface, FlexInde
     /**
      * @param array $orderings
      * @return static
-     * @phpstan-return static<TKey,T,C>
+     * @phpstan-return static<T,C>
      */
     public function orderBy(array $orderings)
     {
@@ -380,7 +378,7 @@ class FlexIndex extends ObjectIndex implements FlexCollectionInterface, FlexInde
 
         // Handle primary key alias.
         $keyField = $this->getFlexDirectory()->getStorage()->getKeyField();
-        if (isset($orderings[$keyField])) {
+        if ($keyField !== 'key' && $keyField !== 'storage_key' && isset($orderings[$keyField])) {
             $orderings['key'] = $orderings[$keyField];
             unset($orderings[$keyField]);
         }
@@ -538,7 +536,7 @@ class FlexIndex extends ObjectIndex implements FlexCollectionInterface, FlexInde
      * @param array $entries
      * @param string|null $keyField
      * @return static
-     * @phpstan-return static<TKey,T,C>
+     * @phpstan-return static<T,C>
      */
     protected function createFrom(array $entries, string $keyField = null)
     {

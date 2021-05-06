@@ -240,6 +240,126 @@ class ParsedownTest extends \Codeception\TestCase\Test
         );
     }
 
+    public function testImagesDefaults(): void
+    {
+        /**
+         * Testing default 'loading'
+        */
+
+        $this->setImagesDefaults(['loading' => 'auto']);
+
+
+        // loading should NOT be added to image by default
+        self::assertSame(
+            '<p><img alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" /></p>',
+            $this->parsedown->text('![](sample-image.jpg)')
+        );
+
+        // loading="lazy" should be added when default is overridden by ?loading=lazy
+        self::assertSame(
+            '<p><img loading="lazy" alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" /></p>',
+            $this->parsedown->text('![](sample-image.jpg?loading=lazy)')
+        );
+
+        $this->setImagesDefaults(['loading' => 'lazy']);
+
+        // loading="lazy" should be added by default
+        self::assertSame(
+            '<p><img loading="lazy" alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" /></p>',
+            $this->parsedown->text('![](sample-image.jpg)')
+        );
+
+        // loading should not be added when default is overridden by ?loading=auto
+        self::assertSame(
+            '<p><img alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" /></p>',
+            $this->parsedown->text('![](sample-image.jpg?loading=auto)')
+        );
+
+        // loading="eager" should be added when default is overridden by ?loading=eager
+        self::assertSame(
+            '<p><img loading="eager" alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" /></p>',
+            $this->parsedown->text('![](sample-image.jpg?loading=eager)')
+        );
+
+    }
+
+    public function testCLSAutoSizes(): void
+    {
+        $this->config->set('system.images.cls.auto_sizes', false);
+        $this->uri->initializeWithURL('http://testing.dev/item2/item2-2')->init();
+
+        self::assertSame(
+            '<p><img alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" /></p>',
+            $this->parsedown->text('![](sample-image.jpg)')
+        );
+
+        self::assertSame(
+            '<p><img height="1" width="1" alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" /></p>',
+            $this->parsedown->text('![](sample-image.jpg?height=1&width=1)')
+        );
+
+        self::assertSame(
+            '<p><img alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" width="1024" height="768" /></p>',
+            $this->parsedown->text('![](sample-image.jpg?autoSizes=true)')
+        );
+
+        $this->config->set('system.images.cls.auto_sizes', true);
+
+        self::assertSame(
+            '<p><img alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" width="1024" height="768" /></p>',
+            $this->parsedown->text('![](sample-image.jpg?reset)')
+        );
+
+        self::assertSame(
+            '<p><img height="1" width="1" alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" /></p>',
+            $this->parsedown->text('![](sample-image.jpg?height=1&width=1)')
+        );
+
+        self::assertSame(
+            '<p><img alt="" src="/tests/fake/nested-site/user/pages/02.item2/02.item2-2/sample-image.jpg" /></p>',
+            $this->parsedown->text('![](sample-image.jpg?autoSizes=false)')
+        );
+
+        self::assertRegExp(
+            '/width="400" height="200"/',
+            $this->parsedown->text('![](sample-image.jpg?reset&resize=400,200)')
+        );
+
+        $this->config->set('system.images.cls.retina_scale', 2);
+
+
+        self::assertRegExp(
+            '/width="400" height="200"/',
+            $this->parsedown->text('![](sample-image.jpg?reset&resize=800,400)')
+        );
+
+        $this->config->set('system.images.cls.retina_scale', 4);
+
+        self::assertRegExp(
+            '/width="200" height="100"/',
+            $this->parsedown->text('![](sample-image.jpg?reset&resize=800,400)')
+        );
+
+        self::assertRegExp(
+            '/width="266" height="133"/',
+            $this->parsedown->text('![](sample-image.jpg?reset&resize=800,400&retinaScale=3)')
+        );
+
+        $this->config->set('system.images.cls.aspect_ratio', true);
+
+        self::assertRegExp(
+            '/style="--aspect-ratio: 800\/400;"/',
+            $this->parsedown->text('![](sample-image.jpg?reset&resize=800,400)')
+        );
+
+        $this->config->set('system.images.cls.aspect_ratio', false);
+
+        self::assertRegExp(
+            '/style="--aspect-ratio: 800\/400;"/',
+            $this->parsedown->text('![](sample-image.jpg?reset&resize=800,400&aspectRatio=true)')
+        );
+
+    }
 
     public function testRootImages(): void
     {
@@ -1125,5 +1245,16 @@ class ParsedownTest extends \Codeception\TestCase\Test
     private function stripLeadingWhitespace($string)
     {
         return preg_replace('/^\s*(.*)/', '', $string);
+    }
+
+    private function setImagesDefaults($defaults) {
+        $defaults = [
+            'images' => [
+                'defaults' => $defaults
+            ],
+        ];
+        $page = $this->pages->find('/item2/item2-2');
+        $excerpts = new Excerpts($page, $defaults);
+        $this->parsedown = new Parsedown($excerpts);
     }
 }

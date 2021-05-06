@@ -21,6 +21,7 @@ use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
 use function array_key_exists;
 use function count;
+use function in_array;
 use function is_array;
 use function is_string;
 use function strlen;
@@ -204,8 +205,8 @@ class Uri
         // set active language
         $uri = $language->setActiveFromUri($uri);
 
-        // split the URL and params
-        $bits = parse_url($uri);
+        // split the URL and params (and make sure that the path isn't seen as domain)
+        $bits = parse_url('http://domain.com' . $uri);
 
         //process fragment
         if (isset($bits['fragment'])) {
@@ -394,7 +395,7 @@ class Uri
      * Return the Extension of the URI
      *
      * @param string|null $default
-     * @return string The extension of the URI
+     * @return string|null The extension of the URI
      */
     public function extension($default = null)
     {
@@ -518,7 +519,7 @@ class Uri
      * Return the full uri
      *
      * @param bool $include_root
-     * @return mixed
+     * @return string
      */
     public function uri($include_root = true)
     {
@@ -1408,18 +1409,14 @@ class Uri
     /**
      * Check if this is a valid Grav extension
      *
-     * @param string $extension
+     * @param string|null $extension
      * @return bool
      */
-    public function isValidExtension($extension)
+    public function isValidExtension($extension): bool
     {
-        $valid_page_types = implode('|', Utils::getSupportPageTypes());
+        $extension = (string)$extension;
 
-        // Strip the file extension for valid page types
-        if (preg_match('/(' . $valid_page_types . ')/', $extension)) {
-            return true;
-        }
-        return false;
+        return $extension !== '' && in_array($extension, Utils::getSupportPageTypes(), true);
     }
 
     /**
