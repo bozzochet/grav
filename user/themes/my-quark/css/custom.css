@@ -1,0 +1,11 @@
+.bibtexify-authors li {
+  display:none;
+}
+
+.bibtexify-authors li:nth-child(-n+2) {
+  display: inline;
+}
+
+.bibtexify-authors .bibtexify-author-etal:before {
+  content: ", et al.";
+}
