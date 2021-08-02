@@ -33,6 +33,10 @@ then
 	    else
 		echo "$FIRSTAUTHOR and {...} and {M. Duranti} and {et al.}}," >> text.md
 	    fi
+	elif [[ "$i" == @* ]]
+	then
+	    echo "" >> text.md
+	    echo "$i" >> text.md
 	else
 	    echo "$i" >> text.md
 	fi
