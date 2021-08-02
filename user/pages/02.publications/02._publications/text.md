@@ -11,8 +11,47 @@ markdown:
 
 %% This BibTeX bibliography file was created using BibDesk.
 %% http://bibdesk.sourceforge.net/
-%% Created for Bozzo at 2021-05-06 17:21:23 +0200 
+%% Created for Bozzo at 2021-06-07 10:14:10 +0200 
 %% Saved with string encoding Unicode (UTF-8) 
+@article{bib:ALADInO,
+	abstract = {Multimessenger astrophysics is based on the detection, with the highest possible accuracy, of the cosmic radiation. During the last 20 years, the advent space-borne magnetic spectrometers in space (AMS-01, Pamela, AMS-02), able to measure the charged cosmic radiation separating matter from antimatter, and to provide accurate measurement of the rarest components of Cosmic Rays (CRs) to the highest possible energies, have become possible, together with the ultra-precise measurement of ordinary CRs. These developments started the era of precision Cosmic Ray physics providing access to a rich program of high-energy astrophysics addressing fundamental questions like matter-antimatter asymmetry, indirect detection for Dark Matter and the detailed study of origin, acceleration and propagation of CRs and their interactions with the interstellar medium.},
+	author = {Battiston, R. and {...} and {M. Duranti} and {et al.}},
+	da = {2021/05/19},
+	date-added = {2021-06-07 10:13:17 +0200},
+	date-modified = {2021-06-07 10:14:05 +0200},
+	doi = {10.1007/s10686-021-09708-w},
+	id = {Battiston2021},
+	isbn = {1572-9508},
+	journal = {Experimental Astronomy},
+	title = {High precision particle astrophysics as a new window on the universe with an Antimatter Large Acceptance Detector In Orbit (ALADInO)},
+	ty = {JOUR},
+	url = {https://doi.org/10.1007/s10686-021-09708-w},
+	year = {2021},
+	Bdsk-Url-1 = {https://doi.org/10.1007/s10686-021-09708-w}}
+@article{Duranti_2021,
+	author = {Duranti, Matteo and {et al.}},
+	doi = {10.3390/instruments5020020},
+	issn = {2410-390X},
+	journal = {Instruments},
+	month = {May},
+	number = {2},
+	pages = {20},
+	publisher = {MDPI AG},
+	title = {Advantages and Requirements in Time Resolving Tracking for Astroparticle Experiments in Space},
+	url = {http://dx.doi.org/10.3390/instruments5020020},
+	volume = {5},
+	year = {2021},
+	Bdsk-Url-1 = {http://dx.doi.org/10.3390/instruments5020020}}
+@article{bib:HVO,
+	archiveprefix = {arXiv},
+	author = {Pelosi, David and {...} and {M. Duranti} and {et al.}},
+	eprint = {2101.09366},
+	month = {1},
+	primaryclass = {physics.space-ph},
+	title = {{Development of a web application for monitoring solar activity and cosmic radiation}},
+	url = {https://arxiv.org/abs/2101.09366},
+	year = {2021},
+	Bdsk-Url-1 = {https://arxiv.org/abs/2101.09366}}
 @article{bib:DAMPENature,
 	abstract = {A direct measurement of cosmic-ray electrons and positrons with unprecedentedly high energy resolution reveals a spectral break at about 0.9 teraelectronvolts, confirming the evidence found by previous indirect measurements.},
 	author = {Ambrosi, G. and {...} and {M. Duranti} and {et al.}},
