@@ -1,3 +1,50 @@
+# v1.7.18
+## 07/19/2021
+
+1. [](#improved)
+    * Added support for loading Flex Directory configuration from main configuration
+    * Move SVGs that cannot be sanitized to quarantine folder under `log://quarantine`
+    * Added support for CloudFlare-forwarded client IP in the `URI::ip()` method
+1. [](#bugfix)
+    * Fixed error when using Flex `SimpleStorage` with no entries
+    * Fixed page search to include slug field [#3316](https://github.com/getgrav/grav/issues/3316)
+    * Fixed Admin becoming unusable when GPM cannot be reached [#3383](https://github.com/getgrav/grav/issues/3383)
+    * Fixed `Failed to save entry: Forbidden` when moving a page to a visible page [#3389](https://github.com/getgrav/grav/issues/3389)
+    * Better support for Symfony local server on linux [#3400](https://github.com/getgrav/grav/pull/3400)
+    * Fixed `open_basedir()` error with some forms
+
+# v1.7.17
+## 06/15/2021
+
+1. [](#new)
+    * Interface `FlexDirectoryInterface` now extends `FlexAuthorizeInterface`
+1. [](#improved)
+    * Allow to unset an asset attribute by specifying null (ie, `'defer': null`)
+    * Support specifying custom attributes to assets in a collection [Read more](https://learn.getgrav.org/17/themes/asset-manager#collections-with-attributes?target=_blank) [#3358](https://github.com/getgrav/grav/issues/3358)
+    * File `frontmatter.yaml` isn't part of media, ignore it
+    * Switched default `JQuery` collection to use 3.x rather than 2.x
+1. [](#bugfix)
+    * Fixed missing styles when CSS/JS Pipeline is used and `asset://` folder is missing
+    * Fixed permission check when moving a page [#3382](https://github.com/getgrav/grav/issues/3382)
+
+# v1.7.16
+## 06/02/2021
+
+1. [](#new)
+    * Added 'addFrame()' method to ImageMedium [#3323](https://github.com/getgrav/grav/pull/3323)
+1. [](#improved)
+    * Set `cache.clear_images_by_default` to `false` by default
+    * Improve error on bad nested form data [#3364](https://github.com/getgrav/grav/issues/3364)
+1. [](#bugfix)
+    * Improve Plugin and Theme initialization to fix PHP8 bug [#3368](https://github.com/getgrav/grav/issues/3368)
+    * Fixed `pathinfo()` twig filter in PHP7
+    * Fixed the first visible child page getting ordering number `999999.` [#3365](https://github.com/getgrav/grav/issues/3365)
+    * Fixed flex pages search using only folder name [#3316](https://github.com/getgrav/grav/issues/3316)
+    * Fixed flex pages using wrong type in `onBlueprintCreated` event [#3157](https://github.com/getgrav/grav/issues/3157)
+    * Fixed wrong SRI paths invoked when Grav instance as a sub folder [#3358](https://github.com/getgrav/grav/issues/3358)
+    * Fixed SRI trying to calculate remote assets, only ever set integrity for local files. Use the SRI provided by the remote source and manually add it in the `addJs/addCss` call for remote support. [#3358](https://github.com/getgrav/grav/issues/3358)
+    * Fix for weird regex issue with latest PHP versions on Intel Macs causing params to not parse properly in URI object
+
 # v1.7.15
 ## 05/19/2021
 

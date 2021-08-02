@@ -298,7 +298,11 @@ class FlexObject implements FlexObjectInterface, FlexAuthorizeInterface
 
         $weight = 0;
         foreach ($properties as $property) {
-            $weight += $this->searchNestedProperty($property, $search, $options);
+            if (strpos($property, '.')) {
+                $weight += $this->searchNestedProperty($property, $search, $options);
+            } else {
+                $weight += $this->searchProperty($property, $search, $options);
+            }
         }
 
         return $weight > 0 ? min($weight, 1) : 0;
@@ -688,6 +692,17 @@ class FlexObject implements FlexObjectInterface, FlexAuthorizeInterface
     }
 
     /**
+     * @param UserInterface|null $user
+     */
+    public function check(UserInterface $user = null): void
+    {
+        // If user has been provided, check if the user has permissions to save this object.
+        if ($user && !$this->isAuthorized('save', null, $user)) {
+            throw new \RuntimeException('Forbidden', 403);
+        }
+    }
+
+    /**
      * {@inheritdoc}
      * @see FlexObjectInterface::save()
      */
@@ -1057,6 +1072,17 @@ class FlexObject implements FlexObjectInterface, FlexAuthorizeInterface
         }
 
         return $action;
+    }
+
+    /**
+     * Method to reset blueprints if the type changes.
+     *
+     * @return void
+     * @since 1.7.18
+     */
+    protected function resetBlueprints(): void
+    {
+        $this->_blueprint = [];
     }
 
     // DEPRECATED METHODS

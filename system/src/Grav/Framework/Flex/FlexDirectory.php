@@ -47,7 +47,7 @@ use function is_callable;
  * @package Grav\Framework\Flex
  * @template T
  */
-class FlexDirectory implements FlexDirectoryInterface, FlexAuthorizeInterface
+class FlexDirectory implements FlexDirectoryInterface
 {
     use FlexAuthorizeTrait;
 
@@ -235,7 +235,17 @@ class FlexDirectory implements FlexDirectoryInterface, FlexAuthorizeInterface
 
         /** @var UniformResourceLocator $locator */
         $locator = $grav['locator'];
-        $filename = $locator->findResource($this->getDirectoryConfigUri($name), true);
+        $uri = $this->getDirectoryConfigUri($name);
+
+        // If configuration is found in main configuration, use it.
+        if (str_starts_with($uri, 'config://')) {
+            $path = strtr(substr($uri, 9,  -5), '/', '.');
+
+            return $grav['config']->get($path);
+        }
+
+        // Load the configuration file.
+        $filename = $locator->findResource($uri, true);
         if ($filename === false) {
             return [];
         }
