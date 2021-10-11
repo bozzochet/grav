@@ -109,6 +109,10 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
         }
 
         $element = parent::get($key);
+        if (null === $element) {
+            return null;
+        }
+
         if (isset($params)) {
             $element = $element->getTranslation(ltrim($params, '.'));
         }
@@ -331,7 +335,10 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
      */
     protected function filterByParent(array $filters)
     {
-        return parent::filterBy($filters);
+        /** @var static $index */
+        $index = parent::filterBy($filters);
+
+        return $index;
     }
 
     /**
@@ -673,13 +680,14 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
                     $child_count = $tmp->count();
                     $count = $filters ? $tmp->filterBy($filters, true)->count() : null;
                     $route = $child->getRoute();
+                    $route = $route ? ($route->toString(false) ?: '/') : '';
                     $payload = [
-                        'item-key' => basename($child->rawRoute() ?? $child->getKey()),
+                        'item-key' => htmlspecialchars(basename($child->rawRoute() ?? $child->getKey())),
                         'icon' => $icon,
                         'title' => htmlspecialchars($child->menu()),
                         'route' => [
-                            'display' => ($route ? ($route->toString(false) ?: '/') : null) ?? '',
-                            'raw' => $child->rawRoute(),
+                            'display' => htmlspecialchars($route) ?: null,
+                            'raw' => htmlspecialchars($child->rawRoute()),
                         ],
                         'modified' => $this->jsDate($child->modified()),
                         'child_count' => $child_count ?: null,
@@ -834,12 +842,11 @@ class PageIndex extends FlexPageIndex implements PageCollectionInterface
     /**
      * Remove item from the list.
      *
-     * @param PageInterface|string|null $key
-     *
-     * @return $this
+     * @param string $key
+     * @return PageObject|null
      * @throws InvalidArgumentException
      */
-    public function remove($key = null)
+    public function remove($key)
     {
         return $this->getCollection()->remove($key);
     }

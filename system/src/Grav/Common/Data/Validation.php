@@ -519,17 +519,32 @@ class Validation
             return false;
         }
 
-        if (isset($params['min']) && $value < $params['min']) {
-            return false;
+        $value = (float)$value;
+
+        $min = 0;
+        if (isset($params['min'])) {
+            $min = (float)$params['min'];
+            if ($value < $min) {
+                return false;
+            }
         }
 
-        if (isset($params['max']) && $value > $params['max']) {
-            return false;
+        if (isset($params['max'])) {
+            $max = (float)$params['max'];
+            if ($value > $max) {
+                return false;
+            }
         }
 
-        $min = $params['min'] ?? 0;
+        if (isset($params['step'])) {
+            $step = (float)$params['step'];
+            // Count of how many steps we are above/below the minimum value.
+            $pos = ($value - $min) / $step;
 
-        return !(isset($params['step']) && fmod($value - $min, $params['step']) === 0);
+            return is_int(static::filterNumber($pos, $params, $field));
+        }
+
+        return true;
     }
 
     /**
@@ -593,7 +608,7 @@ class Validation
      */
     public static function typeColor($value, array $params, array $field)
     {
-        return preg_match('/^\#[0-9a-fA-F]{3}[0-9a-fA-F]{3}?$/u', $value);
+        return (bool)preg_match('/^\#[0-9a-fA-F]{3}[0-9a-fA-F]{3}?$/u', $value);
     }
 
     /**
@@ -1174,7 +1189,7 @@ class Validation
      */
     public static function filterItem_List($value, $params)
     {
-        return array_values(array_filter($value, function ($v) {
+        return array_values(array_filter($value, static function ($v) {
             return !empty($v);
         }));
     }

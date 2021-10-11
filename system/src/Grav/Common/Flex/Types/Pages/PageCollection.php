@@ -19,7 +19,6 @@ use Grav\Common\Page\Header;
 use Grav\Common\Page\Interfaces\PageCollectionInterface;
 use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Utils;
-use Grav\Framework\Flex\Interfaces\FlexObjectInterface;
 use Grav\Framework\Flex\Pages\FlexPageCollection;
 use Collator;
 use InvalidArgumentException;
@@ -159,7 +158,7 @@ class PageCollection extends FlexPageCollection implements PageCollectionInterfa
      */
     public function addPage(PageInterface $page)
     {
-        if (!$page instanceof FlexObjectInterface) {
+        if (!$page instanceof PageObject) {
             throw new InvalidArgumentException('$page is not a flex page.');
         }
 
@@ -188,6 +187,14 @@ class PageCollection extends FlexPageCollection implements PageCollectionInterfa
      * @return static
      */
     public function intersect(PageCollectionInterface $collection)
+    {
+        throw new RuntimeException(__METHOD__ . '(): Not Implemented');
+    }
+
+    /**
+     * Set current page.
+     */
+    public function setCurrent(string $path): void
     {
         throw new RuntimeException(__METHOD__ . '(): Not Implemented');
     }
@@ -392,8 +399,8 @@ class PageCollection extends FlexPageCollection implements PageCollectionInterfa
             $i = count($manual);
             $new_list = [];
             foreach ($list as $key => $dummy) {
-                $child = $this[$key];
-                $order = array_search($child->slug, $manual, true);
+                $child = $this[$key] ?? null;
+                $order = $child ? array_search($child->slug, $manual, true) : false;
                 if ($order === false) {
                     $order = $i++;
                 }
