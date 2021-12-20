@@ -22,6 +22,7 @@ use function count;
  * Abstract Index Collection.
  * @template TKey of array-key
  * @template T
+ * @template C of CollectionInterface
  * @implements CollectionInterface<TKey,T>
  */
 abstract class AbstractIndexCollection implements CollectionInterface
@@ -144,6 +145,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      *
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->containsKey($offset);
@@ -154,6 +156,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      *
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset);
@@ -164,6 +167,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      *
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (null === $offset) {
@@ -178,9 +182,10 @@ abstract class AbstractIndexCollection implements CollectionInterface
      *
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
-        return $this->remove($offset);
+        $this->remove($offset);
     }
 
     /**
@@ -361,7 +366,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      * @param int $start
      * @param int|null $limit
      * @return static
-     * @phpstan-return static<TKey,T>
+     * @phpstan-return static<TKey,T,C>
      */
     public function limit($start, $limit = null)
     {
@@ -372,7 +377,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      * Reverse the order of the items.
      *
      * @return static
-     * @phpstan-return static<TKey,T>
+     * @phpstan-return static<TKey,T,C>
      */
     public function reverse()
     {
@@ -383,7 +388,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      * Shuffle items.
      *
      * @return static
-     * @phpstan-return static<TKey,T>
+     * @phpstan-return static<TKey,T,C>
      */
     public function shuffle()
     {
@@ -400,7 +405,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      *
      * @param array $keys
      * @return static
-     * @phpstan-return static<TKey,T>
+     * @phpstan-return static<TKey,T,C>
      */
     public function select(array $keys)
     {
@@ -419,7 +424,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      *
      * @param array $keys
      * @return static
-     * @phpstan-return static<TKey,T>
+     * @phpstan-return static<TKey,T,C>
      */
     public function unselect(array $keys)
     {
@@ -474,7 +479,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      *
      * @param array $entries Elements.
      * @return static
-     * @phpstan-return static<TKey,T>
+     * @phpstan-return static<TKey,T,C>
      */
     protected function createFrom(array $entries)
     {
@@ -527,7 +532,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
     /**
      * @param array|null $entries
      * @return CollectionInterface
-     * @phpstan-return T
+     * @phpstan-return C
      */
     abstract protected function loadCollection(array $entries = null): CollectionInterface;
 
