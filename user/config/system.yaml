@@ -35,3 +35,6 @@ debugger:
   twig: true
   shutdown:
     close_connection: true
+
+http:
+  verify_peer: false                              # Enable/Disable SSL verification of peer certificates
