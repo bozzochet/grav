@@ -6,6 +6,11 @@ features:
     -
         icon: 'fa fa-terminal'
         header: null
+        text: 'Metodi Computazionali per la Fisica - 2021-2022'
+        url: metodi/metodi_21-22
+    -
+        icon: 'fa fa-terminal'
+        header: null
         text: 'Metodi Computazionali per la Fisica - 2020-2021'
         url: metodi/metodi_20-21
     -
