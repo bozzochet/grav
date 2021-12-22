@@ -1,0 +1,74 @@
+enabled: true
+built_in_css: true
+name: 'Matteo Duranti'
+title: 'PhD in Particle Physics - Istituto Nazionale Fisica Nucleare, Sez. Perugia'
+show_title: true
+description: "\n\n_A revolution is not a dinner party, or writing an essay, or painting a picture, or doing embroidery; it cannot be so refined, so leisurely and gentle, so temperate, kind, courteous, restrained and magnanimous. A revolution is an insurrection, an act of violence..._\nMao Zedong"
+picture_src:
+  user/plugins/aboutme/assets/avatars/pict1245.gif:
+    name: pict1245.gif
+    type: image/gif
+    size: 289121
+    path: user/plugins/aboutme/assets/avatars/pict1245.gif
+gravatar:
+  enabled: false
+  email: bozzo1983@gmail.com
+  size: 100
+social_pages:
+  enabled: true
+  use_font_awesome: false
+  pages:
+    facebook:
+      icon_type: null
+      icon: facebook
+      title: Facebook
+      position: 5
+      url: 'https://www.facebook.com/matteo.duranti'
+    twitter:
+      icon_type: null
+      icon: twitter
+      title: Twitter
+      position: 6
+      url: 'https://twitter.com/bozzochet'
+    github:
+      icon_type: null
+      icon: github
+      title: GitHub
+      position: 7
+      url: 'https://github.com/bozzochet'
+    linkedin:
+      icon_type: b
+      icon: linkedin
+      title: LinkedIn
+      position: 8
+      url: null
+    instagram:
+      icon_type: b
+      icon: instagram
+      title: Instagram
+      position: 9
+      url: null
+    infn:
+      icon_type: null
+      icon: envelope
+      title: INFN
+      position: 1
+      url: 'mailto:matteo.duranti@infn.it'
+    unipg:
+      icon_type: null
+      icon: university
+      title: UniPG
+      position: 2
+      url: 'mailto:matteo.duranti@unipg.it'
+    cern:
+      icon_type: null
+      icon: bar-chart-o
+      title: CERN
+      position: 3
+      url: 'mailto:matteo.duranti@cern.ch'
+    gmail:
+      icon_type: null
+      icon: google
+      title: Gmail
+      position: 4
+      url: 'mailto:bozzo1983@gmail.com'

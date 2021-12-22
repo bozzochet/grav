@@ -8,8 +8,9 @@ hero_classes: 'hero-fullscreen overlay-light text-dark'
 hero_align: center
 hero_noarrow: true
 process:
+    markdown: true
     twig: true
-    markdown: false
+twig_first: true
 ---
 
 </br>
@@ -30,6 +31,7 @@ process:
 </br>
 </br>
 </br>
+<!--
 <div style="text-align: left">
 <h3>
     <ul>
@@ -42,3 +44,5 @@ process:
     </ul>
 </h3>
 </div>
+-->
+{% include 'partials/aboutme.html.twig' %}
