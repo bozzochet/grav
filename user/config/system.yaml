@@ -77,9 +77,9 @@ pages:
   last_modified: true
   etag: true
   vary_accept_encoding: false
-  redirect_default_route: false
   redirect_default_code: '302'
-  redirect_trailing_slash: true
+  redirect_trailing_slash: 1
+  redirect_default_route: 0
   ignore_files:
     - .DS_Store
   ignore_folders:
@@ -126,6 +126,8 @@ twig:
   autoescape: false
   undefined_functions: true
   undefined_filters: true
+  safe_functions: {  }
+  safe_filters: {  }
   umask_fix: false
 assets:
   css_pipeline: false
@@ -139,6 +141,7 @@ assets:
   js_pipeline_before_excludes: true
   js_minify: true
   enable_asset_timestamp: false
+  enable_asset_sri: false
   collections:
     jquery: 'system://assets/jquery/jquery-2.x.min.js'
 errors:
@@ -162,8 +165,18 @@ images:
   debug: false
   auto_fix_orientation: true
   seofriendly: false
+  cls:
+    auto_sizes: false
+    aspect_ratio: false
+    retina_scale: '1'
   defaults:
     loading: auto
+  watermark:
+    image: 'system://images/watermark.png'
+    position_y: center
+    position_x: center
+    scale: 33
+    watermark_all: false
 media:
   enable_media_timestamp: false
   unsupported_inline_types: null
@@ -184,10 +197,17 @@ session:
   path: null
 gpm:
   releases: stable
-  proxy_url: null
+  official_gpm_only: true
   method: auto
   verify_peer: true
-  official_gpm_only: true
+http:
+  method: auto
+  enable_proxy: true
+  proxy_url: null
+  proxy_cert_path: null
+  concurrent_connections: 5
+  verify_peer: false
+  verify_host: true
 accounts:
   type: regular
   storage: file
