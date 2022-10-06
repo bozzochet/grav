@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Media
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -16,6 +16,8 @@ use Grav\Common\Data\Data;
  * Class implements media object interface.
  *
  * @property string $type
+ * @property string $filename
+ * @property string $filepath
  */
 interface MediaObjectInterface extends \Grav\Framework\Media\Interfaces\MediaObjectInterface, ArrayAccess
 {
@@ -62,6 +64,14 @@ interface MediaObjectInterface extends \Grav\Framework\Media\Interfaces\MediaObj
      * @param MediaObjectInterface $alternative
      */
     public function addAlternative($ratio, MediaObjectInterface $alternative);
+
+    /**
+     * Get list of image alternatives. Includes the current media image as well.
+     *
+     * @param bool $withDerived If true, include generated images as well. If false, only return existing files.
+     * @return array
+     */
+    public function getAlternatives(bool $withDerived = true): array;
 
     /**
      * Return string representation of the object (html).
@@ -149,14 +159,6 @@ interface MediaObjectInterface extends \Grav\Framework\Media\Interfaces\MediaObj
     public function thumbnail($type = 'auto');
 
     /**
-     * Return URL to file.
-     *
-     * @param bool $reset
-     * @return string
-     */
-    public function url($reset = true);
-
-    /**
      * Turn the current Medium into a Link
      *
      * @param  bool $reset
@@ -208,19 +210,8 @@ interface MediaObjectInterface extends \Grav\Framework\Media\Interfaces\MediaObj
      * @param mixed $args
      * @return $this
      */
+    #[\ReturnTypeWillChange]
     public function __call($method, $args);
-
-    /**
-     * Get value by using dot notation for nested arrays/objects.
-     *
-     * @example $value = $this->get('this.is.my.nested.variable');
-     *
-     * @param string $name Dot separated path to the requested value.
-     * @param mixed $default Default value (or null).
-     * @param string|null $separator Separator, defaults to '.'
-     * @return mixed Value.
-     */
-    public function get($name, $default = null, $separator = null);
 
     /**
      * Set value by using dot notation for nested arrays/objects.

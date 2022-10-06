@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Errors
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -42,5 +42,26 @@ class SystemFacade extends \Whoops\Util\SystemFacade
             $handler = $this->whoopsShutdownHandler;
             $handler();
         }
+    }
+
+
+    /**
+     * @param int $httpCode
+     *
+     * @return int
+     */
+    public function setHttpResponseCode($httpCode)
+    {
+        if (!headers_sent()) {
+            // Ensure that no 'location' header is present as otherwise this
+            // will override the HTTP code being set here, and mask the
+            // expected error page.
+            header_remove('location');
+
+            // Work around PHP bug #8218 (8.0.17 & 8.1.4).
+            header_remove('Content-Encoding');
+        }
+
+        return http_response_code($httpCode);
     }
 }

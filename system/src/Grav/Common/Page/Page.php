@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Page
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -84,7 +84,7 @@ class Page implements PageInterface
     protected $unpublish_date;
     /** @var string */
     protected $slug;
-    /** @var string */
+    /** @var string|null */
     protected $route;
     /** @var string|null */
     protected $raw_route;
@@ -196,7 +196,7 @@ class Page implements PageInterface
         }
 
         // extract page language from page extension
-        $language = trim(basename($this->extension(), 'md'), '.') ?: null;
+        $language = trim(Utils::basename($this->extension(), 'md'), '.') ?: null;
         $this->language($language);
 
         $this->hide_home_route = $config->get('system.home.hide_in_urls', false);
@@ -218,6 +218,7 @@ class Page implements PageInterface
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function __clone()
     {
         $this->initialized = false;
@@ -387,7 +388,7 @@ class Page implements PageInterface
      * Gets and Sets the header based on the YAML configuration at the top of the .md file
      *
      * @param  object|array|null $var a YAML object representing the configuration for the file
-     * @return object      the current YAML configuration
+     * @return \stdClass      the current YAML configuration
      */
     public function header($var = null)
     {
@@ -621,7 +622,12 @@ class Page implements PageInterface
             $headers['Vary'] = 'Accept-Encoding';
         }
 
-        return $headers;
+
+        // Added new Headers event
+        $headers_obj = (object) $headers;
+        Grav::instance()->fireEvent('onPageHeaders', new Event(['headers' => $headers_obj]));
+
+        return (array)$headers_obj;
     }
 
     /**
@@ -1247,6 +1253,17 @@ class Page implements PageInterface
     }
 
     /**
+     * Returns the blueprint from the page.
+     *
+     * @param string $name Not used.
+     * @return Blueprint Returns a Blueprint.
+     */
+    public function getBlueprint(string $name = '')
+    {
+        return $this->blueprints();
+    }
+
+    /**
      * Get the blueprint name for this page.  Use the blueprint form field if set
      *
      * @return string
@@ -1453,7 +1470,7 @@ class Page implements PageInterface
             $this->extension = $var;
         }
         if (empty($this->extension)) {
-            $this->extension = '.' . pathinfo($this->name(), PATHINFO_EXTENSION);
+            $this->extension = '.' . Utils::pathinfo($this->name(), PATHINFO_EXTENSION);
         }
 
         return $this->extension;
@@ -2097,9 +2114,9 @@ class Page implements PageInterface
     {
         if ($var !== null) {
             // Filename of the page.
-            $this->name = basename($var);
+            $this->name = Utils::basename($var);
             // Folder of the page.
-            $this->folder = basename(dirname($var));
+            $this->folder = Utils::basename(dirname($var));
             // Path to the page.
             $this->path = dirname($var, 2);
         }
@@ -2138,7 +2155,7 @@ class Page implements PageInterface
     {
         if ($var !== null) {
             // Folder of the page.
-            $this->folder = basename($var);
+            $this->folder = Utils::basename($var);
             // Path to the page.
             $this->path = dirname($var);
         }

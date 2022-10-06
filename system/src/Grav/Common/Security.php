@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -25,6 +25,22 @@ use function is_string;
  */
 class Security
 {
+    /**
+     * @param string $filepath
+     * @param array|null $options
+     * @return string|null
+     */
+    public static function detectXssFromSvgFile(string $filepath, array $options = null): ?string
+    {
+        if (file_exists($filepath) && Grav::instance()['config']->get('security.sanitize_svg')) {
+            $content = file_get_contents($filepath);
+
+            return static::detectXss($content, $options);
+        }
+
+        return null;
+    }
+
     /**
      * Sanitize SVG string for XSS code
      *
@@ -61,7 +77,7 @@ class Security
             if ($clean_svg !== false ) {
                 file_put_contents($file, $clean_svg);
             } else {
-                $quarantine_file = basename($file);
+                $quarantine_file = Utils::basename($file);
                 $quarantine_dir = 'log://quarantine';
                 Folder::mkdir($quarantine_dir);
                 file_put_contents("$quarantine_dir/$quarantine_file", $original_svg);
@@ -81,7 +97,7 @@ class Security
      */
     public static function detectXssFromPages(Pages $pages, $route = true, callable $status = null)
     {
-        $routes = $pages->routes();
+        $routes = $pages->getList(null, 0, true);
 
         // Remove duplicate for homepage
         unset($routes['/']);
@@ -94,26 +110,23 @@ class Security
             'steps' => count($routes),
         ]);
 
-        foreach ($routes as $path) {
+        foreach (array_keys($routes) as $route) {
             $status && $status([
                 'type' => 'progress',
             ]);
 
             try {
-                $page = $pages->get($path);
+                $page = $pages->find($route);
+                if ($page->exists()) {
+                    // call the content to load/cache it
+                    $header = (array) $page->header();
+                    $content = $page->value('content');
 
-                // call the content to load/cache it
-                $header = (array) $page->header();
-                $content = $page->value('content');
+                    $data = ['header' => $header, 'content' => $content];
+                    $results = static::detectXssFromArray($data);
 
-                $data = ['header' => $header, 'content' => $content];
-                $results = static::detectXssFromArray($data);
-
-                if (!empty($results)) {
-                    if ($route) {
-                        $list[$page->route()] = $results;
-                    } else {
-                        $list[$page->filePathClean()] = $results;
+                    if (!empty($results)) {
+                        $list[$page->rawRoute()] = $results;
                     }
                 }
             } catch (Exception $e) {
@@ -200,13 +213,14 @@ class Security
         }, $string);
 
         // Clean up entities
-        $string = preg_replace('!(&#0+[0-9]+)!u', '$1;', $string);
+        $string = preg_replace('!(&#[0-9]+);?!u', '$1;', $string);
 
         // Decode entities
         $string = html_entity_decode($string, ENT_NOQUOTES | ENT_HTML5, 'UTF-8');
 
         // Strip whitespace characters
-        $string = preg_replace('!\s!u', '', $string);
+        $string = preg_replace('!\s!u', ' ', $string);
+        $stripped = preg_replace('!\s!u', '', $string);
 
         // Set the patterns we'll test against
         $patterns = [
@@ -214,7 +228,7 @@ class Security
             'on_events' => '#(<[^>]+[[a-z\x00-\x20\"\'\/])([\s\/]on|\sxmlns)[a-z].*=>?#iUu',
 
             // Match javascript:, livescript:, vbscript:, mocha:, feed: and data: protocols
-            'invalid_protocols' => '#(' . implode('|', array_map('preg_quote', $invalid_protocols, ['#'])) . '):\S.*?#iUu',
+            'invalid_protocols' => '#(' . implode('|', array_map('preg_quote', $invalid_protocols, ['#'])) . ')(:|\&\#58)\S.*?#iUu',
 
             // Match -moz-bindings
             'moz_binding' => '#-moz-binding[a-z\x00-\x20]*:#u',
@@ -229,7 +243,7 @@ class Security
         // Iterate over rules and return label if fail
         foreach ($patterns as $name => $regex) {
             if (!empty($enabled_rules[$name])) {
-                if (preg_match($regex, $string) || preg_match($regex, $orig)) {
+                if (preg_match($regex, $string) || preg_match($regex, $stripped) || preg_match($regex, $orig)) {
                     return $name;
                 }
             }

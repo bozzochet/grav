@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Language
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -93,7 +93,7 @@ class LanguageCodes
         'la'         => [ 'name' => 'Latin',                     'nativeName' => 'Latina' ],
         'lb'         => [ 'name' => 'Luxembourgish',             'nativeName' => 'Lëtzebuergesch' ],
         'lg'         => [ 'name' => 'Luganda',                   'nativeName' => 'Luganda' ],
-        'lo'         => [ 'name' => 'Lao',                       'nativeName' => 'Lao' ],        
+        'lo'         => [ 'name' => 'Lao',                       'nativeName' => 'Lao' ],
         'lt'         => [ 'name' => 'Lithuanian',                'nativeName' => 'Lietuvių' ],
         'lv'         => [ 'name' => 'Latvian',                   'nativeName' => 'Latviešu' ],
         'mai'        => [ 'name' => 'Maithili',                  'nativeName' => 'मैथिली মৈথিলী' ],
@@ -103,7 +103,7 @@ class LanguageCodes
         'ml'         => [ 'name' => 'Malayalam',                 'nativeName' => 'മലയാളം' ],
         'mn'         => [ 'name' => 'Mongolian',                 'nativeName' => 'Монгол' ],
         'mr'         => [ 'name' => 'Marathi',                   'nativeName' => 'मराठी' ],
-        'my'         => [ 'name' => 'Myanmar (Burmese)',         'nativeName' => 'ဗမာी' ],        
+        'my'         => [ 'name' => 'Myanmar (Burmese)',         'nativeName' => 'ဗမာी' ],
         'no'         => [ 'name' => 'Norwegian',                 'nativeName' => 'Norsk' ],
         'nb'         => [ 'name' => 'Norwegian',                 'nativeName' => 'Norsk' ],
         'nb-NO'      => [ 'name' => 'Norwegian (Bokmål)',        'nativeName' => 'Norsk bokmål' ],
@@ -153,6 +153,8 @@ class LanguageCodes
         'vi'         => [ 'name' => 'Vietnamese',                'nativeName' => 'Tiếng Việt' ],
         'wo'         => [ 'name' => 'Wolof',                     'nativeName' => 'Wolof' ],
         'xh'         => [ 'name' => 'Xhosa',                     'nativeName' => 'isiXhosa' ],
+        'yi'         => [ 'name' => 'Yiddish',                   'nativeName' => 'ייִדיש', 'orientation' => 'rtl'  ],
+        'ydd'        => [ 'name' => 'Yiddish',                   'nativeName' => 'ייִדיש', 'orientation' => 'rtl'  ],
         'zh'         => [ 'name' => 'Chinese (Simplified)',      'nativeName' => '中文 (简体)' ],
         'zh-CN'      => [ 'name' => 'Chinese (Simplified)',      'nativeName' => '中文 (简体)' ],
         'zh-TW'      => [ 'name' => 'Chinese (Traditional)',     'nativeName' => '正體中文 (繁體)' ],

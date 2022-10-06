@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Page
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -88,6 +88,8 @@ class Pages
     /** @var string */
     protected $check_method;
     /** @var string */
+    protected $simple_pages_hash;
+    /** @var string */
     protected $pages_cache_id;
     /** @var bool */
     protected $initialized = false;
@@ -99,6 +101,7 @@ class Pages
     protected static $types;
     /** @var string|null */
     protected static $home_route;
+
 
     /**
      * Constructor
@@ -736,7 +739,13 @@ class Pages
                 break;
             case 'siblings':
                 $parent = $page->parent();
-                $collection = $parent ? $parent->children()->remove($page->path()) : new Collection();
+                if ($parent) {
+                    /** @var Collection $collection */
+                    $collection = $parent->children();
+                    $collection = $collection->remove($page->path());
+                } else {
+                    $collection = new Collection();
+                }
                 break;
             case 'descendants':
                 $collection = $this->all($page)->remove($page->path())->pages();
@@ -1041,9 +1050,14 @@ class Pages
                     $this->grav->redirectLangSafe($page->redirect());
                 }
 
-                if (!$routable && ($child = $page->children()->visible()->routable()->published()->first()) !== null) {
-                    // Redirect to the first visible child as current page isn't routable.
-                    $this->grav->redirectLangSafe($child->route());
+                if (!$routable) {
+                    /** @var Collection $children */
+                    $children = $page->children()->visible()->routable()->published();
+                    $child = $children->first();
+                    if ($child !== null) {
+                        // Redirect to the first visible child as current page isn't routable.
+                        $this->grav->redirectLangSafe($child->route());
+                    }
                 }
             }
 
@@ -1701,10 +1715,7 @@ class Pages
         /** @var Language $language */
         $language = $this->grav['language'];
 
-        $pages_dir = $locator->findResource('page://');
-        if (!is_string($pages_dir)) {
-            throw new RuntimeException('Internal Error');
-        }
+        $pages_dirs = $this->getPagesPaths();
 
         // Set active language
         $this->active_lang = $language->getActive();
@@ -1720,16 +1731,17 @@ class Pages
                     $hash = 0;
                     break;
                 case 'folder':
-                    $hash = Folder::lastModifiedFolder($pages_dir);
+                    $hash = Folder::lastModifiedFolder($pages_dirs);
                     break;
                 case 'hash':
-                    $hash = Folder::hashAllFiles($pages_dir);
+                    $hash = Folder::hashAllFiles($pages_dirs);
                     break;
                 default:
-                    $hash = Folder::lastModifiedFile($pages_dir);
+                    $hash = Folder::lastModifiedFile($pages_dirs);
             }
 
-            $this->pages_cache_id = md5($pages_dir . $hash . $language->getActive() . $config->checksum());
+            $this->simple_pages_hash = json_encode($pages_dirs) . $hash . $config->checksum();
+            $this->pages_cache_id = md5($this->simple_pages_hash . $language->getActive());
 
             /** @var Cache $cache */
             $cache = $this->grav['cache'];
@@ -1749,18 +1761,39 @@ class Pages
             $this->grav['debugger']->addMessage('Page cache disabled, rebuilding pages..');
         }
 
-        $this->resetPages($pages_dir);
+        $this->resetPages($pages_dirs);
+    }
+
+    protected function getPagesPaths(): array
+    {
+        $grav = Grav::instance();
+        $locator = $grav['locator'];
+        $paths = [];
+
+        $dirs = (array) $grav['config']->get('system.pages.dirs', ['page://']);
+        foreach ($dirs as $dir) {
+            $path = $locator->findResource($dir);
+            if (file_exists($path)) {
+                $paths[] = $path;
+            }
+        }
+
+        return $paths;
     }
 
     /**
      * Accessible method to manually reset the pages cache
      *
-     * @param string $pages_dir
+     * @param array $pages_dirs
      */
-    public function resetPages($pages_dir): void
+    public function resetPages(array $pages_dirs): void
     {
         $this->sort = [];
-        $this->recurse($pages_dir);
+
+        foreach ($pages_dirs as $dir) {
+            $this->recurse($dir);
+        }
+
         $this->buildRoutes();
 
         // cache if needed
@@ -1784,7 +1817,7 @@ class Pages
      * @throws RuntimeException
      * @internal
      */
-    protected function recurse($directory, PageInterface $parent = null)
+    protected function recurse(string $directory, PageInterface $parent = null)
     {
         $directory = rtrim($directory, DS);
         $page = new Page;
@@ -2065,7 +2098,7 @@ class Pages
                     $list[$key] = $child->slug();
                     break;
                 case 'basename':
-                    $list[$key] = basename($key);
+                    $list[$key] = Utils::basename($key);
                     break;
                 case 'folder':
                     $list[$key] = $child->folder();
@@ -2166,7 +2199,7 @@ class Pages
      * @param array $list
      * @return array
      */
-    protected function arrayShuffle($list)
+    protected function arrayShuffle(array $list): array
     {
         $keys = array_keys($list);
         shuffle($keys);
@@ -2182,7 +2215,7 @@ class Pages
     /**
      * @return string
      */
-    protected function getVersion()
+    protected function getVersion(): string
     {
         return $this->directory ? 'flex' : 'regular';
     }
@@ -2193,10 +2226,20 @@ class Pages
      * this is particularly useful to know if pages have changed and you want
      * to sync another cache with pages cache - works best in `onPagesInitialized()`
      *
-     * @return string
+     * @return null|string
      */
-    public function getPagesCacheId()
+    public function getPagesCacheId(): ?string
     {
         return $this->pages_cache_id;
+    }
+
+    /**
+     * Get the simple pages hash that is not md5 encoded, and isn't specific to language
+     *
+     * @return null|string
+     */
+    public function getSimplePagesHash(): ?string
+    {
+        return $this->simple_pages_hash;
     }
 }

@@ -3,15 +3,15 @@
 /**
  * @package    Grav\Common\GPM
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
 namespace Grav\Common\GPM\Remote;
 
 use Grav\Common\Grav;
+use Grav\Common\HTTP\Response;
 use Grav\Common\GPM\Common\AbstractPackageCollection as BaseCollection;
-use Grav\Common\GPM\Response;
 use \Doctrine\Common\Cache\FilesystemCache;
 use RuntimeException;
 

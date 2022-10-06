@@ -122,6 +122,19 @@ config:
       fields:
         - key
         - email
+        - username
+        - fullname
+
+  relationships:
+    media:
+      type: media
+      cardinality: to-many
+    avatar:
+      type: media
+      cardinality: to-one
+#    roles:
+#      type: user-groups
+#      cardinality: to-many
 
 blueprints:
   configure:

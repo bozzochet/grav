@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Framework\Form
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -21,6 +21,13 @@ interface FormFlashInterface extends \JsonSerializable
      * @param array $config     Available configuration keys: session_id, unique_id, form_name
      */
     public function __construct($config);
+
+    /**
+     * Get unique form flash id if set.
+     *
+     * @return string
+     */
+    public function getId(): string;
 
     /**
      * Get session Id associated to this form instance.

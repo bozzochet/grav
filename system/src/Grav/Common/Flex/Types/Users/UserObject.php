@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * @package    Grav\Common\Flex
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -30,6 +30,8 @@ use Grav\Common\Flex\Types\UserGroups\UserGroupCollection;
 use Grav\Common\Flex\Types\UserGroups\UserGroupIndex;
 use Grav\Common\User\Interfaces\UserInterface;
 use Grav\Common\User\Traits\UserTrait;
+use Grav\Common\Utils;
+use Grav\Framework\Contracts\Relationships\ToOneRelationshipInterface;
 use Grav\Framework\File\Formatter\JsonFormatter;
 use Grav\Framework\File\Formatter\YamlFormatter;
 use Grav\Framework\Filesystem\Filesystem;
@@ -37,7 +39,10 @@ use Grav\Framework\Flex\Flex;
 use Grav\Framework\Flex\FlexDirectory;
 use Grav\Framework\Flex\Storage\FileStorage;
 use Grav\Framework\Flex\Traits\FlexMediaTrait;
+use Grav\Framework\Flex\Traits\FlexRelationshipsTrait;
 use Grav\Framework\Form\FormFlashFile;
+use Grav\Framework\Media\MediaIdentifier;
+use Grav\Framework\Media\UploadedMediaObject;
 use Psr\Http\Message\UploadedFileInterface;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\File\FileInterface;
@@ -76,9 +81,12 @@ class UserObject extends FlexObject implements UserInterface, Countable
     }
     use UserTrait;
     use UserObjectLegacyTrait;
+    use FlexRelationshipsTrait;
 
     /** @var Closure|null */
     static public $authorizeCallable;
+    /** @var Closure|null */
+    static public $isAuthorizedCallable;
 
     /** @var array|null */
     protected $_uploads_original;
@@ -123,7 +131,8 @@ class UserObject extends FlexObject implements UserInterface, Countable
         // Define username if it's not set.
         if (!isset($elements['username'])) {
             $storageKey = $elements['__META']['storage_key'] ?? null;
-            if (null !== $storageKey && $key === $directory->getStorage()->normalizeKey($storageKey)) {
+            $storage = $directory->getStorage();
+            if (null !== $storageKey && method_exists($storage, 'normalizeKey') && $key === $storage->normalizeKey($storageKey)) {
                 $elements['username'] = $storageKey;
             } else {
                 $elements['username'] = $key;
@@ -136,6 +145,14 @@ class UserObject extends FlexObject implements UserInterface, Countable
         }
 
         parent::__construct($elements, $key, $directory, $validate);
+    }
+
+    public function __clone()
+    {
+        $this->_access = null;
+        $this->_groups = null;
+
+        parent::__clone();
     }
 
     /**
@@ -231,13 +248,19 @@ class UserObject extends FlexObject implements UserInterface, Countable
     }
 
     /**
+     * @param UserInterface|null $user
      * @return bool
      */
-    public function isMyself(): bool
+    public function isMyself(?UserInterface $user = null): bool
     {
-        $me = $this->getActiveUser();
+        if (null === $user) {
+            $user = $this->getActiveUser();
+            if ($user && !$user->authenticated) {
+                $user = null;
+            }
+        }
 
-        return $me && $me->authenticated && $this->username === $me->username;
+        return $user && $this->username === $user->username;
     }
 
     /**
@@ -277,8 +300,8 @@ class UserObject extends FlexObject implements UserInterface, Countable
         // Check custom application access.
         $authorizeCallable = static::$authorizeCallable;
         if ($authorizeCallable instanceof Closure) {
-            $authorizeCallable->bindTo($this);
-            $authorized = $authorizeCallable($action, $scope);
+            $callable = $authorizeCallable->bindTo($this, $this);
+            $authorized = $callable($action, $scope);
             if (is_bool($authorized)) {
                 return $authorized;
             }
@@ -628,7 +651,7 @@ class UserObject extends FlexObject implements UserInterface, Countable
             $medium = MediumFactory::fromFile($path);
             if ($medium) {
                 $media->add($path, $medium);
-                $name = basename($path);
+                $name = Utils::basename($path);
                 if ($name !== $path) {
                     $media->add($name, $medium);
                 }
@@ -648,10 +671,85 @@ class UserObject extends FlexObject implements UserInterface, Countable
         // Check for shared media
         if (!$folder && !$this->getFlexDirectory()->getMediaFolder()) {
             $this->_loadMedia = false;
-            $folder = $this->getBlueprint()->fields()['avatar']['destination'] ?? 'user://accounts/avatars';
+            $folder = $this->getBlueprint()->fields()['avatar']['destination'] ?? 'account://avatars';
         }
 
         return $folder;
+    }
+
+    /**
+     * @param string $name
+     * @return array|object|null
+     * @internal
+     */
+    public function initRelationship(string $name)
+    {
+        switch ($name) {
+            case 'media':
+                $list = [];
+                foreach ($this->getMedia()->all() as $filename => $object) {
+                    $list[] = $this->buildMediaObject(null, $filename, $object);
+                }
+
+                return $list;
+            case 'avatar':
+                return $this->buildMediaObject('avatar', basename($this->getAvatarUrl()), $this->getAvatarImage());
+        }
+
+        throw new \InvalidArgumentException(sprintf('%s: Relationship %s does not exist', $this->getFlexType(), $name));
+    }
+
+    /**
+     * @return bool Return true if relationships were updated.
+     */
+    protected function updateRelationships(): bool
+    {
+        $modified = $this->getRelationships()->getModified();
+        if ($modified) {
+            foreach ($modified as $relationship) {
+                $name = $relationship->getName();
+                switch ($name) {
+                    case 'avatar':
+                        \assert($relationship instanceof ToOneRelationshipInterface);
+                        $this->updateAvatarRelationship($relationship);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException(sprintf('%s: Relationship %s cannot be modified', $this->getFlexType(), $name), 400);
+                }
+            }
+
+            $this->resetRelationships();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param ToOneRelationshipInterface $relationship
+     */
+    protected function updateAvatarRelationship(ToOneRelationshipInterface $relationship): void
+    {
+        $files = [];
+        $avatar = $this->getAvatarImage();
+        if ($avatar) {
+            $files['avatar'][$avatar->filename] = null;
+        }
+
+        $identifier = $relationship->getIdentifier();
+        if ($identifier) {
+            \assert($identifier instanceof MediaIdentifier);
+            $object = $identifier->getObject();
+            if ($object instanceof UploadedMediaObject) {
+                $uploadedFile = $object->getUploadedFile();
+                if ($uploadedFile) {
+                    $files['avatar'][$uploadedFile->getClientFilename()] = $uploadedFile;
+                }
+            }
+        }
+
+        $this->update([], $files);
     }
 
     /**
@@ -683,6 +781,16 @@ class UserObject extends FlexObject implements UserInterface, Countable
      */
     protected function isAuthorizedOverride(UserInterface $user, string $action, string $scope, bool $isMe = false): ?bool
     {
+        // Check custom application access.
+        $isAuthorizedCallable = static::$isAuthorizedCallable;
+        if ($isAuthorizedCallable instanceof Closure) {
+            $callable = $isAuthorizedCallable->bindTo($this, $this);
+            $authorized = $callable($user, $action, $scope, $isMe);
+            if (is_bool($authorized)) {
+                return $authorized;
+            }
+        }
+
         if ($user instanceof self && $user->getStorageKey() === $this->getStorageKey()) {
             // User cannot delete his own account, otherwise he has full access.
             return $action !== 'delete';
@@ -787,7 +895,7 @@ class UserObject extends FlexObject implements UserInterface, Countable
                 }
 
                 // Calculate path without the retina scaling factor.
-                $realpath = $filesystem->pathname($filepath) . str_replace(['@3x', '@2x'], '', basename($filepath));
+                $realpath = $filesystem->pathname($filepath) . str_replace(['@3x', '@2x'], '', Utils::basename($filepath));
 
                 $list[$filename] = [$file, $settings];
 
@@ -898,7 +1006,9 @@ class UserObject extends FlexObject implements UserInterface, Countable
     protected function getGroups()
     {
         if (null === $this->_groups) {
-            $this->_groups = $this->getUserGroups()->select((array)$this->getProperty('groups'));
+            /** @var UserGroupIndex $groups */
+            $groups = $this->getUserGroups()->select((array)$this->getProperty('groups'));
+            $this->_groups = $groups;
         }
 
         return $this->_groups;
@@ -910,7 +1020,7 @@ class UserObject extends FlexObject implements UserInterface, Countable
     protected function getAccess(): Access
     {
         if (null === $this->_access) {
-            $this->getProperty('access');
+            $this->_access = new Access($this->getProperty('access'));
         }
 
         return $this->_access;
@@ -925,8 +1035,6 @@ class UserObject extends FlexObject implements UserInterface, Countable
         if (!$value instanceof Access) {
             $value = new Access($value);
         }
-
-        $this->_access = $value;
 
         return $value->jsonSerialize();
     }

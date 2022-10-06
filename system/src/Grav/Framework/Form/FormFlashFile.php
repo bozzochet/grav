@@ -3,14 +3,17 @@
 /**
  * @package    Grav\Framework\Form
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
 namespace Grav\Framework\Form;
 
+use Grav\Common\Security;
+use Grav\Common\Utils;
 use Grav\Framework\Psr7\Stream;
 use InvalidArgumentException;
+use JsonSerializable;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
@@ -23,8 +26,10 @@ use function sprintf;
  * Class FormFlashFile
  * @package Grav\Framework\Form
  */
-class FormFlashFile implements UploadedFileInterface, \JsonSerializable
+class FormFlashFile implements UploadedFileInterface, JsonSerializable
 {
+    /** @var string */
+    private $id;
     /** @var string */
     private $field;
     /** @var bool */
@@ -42,6 +47,7 @@ class FormFlashFile implements UploadedFileInterface, \JsonSerializable
      */
     public function __construct(string $field, array $upload, FormFlash $flash)
     {
+        $this->id = $flash->getId() ?: $flash->getUniqueId();
         $this->field = $field;
         $this->upload = $upload;
         $this->flash = $flash;
@@ -102,6 +108,11 @@ class FormFlashFile implements UploadedFileInterface, \JsonSerializable
         if ($filename) {
             $this->flash->removeFile($filename, $this->field);
         }
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     /**
@@ -175,9 +186,25 @@ class FormFlashFile implements UploadedFileInterface, \JsonSerializable
     /**
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->upload;
+    }
+
+    /**
+     * @return void
+     */
+    public function checkXss(): void
+    {
+        $tmpFile = $this->getTmpFile();
+        $mime = $this->getClientMediaType();
+        if (Utils::contains($mime, 'svg', false)) {
+            $response = Security::detectXssFromSvgFile($tmpFile);
+            if ($response) {
+                throw new RuntimeException(sprintf('SVG file XSS check failed on %s', $response));
+            }
+        }
     }
 
     /**
@@ -199,9 +226,11 @@ class FormFlashFile implements UploadedFileInterface, \JsonSerializable
     /**
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function __debugInfo()
     {
         return [
+            'id:private' => $this->id,
             'field:private' => $this->field,
             'moved:private' => $this->moved,
             'upload:private' => $this->upload,

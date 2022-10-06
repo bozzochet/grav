@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Filesystem
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -31,32 +31,34 @@ abstract class Folder
     /**
      * Recursively find the last modified time under given path.
      *
-     * @param  string $path
+     * @param array $paths
      * @return int
      */
-    public static function lastModifiedFolder($path)
+    public static function lastModifiedFolder(array $paths): int
     {
-        if (!file_exists($path)) {
-            return 0;
-        }
-
         $last_modified = 0;
 
         /** @var UniformResourceLocator $locator */
         $locator = Grav::instance()['locator'];
         $flags = RecursiveDirectoryIterator::SKIP_DOTS;
-        if ($locator->isStream($path)) {
-            $directory = $locator->getRecursiveIterator($path, $flags);
-        } else {
-            $directory = new RecursiveDirectoryIterator($path, $flags);
-        }
-        $filter  = new RecursiveFolderFilterIterator($directory);
-        $iterator = new RecursiveIteratorIterator($filter, RecursiveIteratorIterator::SELF_FIRST);
 
-        foreach ($iterator as $dir) {
-            $dir_modified = $dir->getMTime();
-            if ($dir_modified > $last_modified) {
-                $last_modified = $dir_modified;
+        foreach ($paths as $path) {
+            if (!file_exists($path)) {
+                return 0;
+            }
+            if ($locator->isStream($path)) {
+                $directory = $locator->getRecursiveIterator($path, $flags);
+            } else {
+                $directory = new RecursiveDirectoryIterator($path, $flags);
+            }
+            $filter  = new RecursiveFolderFilterIterator($directory);
+            $iterator = new RecursiveIteratorIterator($filter, RecursiveIteratorIterator::SELF_FIRST);
+
+            foreach ($iterator as $dir) {
+                $dir_modified = $dir->getMTime();
+                if ($dir_modified > $last_modified) {
+                    $last_modified = $dir_modified;
+                }
             }
         }
 
@@ -66,38 +68,40 @@ abstract class Folder
     /**
      * Recursively find the last modified time under given path by file.
      *
-     * @param string  $path
+     * @param array  $paths
      * @param string  $extensions   which files to search for specifically
      * @return int
      */
-    public static function lastModifiedFile($path, $extensions = 'md|yaml')
+    public static function lastModifiedFile(array $paths, $extensions = 'md|yaml'): int
     {
-        if (!file_exists($path)) {
-            return 0;
-        }
-
         $last_modified = 0;
 
         /** @var UniformResourceLocator $locator */
         $locator = Grav::instance()['locator'];
         $flags = RecursiveDirectoryIterator::SKIP_DOTS;
-        if ($locator->isStream($path)) {
-            $directory = $locator->getRecursiveIterator($path, $flags);
-        } else {
-            $directory = new RecursiveDirectoryIterator($path, $flags);
-        }
-        $recursive = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::SELF_FIRST);
-        $iterator = new RegexIterator($recursive, '/^.+\.'.$extensions.'$/i');
 
-        /** @var RecursiveDirectoryIterator $file */
-        foreach ($iterator as $filepath => $file) {
-            try {
-                $file_modified = $file->getMTime();
-                if ($file_modified > $last_modified) {
-                    $last_modified = $file_modified;
+        foreach($paths as $path) {
+            if (!file_exists($path)) {
+                return 0;
+            }
+            if ($locator->isStream($path)) {
+                $directory = $locator->getRecursiveIterator($path, $flags);
+            } else {
+                $directory = new RecursiveDirectoryIterator($path, $flags);
+            }
+            $recursive = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::SELF_FIRST);
+            $iterator = new RegexIterator($recursive, '/^.+\.'.$extensions.'$/i');
+
+            /** @var RecursiveDirectoryIterator $file */
+            foreach ($iterator as $file) {
+                try {
+                    $file_modified = $file->getMTime();
+                    if ($file_modified > $last_modified) {
+                        $last_modified = $file_modified;
+                    }
+                } catch (Exception $e) {
+                    Grav::instance()['log']->error('Could not process file: ' . $e->getMessage());
                 }
-            } catch (Exception $e) {
-                Grav::instance()['log']->error('Could not process file: ' . $e->getMessage());
             }
         }
 
@@ -107,28 +111,30 @@ abstract class Folder
     /**
      * Recursively md5 hash all files in a path
      *
-     * @param string $path
+     * @param array $paths
      * @return string
      */
-    public static function hashAllFiles($path)
+    public static function hashAllFiles(array $paths): string
     {
         $files = [];
 
-        if (file_exists($path)) {
-            $flags = RecursiveDirectoryIterator::SKIP_DOTS;
+        foreach ($paths as $path) {
+            if (file_exists($path)) {
+                $flags = RecursiveDirectoryIterator::SKIP_DOTS;
 
-            /** @var UniformResourceLocator $locator */
-            $locator = Grav::instance()['locator'];
-            if ($locator->isStream($path)) {
-                $directory = $locator->getRecursiveIterator($path, $flags);
-            } else {
-                $directory = new RecursiveDirectoryIterator($path, $flags);
-            }
+                /** @var UniformResourceLocator $locator */
+                $locator = Grav::instance()['locator'];
+                if ($locator->isStream($path)) {
+                    $directory = $locator->getRecursiveIterator($path, $flags);
+                } else {
+                    $directory = new RecursiveDirectoryIterator($path, $flags);
+                }
 
-            $iterator = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::SELF_FIRST);
+                $iterator = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::SELF_FIRST);
 
-            foreach ($iterator as $file) {
-                $files[] = $file->getPathname() . '?'. $file->getMTime();
+                foreach ($iterator as $file) {
+                    $files[] = $file->getPathname() . '?'. $file->getMTime();
+                }
             }
         }
 
@@ -513,7 +519,7 @@ abstract class Folder
         }
         $directories = glob($directory . '/*', GLOB_ONLYDIR);
 
-        return count($directories);
+        return $directories ? count($directories) : false;
     }
 
     /**
@@ -530,7 +536,8 @@ abstract class Folder
         }
 
         // Go through all items in filesystem and recursively remove everything.
-        $files = array_diff(scandir($folder, SCANDIR_SORT_NONE), array('.', '..'));
+        $files = scandir($folder, SCANDIR_SORT_NONE);
+        $files = $files ? array_diff($files, ['.', '..']) : [];
         foreach ($files as $file) {
             $path = "{$folder}/{$file}";
             is_dir($path) ? self::doDelete($path) : @unlink($path);

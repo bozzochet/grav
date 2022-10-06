@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Console
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -288,7 +288,7 @@ trait ConsoleTrait
     {
         $composer = Composer::getComposerExecutor();
 
-        return system($composer . ' --working-dir="'.$path.'" --no-interaction --no-dev --prefer-dist -o '. $action);
+        return system($composer . ' --working-dir=' . escapeshellarg($path) . ' --no-interaction --no-dev --prefer-dist -o '. $action);
     }
 
     /**

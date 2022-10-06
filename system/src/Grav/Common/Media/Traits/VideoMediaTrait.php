@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Media
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -40,7 +40,7 @@ trait VideoMediaTrait
     public function playsinline($status = false)
     {
         if ($status) {
-            $this->attributes['playsinline'] = true;
+            $this->attributes['playsinline'] = 'playsinline';
         } else {
             unset($this->attributes['playsinline']);
         }

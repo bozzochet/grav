@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Service
  *
- * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2022 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -97,7 +97,9 @@ class FlexServiceProvider implements ServiceProviderInterface
                 'options' => [
                     'file' => 'user',
                     'pattern' => '{FOLDER}/{KEY:2}/{KEY}/{FILE}{EXT}',
-                    'key' => 'storage_key'
+                    'key' => 'storage_key',
+                    'indexed' => true,
+                    'case_sensitive' => false
                 ],
             ];
         }
@@ -107,7 +109,9 @@ class FlexServiceProvider implements ServiceProviderInterface
                 'class' => UserFileStorage::class,
                 'options' => [
                     'pattern' => '{FOLDER}/{KEY}{EXT}',
-                    'key' => 'username'
+                    'key' => 'username',
+                    'indexed' => true,
+                    'case_sensitive' => false
                 ],
             ];
         }
