@@ -20,6 +20,11 @@ features:
         url: laboratorio_22-23/_slides/Segnale.pdf
     -
         icon: 'fa fa-file-pdf-o'
+        header: 'Amplificatore operazionale'
+        text: null
+        url: laboratorio_22-23/_slides/Operazionali.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
         header: 'Conversione A/D'
         text: null
     -
@@ -37,10 +42,6 @@ features:
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Elettronica Digitale (seconda parte)'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Amplifacatore operazionale'
         text: null
     -
         icon: 'fa fa-file-pdf-o'
