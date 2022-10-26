@@ -12,7 +12,7 @@ features:
         icon: 'fa fa-file-pdf-o'
         header: 'Test auto-valutazione'
         text: null
-        url: laboratorio_22-23/_slides/Questionario2_risposte.pdf
+        url: laboratorio_22-23/_slides/Questionario_risposte.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Segnale e DAQ'
@@ -23,6 +23,35 @@ features:
         header: 'Amplificatore operazionale'
         text: null
         url: laboratorio_22-23/_slides/Operazionali.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Montaggio LED'
+        text: null
+        url: laboratorio_22-23/_slides/MontaggioLED.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Esercitazione 0: "Vocale WhatsApp"'
+        text: null
+        url: laboratorio_22-23/_slides/Esp0_Audio.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Esercitazione 1: "Operazionali"'
+        text: null
+        url: laboratorio_22-23/_slides/Esp1_Operazionale.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Comparatore - FlashADC - LM35"'
+        text: null
+        url: laboratorio_22-23/_slides/Comparatore-FlashADC-LM35.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Esercitazione 2: "Flash ADC + LM35"'
+        text: null
+        url: laboratorio_22-23/_slides/Esp2_FlashADC-LM35.pdf
+visible: false
+---
+
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Conversione A/D'
@@ -95,6 +124,4 @@ features:
         icon: 'fa fa-file-pdf-o'
         header: 'Esercizio 4'
         text: null
-visible: false
----
-
+-->
