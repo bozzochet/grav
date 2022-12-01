@@ -5,6 +5,11 @@ class: offset-box
 features:
     -
         icon: 'fa fa-graduation-cap'
+        header: 'Gianmarco Aristei </br> (2020-2021)'
+        text: 'Valutazioni delle prestazioni di un rivelatore per fotoni di bassa energia a bordo di un CubeSat'
+        url: bachelortheses/_tesi/TesiTriennaleAristei.pdf
+    -
+        icon: 'fa fa-graduation-cap'
         header: 'Andrea Serpolla </br> (2019-2020)'
         text: 'Studio delle prestazioni di un rivelatore con sistema tracciante 4D per misure di Raggi Cosmici Carichi nello spazio'
         url: bachelortheses/_tesi/TesiTriennaleSerpolla.pdf

@@ -48,46 +48,40 @@ features:
         header: 'Esercitazione 2: "Flash ADC + LM35"'
         text: null
         url: laboratorio_22-23/_slides/Esp2_FlashADC-LM35.pdf
-visible: false
----
-
-<!---
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Conversione A/D'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Elettronica Digitale (prima parte)'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: LabWiew
-        text: null
     -
         icon: 'fa fa-file-pdf-o'
         header: Transistor
         text: null
+        url: laboratorio_22-23/_slides/Transistor.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Elettronica Digitale (prima parte)'
+        text: null
+        url: laboratorio_22-23/_slides/ElettronicaDigitale_1parte.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Elettronica Digitale (seconda parte)'
         text: null
+        url: laboratorio_22-23/_slides/ElettronicaDigitale_2parte.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Segnali periodici'
+        header: Fotodiodo
         text: null
+        url: laboratorio_22-23/_slides/FotodiodoLED.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Segnali aperiodici'
+        header: 'Esercizio 3 (Fotodiodo)'
         text: null
+        url: laboratorio_22-23/_slides/Esp3_Fotodiodo.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Banda di un segnale - Filtri'
+        header: 'Analisi segnali (parte 1) - Segnali periodici e aperiodici'
         text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Esercizio 0 (Audio)'
-        text: null
+        url: laboratorio_22-23/_slides/Analisi_Segnali_pt1.pdf
+visible: false
+---
+
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Segnali a tempo discreto'
@@ -103,25 +97,5 @@ visible: false
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esercizio 1 (Studio in frequenza di un segnale)'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Esercizio 2 (Operazionale)'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Fotodiodo e LED'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Esercizio 3 (Fotodiodo)'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Comparatore, FlashADC, TDC con FPGA e LM35'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Esercizio 4'
         text: null
 -->

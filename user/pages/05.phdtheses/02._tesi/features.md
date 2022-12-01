@@ -6,7 +6,7 @@ features:
     -
         icon: 'fa fa-graduation-cap'
         header: 'Enrico Catanzani </br> (XXXIV Ciclo)'
-        text: 'The study of high energy cosmic electrons with calorimetric experiments in space'
+        text: 'The study of high energy cosmic electrons with the DAMPE experiment in space'
         url: null
     -
         icon: 'fa fa-graduation-cap'

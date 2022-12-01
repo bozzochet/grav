@@ -2,7 +2,6 @@
 title: Bachelor-theses
 body_classes: modular
 class: standard
-features: null
 menu: BachelorTheses
 ---
 
