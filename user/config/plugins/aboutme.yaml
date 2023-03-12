@@ -23,7 +23,7 @@ social_pages:
       icon: facebook
       title: Facebook
       position: 5
-      url: 'https://www.facebook.com/matteo.duranti'
+      url:
     twitter:
       icon_type: null
       icon: twitter

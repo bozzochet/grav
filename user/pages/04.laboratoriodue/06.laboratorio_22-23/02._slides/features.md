@@ -30,12 +30,12 @@ features:
         url: laboratorio_22-23/_slides/MontaggioLED.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Esercitazione 0: "Vocale WhatsApp"'
+        header: 'Esperienza 0: "Vocale WhatsApp"'
         text: null
         url: laboratorio_22-23/_slides/Esp0_Audio.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Esercitazione 1: "Operazionali"'
+        header: 'Esperienza 1: "Operazionali"'
         text: null
         url: laboratorio_22-23/_slides/Esp1_Operazionale.pdf
     -
@@ -45,7 +45,7 @@ features:
         url: laboratorio_22-23/_slides/Comparatore-FlashADC-LM35.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Esercitazione 2: "Flash ADC + LM35"'
+        header: 'Esperienza 2: "Flash ADC + LM35"'
         text: null
         url: laboratorio_22-23/_slides/Esp2_FlashADC-LM35.pdf
     -
@@ -70,7 +70,7 @@ features:
         url: laboratorio_22-23/_slides/FotodiodoLED.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Esercizio 3 (Fotodiodo)'
+        header: 'Esperienza 3: "Fotodiodo e misura di g"'
         text: null
         url: laboratorio_22-23/_slides/Esp3_Fotodiodo.pdf
     -
@@ -78,24 +78,56 @@ features:
         header: 'Analisi segnali (parte 1) - Segnali periodici e aperiodici'
         text: null
         url: laboratorio_22-23/_slides/Analisi_Segnali_pt1.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Analisi segnali (parte 2) - Segnali a tempo discreto'
+        text: null
+        url: laboratorio_22-23/_slides/Analisi_Segnali_pt2.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'FPGA + Esperienza 4'
+        text: null
+        url: laboratorio_22-23/_slides/FPGA.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Esperienza 5: "GarageBand"'
+        text: null
+        url: laboratorio_22-23/_slides/Esp5_GarageBand.pdf
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: diapason.wav'
+        text: null
+        url: laboratorio_22-23/_slides/diapason.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: pulita_semplice.wav'
+        text: null
+        url: laboratorio_22-23/_slides/pulita_semplice.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: pulita_media.wav'
+        text: null
+        url: laboratorio_22-23/_slides/pulita_media.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: pulita_difficile.wav'
+        text: null
+        url: laboratorio_22-23/_slides/pulita_difficile.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: pulita_pezzo.wav'
+        text: null
+        url: laboratorio_22-23/_slides/pulita_pezzo.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: distorta.wav'
+        text: null
+        url: laboratorio_22-23/_slides/distorta.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: distorta_pezzo.wav'
+        text: null
+        url: laboratorio_22-23/_slides/distorta_pezzo.wav
 visible: false
 ---
 
-<!---
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Segnali a tempo discreto'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'FPGA - intro'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'FPGA - esercizi'
-        text: null
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Esercizio 1 (Studio in frequenza di un segnale)'
-        text: null
--->

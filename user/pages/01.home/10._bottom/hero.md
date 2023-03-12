@@ -32,10 +32,11 @@ twig_first: true
 </br>
 </br>
 <!--
+this is if aboutme is not working
 <div style="text-align: left">
 <h3>
     <ul>
-        <li> <a href="mailto:{{'matteo.duranti@infn.it'|safe_email}}"><i class="fa fa-envelope-o" aria-hidden="true"></i> INFN</a></li>
+        <li> <a href="mailto:{{'matteo.duranti@pg.infn.it'|safe_email}}"><i class="fa fa-envelope-o" aria-hidden="true"></i> INFN</a></li>
         <li><a href="mailto:{{'matteo.duranti@cern.ch'|safe_email}}"><i class="fa fa-envelope-o" aria-hidden="true"></i> CERN</a></li>
         <li><a href="mailto:{{'matteo.duranti@unipg.it'|safe_email}}"><i class="fa fa-envelope-o" aria-hidden="true"></i> UniPG</a></li>
         <li><a href="mailto:{{'bozzo1983@gmail.com'|safe_email}}"><i class="fa fa-envelope-o" aria-hidden="true"></i> Private or big attachments</a></li>

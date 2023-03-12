@@ -11,8 +11,105 @@ markdown:
 
 %% This BibTeX bibliography file was created using BibDesk.
 %% http://bibdesk.sourceforge.net/
-%% Created for Bozzo at 2021-06-07 10:14:10 +0200 
+%% Created for Bozzo at 2022-12-05 16:23:55 +0100 
 %% Saved with string encoding Unicode (UTF-8) 
+
+@article{bib:HVO,
+	archiveprefix = {arXiv},
+	author = {Pelosi, David and {...} and {M. Duranti} and {et al.}},
+	date-added = {2022-03-23 19:50:13 +0100},
+	date-modified = {2022-03-23 19:50:24 +0100},
+	doi = {10.1393/ncc/i2021-21097-2},
+	eprint = {2101.09366},
+	journal = {Nuovo Cim. C},
+	number = {2-3-3},
+	pages = {97},
+	primaryclass = {physics.space-ph},
+	title = {{Development of a web application for monitoring solar activity and cosmic radiation}},
+	volume = {44},
+	year = {2021},
+	bdsk-url-1 = {https://doi.org/10.1393/ncc/i2021-21097-2}}
+
+@article{bib:HVO2,
+	author = {Pelosi, David and {...} and {M. Duranti} and {et al.}},
+	date-added = {2022-03-23 19:49:41 +0100},
+	date-modified = {2022-03-23 19:49:56 +0100},
+	doi = {10.22323/1.395.1259},
+	journal = {PoS},
+	pages = {1259},
+	title = {{A web application for monitoring cosmic rays and solar activity}},
+	volume = {ICRC2021},
+	year = {2021},
+	bdsk-url-1 = {https://doi.org/10.22323/1.395.1259}}
+
+@article{bib:paper22,
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
+	collaboration = {AMS Collaboration},
+	date-modified = {2022-12-05 16:23:15 +0100},
+	doi = {10.1103/PhysRevLett.128.231102},
+	issue = {23},
+	journal = {Phys. Rev. Lett.},
+	month = {Jun},
+	numpages = {10},
+	pages = {231102},
+	publisher = {American Physical Society},
+	title = {Properties of Daily Helium Fluxes},
+	url = {https://link.aps.org/doi/10.1103/PhysRevLett.128.231102},
+	volume = {128},
+	year = {2022},
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.128.231102},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.128.231102}}
+
+@article{bib:paper21,
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
+	collaboration = {AMS Collaboration},
+	date-modified = {2022-12-05 16:22:35 +0100},
+	doi = {10.1103/PhysRevLett.127.271102},
+	issue = {27},
+	journal = {Phys. Rev. Lett.},
+	month = {Dec},
+	numpages = {8},
+	pages = {271102},
+	publisher = {American Physical Society},
+	title = {Periodicities in the Daily Proton Fluxes from 2011 to 2019 Measured by the Alpha Magnetic Spectrometer on the International Space Station from 1 to 100 GV},
+	url = {https://link.aps.org/doi/10.1103/PhysRevLett.127.271102},
+	volume = {127},
+	year = {2021},
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.127.271102},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.127.271102}}
+
+@article{bib:paper20,
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
+	collaboration = {AMS Collaboration},
+	date-modified = {2022-12-05 16:23:10 +0100},
+	doi = {10.1103/PhysRevLett.127.021101},
+	issue = {2},
+	journal = {Phys. Rev. Lett.},
+	month = {Jul},
+	numpages = {9},
+	pages = {021101},
+	publisher = {American Physical Society},
+	title = {Properties of a New Group of Cosmic Nuclei: Results from the Alpha Magnetic Spectrometer on Sodium, Aluminum, and Nitrogen},
+	url = {https://link.aps.org/doi/10.1103/PhysRevLett.127.021101},
+	volume = {127},
+	year = {2021},
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.127.021101},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.127.021101}}
+
+@article{bib:ALADInO2,
+	abstract = {A new generation magnetic spectrometer in space will open the opportunity to investigate the frontiers in direct high-energy cosmic ray measurements and to precisely measure the amount of the rare antimatter component in cosmic rays beyond the reach of current missions. We propose the concept for an Antimatter Large Acceptance Detector In Orbit (ALADInO), designed to take over the legacy of direct measurements of cosmic rays in space performed by PAMELA and AMS-02. ALADInO features technological solutions conceived to overcome the current limitations of magnetic spectrometers in space with a layout that provides an acceptance larger than 10 m2 sr. A superconducting magnet coupled to precision tracking and time-of-flight systems can provide the required matter&ndash;antimatter separation capabilities and rigidity measurement resolution with a Maximum Detectable Rigidity better than 20 TV. The inner 3D-imaging deep calorimeter, designed to maximize the isotropic acceptance of particles, allows for the measurement of cosmic rays up to PeV energies with accurate energy resolution to precisely measure features in the cosmic ray spectra. The operations of ALADInO in the Sun&ndash;Earth L2 Lagrangian point for at least 5 years would enable unique revolutionary observations with groundbreaking discovery potentials in the field of astroparticle physics by precision measurements of electrons, positrons, and antiprotons up to 10 TeV and of nuclear cosmic rays up to PeV energies, and by the possible unambiguous detection and measurement of low-energy antideuteron and antihelium components in cosmic rays.},
+	article-number = {19},
+	author = {Adriani, Oscar and {...} and {M. Duranti} and {et al.}},
+	doi = {10.3390/instruments6020019},
+	issn = {2410-390X},
+	journal = {Instruments},
+	number = {2},
+	title = {Design of an Antimatter Large Acceptance Detector In Orbit (ALADInO)},
+	url = {https://www.mdpi.com/2410-390X/6/2/19},
+	volume = {6},
+	year = {2022},
+	bdsk-url-1 = {https://www.mdpi.com/2410-390X/6/2/19},
+	bdsk-url-2 = {https://doi.org/10.3390/instruments6020019}}
 
 @article{bib:ALADInO,
 	abstract = {Multimessenger astrophysics is based on the detection, with the highest possible accuracy, of the cosmic radiation. During the last 20 years, the advent space-borne magnetic spectrometers in space (AMS-01, Pamela, AMS-02), able to measure the charged cosmic radiation separating matter from antimatter, and to provide accurate measurement of the rarest components of Cosmic Rays (CRs) to the highest possible energies, have become possible, together with the ultra-precise measurement of ordinary CRs. These developments started the era of precision Cosmic Ray physics providing access to a rich program of high-energy astrophysics addressing fundamental questions like matter-antimatter asymmetry, indirect detection for Dark Matter and the detailed study of origin, acceleration and propagation of CRs and their interactions with the interstellar medium.},
@@ -28,10 +125,11 @@ markdown:
 	ty = {JOUR},
 	url = {https://doi.org/10.1007/s10686-021-09708-w},
 	year = {2021},
-	Bdsk-Url-1 = {https://doi.org/10.1007/s10686-021-09708-w}}
+	bdsk-url-1 = {https://doi.org/10.1007/s10686-021-09708-w}}
 
-@article{Duranti_2021,
+@article{bib:Timing,
 	author = {Duranti, Matteo and {et al.}},
+	date-modified = {2022-03-23 19:48:36 +0100},
 	doi = {10.3390/instruments5020020},
 	issn = {2410-390X},
 	journal = {Instruments},
@@ -43,18 +141,7 @@ markdown:
 	url = {http://dx.doi.org/10.3390/instruments5020020},
 	volume = {5},
 	year = {2021},
-	Bdsk-Url-1 = {http://dx.doi.org/10.3390/instruments5020020}}
-
-@article{bib:HVO,
-	archiveprefix = {arXiv},
-	author = {Pelosi, David and {...} and {M. Duranti} and {et al.}},
-	eprint = {2101.09366},
-	month = {1},
-	primaryclass = {physics.space-ph},
-	title = {{Development of a web application for monitoring solar activity and cosmic radiation}},
-	url = {https://arxiv.org/abs/2101.09366},
-	year = {2021},
-	Bdsk-Url-1 = {https://arxiv.org/abs/2101.09366}}
+	bdsk-url-1 = {http://dx.doi.org/10.3390/instruments5020020}}
 
 @article{bib:DAMPENature,
 	abstract = {A direct measurement of cosmic-ray electrons and positrons with unprecedentedly high energy resolution reveals a spectral break at about 0.9 teraelectronvolts, confirming the evidence found by previous indirect measurements.},
@@ -73,7 +160,7 @@ markdown:
 	url = {https://doi.org/10.1038/nature24475},
 	volume = {552},
 	year = {2017},
-	Bdsk-Url-1 = {https://doi.org/10.1038/nature24475}}
+	bdsk-url-1 = {https://doi.org/10.1038/nature24475}}
 
 @article{bib:paper18,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -89,8 +176,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.126.081102},
 	volume = {126},
 	year = {2021},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.126.081102},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.126.081102}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.126.081102},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.126.081102}}
 
 @article{bib:paper19,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -106,8 +193,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.126.041104},
 	volume = {126},
 	year = {2021},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.126.041104},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.126.041104}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.126.041104},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.126.041104}}
 
 @article{bib:AMSPR2,
 	abstract = {The Alpha Magnetic Spectrometer (AMS) is a precision particle physics detector on the International Space Station (ISS) conducting a unique, long-duration mission of fundamental physics research in space. The physics objectives include the precise studies of the origin of dark matter, antimatter, and cosmic rays as well as the exploration of new phenomena. Following a 16-year period of construction and testing, and a precursor flight on the Space Shuttle, AMS was installed on the ISS on May 19, 2011. In this report we present results based on 120 billion charged cosmic ray events up to multi-TeV energies. This includes the fluxes of positrons, electrons, antiprotons, protons, and nuclei. These results provide unexpected information, which cannot be explained by the current theoretical models. The accuracy and characteristics of the data, simultaneously from many different types of cosmic rays, provide unique input to the understanding of origins, acceleration, and propagation of cosmic rays.},
@@ -124,8 +211,8 @@ markdown:
 	url = {http://www.sciencedirect.com/science/article/pii/S0370157320303434},
 	volume = {894},
 	year = {2021},
-	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0370157320303434},
-	Bdsk-Url-2 = {https://doi.org/10.1016/j.physrep.2020.09.003}}
+	bdsk-url-1 = {http://www.sciencedirect.com/science/article/pii/S0370157320303434},
+	bdsk-url-2 = {https://doi.org/10.1016/j.physrep.2020.09.003}}
 
 @article{bib:TIC_JoI,
 	abstract = {A multi-messenger, space-based cosmic ray detector for gamma rays and charged particles poses several design   challenges due to the different instrumental requirements for the two kind of particles. Gamma-ray detection requires layers of high Z   materials for photon conversion and a tracking device with a long lever arm to achieve the necessary angular resolution to separate point   sources; on the contrary, charge measurements for atomic nuclei requires a thin detector in order to avoid unwanted fragmentation, and a   shallow instrument so to maximize the geometric factor. In this paper, a novel tracking approach for gamma rays which tries to reconcile   these two conflicting requirements is presented. The proposal is based on the Tracker-In-Calorimeter (TIC) design that relies on a   highly-segmented calorimeter to track the incident gamma ray by sampling the lateral development of the electromagnetic shower at different   depths. The effectiveness of this approach has been studied with Monte Carlo simulations and has been validated with test beam data of a   detector prototype.},
@@ -140,8 +227,8 @@ markdown:
 	url = {https://doi.org/10.1088%2F1748-0221%2F15%2F09%2Fp09034},
 	volume = {15},
 	year = 2020,
-	Bdsk-Url-1 = {https://doi.org/10.1088%2F1748-0221%2F15%2F09%2Fp09034},
-	Bdsk-Url-2 = {https://doi.org/10.1088/1748-0221/15/09/p09034}}
+	bdsk-url-1 = {https://doi.org/10.1088%2F1748-0221%2F15%2F09%2Fp09034},
+	bdsk-url-2 = {https://doi.org/10.1088/1748-0221/15/09/p09034}}
 
 @inproceedings{bib:PAN_IEEE,
 	author = {Ambrosi, Giovanni and {...} and {M. Duranti} and {et al.}},
@@ -154,7 +241,7 @@ markdown:
 	title = {{The Penetrating particle ANalyzer (PAN) instrument for measurements of low energy cosmic rays}},
 	volume = {63},
 	year = {2019},
-	Bdsk-Url-1 = {https://doi.org/10.1109/NSS/MIC42101.2019.9059946}}
+	bdsk-url-1 = {https://doi.org/10.1109/NSS/MIC42101.2019.9059946}}
 
 @article{bib:PAN,
 	archiveprefix = {arXiv},
@@ -167,10 +254,10 @@ markdown:
 	title = {{Penetrating particle ANalyzer (PAN)}},
 	volume = {63},
 	year = {2019},
-	Bdsk-Url-1 = {https://doi.org/10.1016/j.asr.2019.01.012}}
+	bdsk-url-1 = {https://doi.org/10.1016/j.asr.2019.01.012}}
 
 @article{bib:PreselDB,
-	author = {{Duranti, Matteo} and {et al.}},
+	author = {M. Duranti and {et al.}},
 	doi = {10.1051/epjconf/201921404030},
 	journal = {EPJ Web Conf.},
 	pages = {04030},
@@ -178,7 +265,7 @@ markdown:
 	url = {https://doi.org/10.1051/epjconf/201921404030},
 	volume = 214,
 	year = 2019,
-	Bdsk-Url-1 = {https://doi.org/10.1051/epjconf/201921404030}}
+	bdsk-url-1 = {https://doi.org/10.1051/epjconf/201921404030}}
 
 @article{bib:DODAS,
 	author = {D. Spiga and {...} and {M. Duranti} and {et al.}},
@@ -188,7 +275,7 @@ markdown:
 	title = {DODAS: How to effectively exploit heterogeneous clouds for scientific computations},
 	volume = {327},
 	year = {2018},
-	Bdsk-Url-1 = {https://doi.org/10.22323/1.327.0024}}
+	bdsk-url-1 = {https://doi.org/10.22323/1.327.0024}}
 
 @article{bib:OpenStackSSDC,
 	author = {M. Mariotti and {...} and {M. Duranti} and {et al.}},
@@ -198,7 +285,7 @@ markdown:
 	title = {Harvesting dispersed computational resources with OpenStack: a Cloud infrastructure for the Computational Science community},
 	volume = {327},
 	year = {2018},
-	Bdsk-Url-1 = {https://doi.org/10.22323/1.327.0009}}
+	bdsk-url-1 = {https://doi.org/10.22323/1.327.0009}}
 
 @article{bib:DAMPECharge,
 	abstract = {The DArk Matter Particle Explorer (DAMPE) can detect electrons and photons from 5 GeV to 10 TeV and charged nuclei from a few tens of GeV to 100 TeV. The silicon--tungstentracker (STK), which is composed of 768 singled-sided silicon microstrip detectors, is one of four subdetectors in DAMPE providing photon conversion, track reconstruction, and charge identification for relativistic charged particles. This paper focuses on the charge identification performance of the STK detector. The charge response depends mainly on the incident angle and the impact position of the incoming particle. To improve the charge resolution, a reconstruction algorithm to correct for these parameters was tested during a test beam campaign conducted with a high-intensity ion beam at CERN. This algorithm was successfully applied to the ion test beam and the ion charge of Z=4∼10 and was successfully reconstructed for both normal and 9$\,^{\circ}$incident beams.},
@@ -212,8 +299,8 @@ markdown:
 	url = {http://www.sciencedirect.com/science/article/pii/S016890021930484X},
 	volume = {935},
 	year = {2019},
-	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S016890021930484X},
-	Bdsk-Url-2 = {https://doi.org/10.1016/j.nima.2019.04.036}}
+	bdsk-url-1 = {http://www.sciencedirect.com/science/article/pii/S016890021930484X},
+	bdsk-url-2 = {https://doi.org/10.1016/j.nima.2019.04.036}}
 
 @article{bib:AMS100,
 	abstract = {The next generation magnetic spectrometer in space, AMS-100, is designed to have a geometrical acceptance of 100 m 2 sr and to be operated for at least ten years at the Sun--Earth Lagrange Point 2. Compared to existing experiments, it will improve the sensitivity for the observation of new phenomena in cosmic rays, and in particular in cosmic antimatter, by at least a factor of 1000. The magnet design is based on high temperature superconductor tapes, which allow the construction of a thin solenoid with a homogeneous magnetic field of 1 Tesla inside. The inner volume is instrumented with a silicon tracker reaching a maximum detectable rigidity of 100 TV and a calorimeter system that is 70 radiation lengths deep, equivalent to four nuclear interaction lengths, which extends the energy reach for cosmic-ray nuclei up to the PeV scale, i.e. beyond the cosmic-ray knee. Covering most of the sky continuously, AMS-100 will detect high-energy gamma-rays in the calorimeter system and by pair conversion in the thin solenoid, reconstructed with excellent angular resolution in the silicon tracker.},
@@ -227,8 +314,8 @@ markdown:
 	url = {http://www.sciencedirect.com/science/article/pii/S0168900219310848},
 	volume = {944},
 	year = {2019},
-	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900219310848},
-	Bdsk-Url-2 = {https://doi.org/10.1016/j.nima.2019.162561}}
+	bdsk-url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900219310848},
+	bdsk-url-2 = {https://doi.org/10.1016/j.nima.2019.162561}}
 
 @article{bib:paper17,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -240,7 +327,7 @@ markdown:
 	title = {Properties of Neon, Magnesium, and Silicon Primary Cosmic Rays Results from the Alpha Magnetic Spectrometer},
 	volume = {124},
 	year = {2020},
-	Bdsk-Url-1 = {https://doi.org/10.1103/PhysRevLett.124.211102}}
+	bdsk-url-1 = {https://doi.org/10.1103/PhysRevLett.124.211102}}
 
 @article{bib:paper16,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -256,8 +343,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.123.181102},
 	volume = {123},
 	year = {2019},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.123.181102},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.123.181102}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.123.181102},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.123.181102}}
 
 @article{bib:paper15,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -273,8 +360,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.122.101101},
 	volume = {122},
 	year = {2019},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.122.101101},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.122.101101}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.122.101101},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.122.101101}}
 
 @article{bib:CaloCube_proceeding,
 	abstract = {Given the good performances in terms of geometrical acceptance and energy resolution, calorimeters are the best suited detectors to measure high energy cosmic rays directly in space. However, in order to exploit this potential, the design of calorimeters must be carefully optimized to take into account all limitations related to space missions, due mainly to the mass of the experimental apparatus. CaloCube is a three years R&D project, approved and financed by INFN in 2014, aiming to optimize the design of a space-borne calorimeter by the use of a cubic, homogeneous and isotropic geometry. In order to maximize detector performances with respect to the total mass of the apparatus, comparative studies on different scintillating materials, different sizes of crystals and different spacings among them have been performed making use of Monte Carlo simulations. In parallel to this activity, several prototypes instrumented with CsI:Tl cubic crystals have been constructed and tested with particle beams (muons, electrons, protons and ions). Both simulations and prototypes showed that the CaloCube design leads to a good particle energy resolution ( 3:5 m2 sr for electromagnetic showers, > 2:5 m2 sr for hadronic showers). Thanks to these performances, in 5 years of operation it would be possible to measure the ux of electrons+positrons up to some tens of TeV and the uxes of protons and nuclei up to some units of PeV/nucleon, hence extending these measurements by at least one order of magnitude in energy compared to the experiments currently operating in space.},
@@ -290,11 +377,11 @@ markdown:
 	url = {https://doi.org/10.1088%2F1742-6596%2F1162%2F1%2F012042},
 	volume = {1162},
 	year = 2019,
-	Bdsk-Url-1 = {https://doi.org/10.1088%2F1742-6596%2F1162%2F1%2F012042},
-	Bdsk-Url-2 = {https://doi.org/10.1088/1742-6596/1162/1/012042}}
+	bdsk-url-1 = {https://doi.org/10.1088%2F1742-6596%2F1162%2F1%2F012042},
+	bdsk-url-2 = {https://doi.org/10.1088/1742-6596/1162/1/012042}}
 
 @article{bib:RICAP2018,
-	author = {{Duranti, Matteo}},
+	author = {M. Duranti},
 	date-added = {2019-05-17 11:31:43 +0200},
 	date-modified = {2019-05-17 11:32:01 +0200},
 	doi = {10.1051/epjconf/201920901014},
@@ -304,7 +391,7 @@ markdown:
 	url = {https://doi.org/10.1051/epjconf/201920901014},
 	volume = 209,
 	year = 2019,
-	Bdsk-Url-1 = {https://doi.org/10.1051/epjconf/201920901014}}
+	bdsk-url-1 = {https://doi.org/10.1051/epjconf/201920901014}}
 
 @article{bib:paper14,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -320,8 +407,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.122.041102},
 	volume = {122},
 	year = {2019},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.122.041102},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.122.041102}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.122.041102},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.122.041102}}
 
 @article{bib:TIC_proceeding,
 	author = {Bigongiari, Gabriele and {...} and {M. Duranti} and {et al.}},
@@ -333,7 +420,7 @@ markdown:
 	title = {A New Approach to Calorimetry in Space-Based Experiments for High-Energy Cosmic Rays},
 	volume = {5},
 	year = {2019},
-	Bdsk-Url-1 = {https://doi.org/10.3390/universe5030072}}
+	bdsk-url-1 = {https://doi.org/10.3390/universe5030072}}
 
 @article{bib:DAMPETrackerAlignment,
 	abstract = {The DArk Matter Particle Explorer (DAMPE) is a space-borne particle detector designed to probe electrons and gamma-rays in the few GeV to 10 TeV energy range, as well as cosmic-ray proton and nuclei components between 10 GeV and 100 TeV. The silicon--tungsten tracker--converter is a crucial component of DAMPE. It allows the direction of incoming photons converting into electron--positron pairs to be estimated, and the trajectory and charge (Z) of cosmic-ray particles to be identified. It consists of 768 silicon micro-strip sensors assembled in 6 double layers with a total active area of 6.6 m2. Silicon planes are interleaved with three layers of tungsten plates, resulting in about one radiation length of material in the tracker. Internal alignment parameters of the tracker have been determined on orbit, with non-showering protons and helium nuclei. We describe the alignment procedure and present the position resolution and alignment stability measurements.},
@@ -347,8 +434,8 @@ markdown:
 	url = {http://www.sciencedirect.com/science/article/pii/S0168900218302936},
 	volume = {893},
 	year = {2018},
-	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900218302936},
-	Bdsk-Url-2 = {https://doi.org/10.1016/j.nima.2018.02.105}}
+	bdsk-url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900218302936},
+	bdsk-url-2 = {https://doi.org/10.1016/j.nima.2018.02.105}}
 
 @article{bib:DAMPETrackerNIM,
 	author = {A. Tykhonov and {...} and {M. Duranti} and {et al.}},
@@ -362,8 +449,8 @@ markdown:
 	url = {http://www.sciencedirect.com/science/article/pii/S0168900218307575},
 	volume = {924},
 	year = {2019},
-	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900218307575},
-	Bdsk-Url-2 = {https://doi.org/10.1016/j.nima.2018.06.036}}
+	bdsk-url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900218307575},
+	bdsk-url-2 = {https://doi.org/10.1016/j.nima.2018.06.036}}
 
 @article{bib:paper13,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -379,8 +466,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051103},
 	volume = {121},
 	year = {2018},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051103},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.121.051103}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051103},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.121.051103}}
 
 @article{bib:paper12,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -396,8 +483,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051101},
 	volume = {121},
 	year = {2018},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051101},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.121.051101}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051101},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.121.051101}}
 
 @article{bib:paper11,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -413,8 +500,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051102},
 	volume = {121},
 	year = {2018},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051102},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.121.051102}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.121.051102},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.121.051102}}
 
 @article{bib:paper10,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -430,8 +517,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.120.021101},
 	volume = {120},
 	year = {2018},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.120.021101},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.120.021101}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.120.021101},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.120.021101}}
 
 @article{bib:paper9,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -447,8 +534,8 @@ markdown:
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.119.251101},
 	volume = {119},
 	year = {2017},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.119.251101},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.119.251101}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.119.251101},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.119.251101}}
 
 @article{bib:HERDICRC2,
 	author = {Dong, Yongwei and {...} and {M. Duranti} and {et al.}},
@@ -461,7 +548,7 @@ markdown:
 	title = {{A novel 3-D calorimeter for the High Energy cosmic-Radiation Detection (HERD) Facility onboard China's Future Space Station}},
 	volume = {301 - ICRC2017},
 	year = {2018},
-	Bdsk-Url-1 = {https://doi.org/10.22323/1.301.0253}}
+	bdsk-url-1 = {https://doi.org/10.22323/1.301.0253}}
 
 @article{bib:HERDICRC1,
 	author = {Zhang, Shuang-Nan and {...} and {M. Duranti} and {et al.}},
@@ -474,7 +561,7 @@ markdown:
 	title = {{Introduction to the High Energy cosmic-Radiation Detection (HERD) Facility onboard China's Future Space Station}},
 	volume = {301 - ICRC2017},
 	year = {2018},
-	Bdsk-Url-1 = {https://doi.org/10.22323/1.301.1077}}
+	bdsk-url-1 = {https://doi.org/10.22323/1.301.1077}}
 
 @article{bib:paper8,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -492,8 +579,8 @@ markdown:
 	url = {http://link.aps.org/doi/10.1103/PhysRevLett.117.231102},
 	volume = {117},
 	year = {2016},
-	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.117.231102},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.117.231102}}
+	bdsk-url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.117.231102},
+	bdsk-url-2 = {http://dx.doi.org/10.1103/PhysRevLett.117.231102}}
 
 @inproceedings{bib:HERDBT,
 	abstract = {
@@ -508,7 +595,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1117/12.2231804},
 	volume = {9905},
 	year = {2016},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1117/12.2231804}}
+	bdsk-url-1 = {http://dx.doi.org/10.1117/12.2231804}}
 
 @article{bib:DAMPEmission,
 	author = {J. Chang and {...} and {M. Duranti} and {et al.}},
@@ -521,8 +608,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://www.sciencedirect.com/science/article/pii/S0927650517300841},
 	volume = {95},
 	year = {2017},
-	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0927650517300841},
-	Bdsk-Url-2 = {https://doi.org/10.1016/j.astropartphys.2017.08.005}}
+	bdsk-url-1 = {http://www.sciencedirect.com/science/article/pii/S0927650517300841},
+	bdsk-url-2 = {https://doi.org/10.1016/j.astropartphys.2017.08.005}}
 
 @article{bib:DAMPETracker2,
 	author = {Gallo, Valentina and {...} and {M. Duranti} and {et al.}},
@@ -535,7 +622,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	title = {{The DAMPE silicon tungsten tracker}},
 	volume = {287 - Vertex2016},
 	year = {2017},
-	Bdsk-Url-1 = {https://doi.org/10.22323/1.287.0010}}
+	bdsk-url-1 = {https://doi.org/10.22323/1.287.0010}}
 
 @article{bib:DAMPETracker,
 	author = {P. Azzarello and {...} and {M. Duranti} and {et al.}},
@@ -548,7 +635,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1016/j.nima.2016.02.077},
 	volume = {831},
 	year = {2016},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.nima.2016.02.077}}
+	bdsk-url-1 = {http://dx.doi.org/10.1016/j.nima.2016.02.077}}
 
 @article{bib:ICRC2015_DAMPETrackerWu,
 	author = {Wu, X. and {...} and {M. Duranti} and {et al.}},
@@ -561,8 +648,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {https://pos.sissa.it/236/1192/},
 	volume = {236},
 	year = 2016,
-	Bdsk-Url-1 = {https://pos.sissa.it/236/1192/},
-	Bdsk-Url-2 = {https://doi.org/10.22323/1.236.1192}}
+	bdsk-url-1 = {https://pos.sissa.it/236/1192/},
+	bdsk-url-2 = {https://doi.org/10.22323/1.236.1192}}
 
 @article{bib:ICRC2015_DAMPETrackerGallo,
 	author = {Gallo, V. and {...} and {M. Duranti} and {et al.}},
@@ -575,8 +662,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {https://pos.sissa.it/236/1199/},
 	volume = {236},
 	year = 2016,
-	Bdsk-Url-1 = {https://pos.sissa.it/236/1199/},
-	Bdsk-Url-2 = {https://doi.org/10.22323/1.236.1199}}
+	bdsk-url-1 = {https://pos.sissa.it/236/1199/},
+	bdsk-url-2 = {https://doi.org/10.22323/1.236.1199}}
 
 @article{bib:paper7,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -592,8 +679,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {https://link.aps.org/doi/10.1103/PhysRevLett.117.091103},
 	volume = {117},
 	year = {2016},
-	Bdsk-Url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.117.091103},
-	Bdsk-Url-2 = {https://doi.org/10.1103/PhysRevLett.117.091103}}
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.117.091103},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.117.091103}}
 
 @article{bib:paper6,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -609,8 +696,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://link.aps.org/doi/10.1103/PhysRevLett.115.211101},
 	volume = {115},
 	year = {2015},
-	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.115.211101},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.115.211101}}
+	bdsk-url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.115.211101},
+	bdsk-url-2 = {http://dx.doi.org/10.1103/PhysRevLett.115.211101}}
 
 @article{bib:paper5,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -626,8 +713,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://link.aps.org/doi/10.1103/PhysRevLett.114.171103},
 	volume = {114},
 	year = {2015},
-	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.114.171103},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.114.171103}}
+	bdsk-url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.114.171103},
+	bdsk-url-2 = {http://dx.doi.org/10.1103/PhysRevLett.114.171103}}
 
 @article{bib:paper4,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -643,8 +730,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://link.aps.org/doi/10.1103/PhysRevLett.113.221102},
 	volume = {113},
 	year = {2014},
-	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.113.221102},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.113.221102}}
+	bdsk-url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.113.221102},
+	bdsk-url-2 = {http://dx.doi.org/10.1103/PhysRevLett.113.221102}}
 
 @article{bib:paper3,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -660,8 +747,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://link.aps.org/doi/10.1103/PhysRevLett.113.121102},
 	volume = {113},
 	year = {2014},
-	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.113.121102},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.113.121102}}
+	bdsk-url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.113.121102},
+	bdsk-url-2 = {http://dx.doi.org/10.1103/PhysRevLett.113.121102}}
 
 @article{bib:paper2,
 	author = {Accardo, L. and {...} and {M. Duranti} and {et al.}},
@@ -677,8 +764,8 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://link.aps.org/doi/10.1103/PhysRevLett.113.121101},
 	volume = {113},
 	year = {2014},
-	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.113.121101},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1103/PhysRevLett.113.121101}}
+	bdsk-url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.113.121101},
+	bdsk-url-2 = {http://dx.doi.org/10.1103/PhysRevLett.113.121101}}
 
 @article{bib:paper1,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
@@ -695,34 +782,34 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1103/PhysRevLett.110.141102},
 	volume = {110},
 	year = {2013},
-	Bdsk-Url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.110.141102}}
+	bdsk-url-1 = {http://link.aps.org/doi/10.1103/PhysRevLett.110.141102}}
 
 @unpublished{bib:note1,
-	author = {M.Duranti and {et al.}},
+	author = {M. Duranti and {et al.}},
 	month = 7,
 	note = {\textbf{AMS Note 2014-06-09}},
 	title = {AMS-02 $e^+$ + $e^-$ flux measurement: part 1 - signal selection},
 	url = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(1).pdf},
 	year = 2014,
-	Bdsk-Url-1 = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(1).pdf}}
+	bdsk-url-1 = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(1).pdf}}
 
 @unpublished{bib:note2,
-	author = {M.Duranti and {et al.}},
+	author = {M. Duranti and {et al.}},
 	month = 7,
 	note = {\textbf{AMS Note 2014-06-09}},
 	title = {AMS-02 $e^+$ + $e^-$ flux measurement: part 2 - detector acceptance and efficiencies},
 	url = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(2).pdf},
 	year = 2014,
-	Bdsk-Url-1 = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(2).pdf}}
+	bdsk-url-1 = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(2).pdf}}
 
 @unpublished{bib:note3,
-	author = {M.Duranti and {et al.}},
+	author = {M. Duranti and {et al.}},
 	month = 7,
 	note = {\textbf{AMS Note 2014-06-09}},
 	title = {AMS-02 $e^+$ + $e^-$ flux measurement: part 3 - flux evaluation},
 	url = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(3).pdf},
 	year = 2014,
-	Bdsk-Url-1 = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(3).pdf}}
+	bdsk-url-1 = {http://ams.cern.ch/AMS/Reports/AMSnotes2014/AMSnote-2014_06_09_(3).pdf}}
 
 @article{bib:IsotopicComposition,
 	author = {M. Aguilar and {...} and {M. Duranti} and {et al.}},
@@ -735,7 +822,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1088/0004-637X/736/2/105},
 	volume = 736,
 	year = 2011,
-	Bdsk-Url-1 = {http://dx.medra.org/10.1088/0004-637X/736/2/105}}
+	bdsk-url-1 = {http://dx.medra.org/10.1088/0004-637X/736/2/105}}
 
 @article{bib:RelativeComposition,
 	author = {M. Aguilar and {...} and {M. Duranti} and {et al.}},
@@ -748,7 +835,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1088/0004-637X/724/1/329},
 	volume = {724 and Number 1},
 	year = 2010,
-	Bdsk-Url-1 = {http://dx.medra.org/10.1088/0004-637X/724/1/329}}
+	bdsk-url-1 = {http://dx.medra.org/10.1088/0004-637X/724/1/329}}
 
 @article{bib:TrackerAlignment,
 	author = {B. Alpat and {...} and {M. Duranti} and {et al.}},
@@ -761,7 +848,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1016/j.nima.2009.11.065},
 	volume = {613 and Issue 2},
 	year = 2010,
-	Bdsk-Url-1 = {http://dx.medra.org/10.1016/j.nima.2009.11.065}}
+	bdsk-url-1 = {http://dx.medra.org/10.1016/j.nima.2009.11.065}}
 
 @article{bib:TrackerUpgrade,
 	author = {K. L{\"u}belsmeyer and {...} and {M. Duranti} and {et al.}},
@@ -775,10 +862,10 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1016/j.nima.2011.06.051},
 	volume = 654,
 	year = 2011,
-	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900211011752}}
+	bdsk-url-1 = {http://www.sciencedirect.com/science/article/pii/S0168900211011752}}
 
 @inproceedings{bib:RICAP2016,
-	author = {{Duranti, Matteo}},
+	author = {Duranti, Matteo},
 	booktitle = {{RICAP2016}},
 	doi = {10.1051/epjconf/201713602004},
 	journal = {EPJ Web Conf.},
@@ -787,7 +874,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {https://doi.org/10.1051/epjconf/201713602004},
 	volume = 136,
 	year = 2017,
-	Bdsk-Url-1 = {https://doi.org/10.1051/epjconf/201713602004}}
+	bdsk-url-1 = {https://doi.org/10.1051/epjconf/201713602004}}
 
 @inproceedings{bib:Moriond2014,
 	author = {Duranti, M.},
@@ -797,7 +884,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	title = {{The AMS-02 detector after 1000 days on the international space station}},
 	url = {http://inspirehep.net/record/1338142/files/Pages_from_C14-03-15--1_169.pdf},
 	year = {2014},
-	Bdsk-Url-1 = {http://inspirehep.net/record/1338142/files/Pages_from_C14-03-15--1_169.pdf}}
+	bdsk-url-1 = {http://inspirehep.net/record/1338142/files/Pages_from_C14-03-15--1_169.pdf}}
 
 @inproceedings{bib:IFAE13,
 	author = {Duranti, M.},
@@ -811,7 +898,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	title = {{AMS-02 - Status and first results}},
 	url = {http://dx.doi.org/10.1393/ncc/i2014-11682-9},
 	year = {2014},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1393/ncc/i2014-11682-9}}
+	bdsk-url-1 = {http://dx.doi.org/10.1393/ncc/i2014-11682-9}}
 
 @inproceedings{bib:RD11,
 	author = {Duranti, Matteo},
@@ -823,7 +910,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	title = {{The AMS-02 Silicon Tracker status}},
 	url = {http://inspirehep.net/record/1206749/files/RD11_011.pdf},
 	year = {2011},
-	Bdsk-Url-1 = {http://inspirehep.net/record/1206749/files/RD11_011.pdf}}
+	bdsk-url-1 = {http://inspirehep.net/record/1206749/files/RD11_011.pdf}}
 
 @inproceedings{bib:Vertex2012,
 	author = {Duranti, Matteo},
@@ -835,7 +922,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	title = {{The AMS-02 Silicon Tracker after 500 days in space}},
 	url = {http://inspirehep.net/record/1247108/files/Vertex\%202012_052.pdf},
 	year = {2013},
-	Bdsk-Url-1 = {http://inspirehep.net/record/1247108/files/Vertex%5C%202012_052.pdf}}
+	bdsk-url-1 = {http://inspirehep.net/record/1247108/files/Vertex%5C%202012_052.pdf}}
 
 @inproceedings{bib:ICRC2013TrackerAlignment,
 	adsnote = {Provided by the SAO/NASA Astrophysics Data System},
@@ -900,7 +987,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://pos.sissa.it/archive/conferences/236/273/ICRC2015\_273.pdf},
 	volume = {ICRC2015},
 	year = {2015},
-	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/273/ICRC2015%5C_273.pdf}}
+	bdsk-url-1 = {http://pos.sissa.it/archive/conferences/236/273/ICRC2015%5C_273.pdf}}
 
 @inproceedings{bib:ICRC2015Fiandra,
 	author = {E. Fiandrini and {...} and {M. Duranti} and {et al.}},
@@ -912,7 +999,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://pos.sissa.it/archive/conferences/236/095/ICRC2015\_095.pdf},
 	volume = {ICRC2015},
 	year = {2015},
-	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/095/ICRC2015%5C_095.pdf}}
+	bdsk-url-1 = {http://pos.sissa.it/archive/conferences/236/095/ICRC2015%5C_095.pdf}}
 
 @inproceedings{bib:ICRC2015Grandi,
 	author = {D. Grandi and {...} and {M. Duranti} and {et al.}},
@@ -924,7 +1011,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://pos.sissa.it/archive/conferences/236/116/ICRC2015\_116.pdf},
 	volume = {ICRC2015},
 	year = {2015},
-	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/116/ICRC2015%5C_116.pdf}}
+	bdsk-url-1 = {http://pos.sissa.it/archive/conferences/236/116/ICRC2015%5C_116.pdf}}
 
 @inproceedings{bib:ICRC2015Vitillo,
 	author = {G. Ambrosi and {...} and {M. Duranti} and {et al.}},
@@ -936,7 +1023,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://pos.sissa.it/archive/conferences/236/429/ICRC2015\_429.pdf},
 	volume = {ICRC2015},
 	year = {2015},
-	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/429/ICRC2015%5C_429.pdf}}
+	bdsk-url-1 = {http://pos.sissa.it/archive/conferences/236/429/ICRC2015%5C_429.pdf}}
 
 @inproceedings{bib:ICRC2015Qin,
 	author = {G. Ambrosi and {...} and {M. Duranti} and {et al.}},
@@ -948,7 +1035,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://pos.sissa.it/archive/conferences/236/690/ICRC2015\_690.pdf},
 	volume = {ICRC2015},
 	year = {2015},
-	Bdsk-Url-1 = {http://pos.sissa.it/archive/conferences/236/690/ICRC2015%5C_690.pdf}}
+	bdsk-url-1 = {http://pos.sissa.it/archive/conferences/236/690/ICRC2015%5C_690.pdf}}
 
 @inproceedings{bib:CHEP2015,
 	author = {D'Urso, Domenico and {...} and {M. Duranti} and {et al.}},
@@ -961,7 +1048,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1088/1742-6596/664/7/072016},
 	volume = {664},
 	year = {2015},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1088/1742-6596/664/7/072016}}
+	bdsk-url-1 = {http://dx.doi.org/10.1088/1742-6596/664/7/072016}}
 
 @inproceedings{bib:CHEP2015Sapunenko,
 	abstract = {Data management constitutes one of the major challenges that a geographically- distributed e-Infrastructure has to face, especially when remote data access is involved. We discuss an integrated solution which enables transparent and efficient access to on-line and near-line data through high latency networks. The solution is based on the joint use of the General Parallel File System (GPFS) and of the Tivoli Storage Manager (TSM). Both products, developed by IBM, are well known and extensively used in the HEP computing community. Owing to a new feature introduced in GPFS 3.5, so-called Active File Management (AFM), the definition of a single, geographically-distributed namespace, characterised by automated data flow management between different locations, becomes possible. As a practical example, we present the implementation of AFM-based remote data access between two data centres located in Bologna and Rome, demonstrating the validity of the solution for the use case of the AMS experiment, an astro-particle experiment supported by the INFN CNAF data centre with the large disk space requirements (more than 1.5 PB).},
@@ -974,7 +1061,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://stacks.iop.org/1742-6596/664/i=4/a=042047},
 	volume = {664},
 	year = {2015},
-	Bdsk-Url-1 = {http://stacks.iop.org/1742-6596/664/i=4/a=042047}}
+	bdsk-url-1 = {http://stacks.iop.org/1742-6596/664/i=4/a=042047}}
 
 @article{bib:MultipleVolumeReflection,
 	author = {W. Scandale and {...} and {M. Duranti} and {et al.}},
@@ -986,7 +1073,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1103/PhysRevLett.102.084801},
 	volume = 102,
 	year = 2009,
-	Bdsk-Url-1 = {http://dx.medra.org/10.1103/PhysRevLett.102.084801}}
+	bdsk-url-1 = {http://dx.medra.org/10.1103/PhysRevLett.102.084801}}
 
 @article{bib:RadiationFromVolumeReflection,
 	author = {W. Scandale and {...} and {M. Duranti} and {et al.}},
@@ -998,7 +1085,7 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1103/PhysRevA.79.012903},
 	volume = 79,
 	year = 2009,
-	Bdsk-Url-1 = {http://dx.medra.org/10.1103/PhysRevA.79.012903}}
+	bdsk-url-1 = {http://dx.medra.org/10.1103/PhysRevA.79.012903}}
 
 @article{bib:VolumeReflection,
 	author = {W. Scandale and {...} and {M. Duranti} and {et al.}},
@@ -1010,6 +1097,6 @@ The High Energy cosmic-Radiation Detection (HERD) facility is one of several spa
 	url = {http://dx.doi.org/10.1103/PhysRevLett.101.234801},
 	volume = 101,
 	year = 2008,
-	Bdsk-Url-1 = {http://dx.medra.org/10.1103/PhysRevLett.101.234801}}
+	bdsk-url-1 = {http://dx.medra.org/10.1103/PhysRevLett.101.234801}}
 
 [/bibtexify]
