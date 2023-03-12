@@ -11,8 +11,25 @@ markdown:
 
 %% This BibTeX bibliography file was created using BibDesk.
 %% http://bibdesk.sourceforge.net/
-%% Created for Bozzo at 2022-12-05 16:23:55 +0100 
+%% Created for Bozzo at 2023-03-12 08:26:14 +0100 
 %% Saved with string encoding Unicode (UTF-8) 
+
+@article{bib:TIC_proceeding2,
+	abstract = {A space-based detector dedicated to measurements of &gamma;-rays and charged particles has to achieve a balance between different instrumental requirements. A good angular resolution is necessary for the &gamma;-rays, whereas an excellent geometric factor is needed for the charged particles. The tracking reference technique of &gamma;-ray physics is based on a pair-conversion telescope made of passive material (e.g., tungsten) coupled with sensitive layers (e.g., silicon microstrip). However, this kind of detector has a limited acceptance because of the large lever arm between the active layers, needed to improve the track reconstruction capability. Moreover, the passive material can induce fragmentation of nuclei, thus worsening charge reconstruction performances. The Tracker-In-Calorimeter (TIC) project aims to solve all these drawbacks. In the TIC proposal, the silicon sensors are moved inside a highly-segmented isotropic calorimeter with a couple of external scintillators dedicated to charge reconstruction. In principle, this configuration has a good geometrical factor, and the angle of the &gamma;-rays can be precisely reconstructed from the lateral profile of the electromagnetic shower sampled, at different depths in the calorimeter, by silicon strips. The effectiveness of this approach has been studied with Monte Carlo simulations and validated with beam test data of a small prototype.},
+	article-number = {52},
+	author = {Bigongiari, Gabriele and {...} and {M. Duranti} and {et al.}},
+	date-added = {2023-03-12 08:25:29 +0100},
+	date-modified = {2023-03-12 08:25:51 +0100},
+	doi = {10.3390/instruments6040052},
+	issn = {2410-390X},
+	journal = {Instruments},
+	number = {4},
+	title = {Tracker-in-Calorimeter (TIC) Project: A Calorimetric New Solution for Space Experiments},
+	url = {https://www.mdpi.com/2410-390X/6/4/52},
+	volume = {6},
+	year = {2022},
+	bdsk-url-1 = {https://www.mdpi.com/2410-390X/6/4/52},
+	bdsk-url-2 = {https://doi.org/10.3390/instruments6040052}}
 
 @article{bib:HVO,
 	archiveprefix = {arXiv},
@@ -126,6 +143,21 @@ markdown:
 	url = {https://doi.org/10.1007/s10686-021-09708-w},
 	year = {2021},
 	bdsk-url-1 = {https://doi.org/10.1007/s10686-021-09708-w}}
+
+@article{bib:SLA,
+	abstract = {Low Gain Avalanche Diode (LGAD) is a consolidated technology developed for particle detectors at colliders which allows for simultaneous and accurate time (&lt;100 ps) and position (tens of μm) resolutions. It is a candidate technology that could enable for the first time 5D tracking in space using LGAD Si-microstrip tracking systems. The intrinsic gain of LGAD sensors may also allow to decrease the sensor thickness while achieving signal yields similar to those of Si-microstrips currently operated in Space. In this document we discuss the possible applications and breakthrough opportunities in next generation large area cosmic ray detectors and sub-GeV gamma-ray detectors that could be enabled by LGAD Si-microstrip tracking detectors in Space. We propose the design of a cost-effective instrument demonstrator on a CubeSat platform to enable and qualify the operations of LGAD Si-microstrip detectors in space.},
+	author = {Matteo Duranti and {et al.}},
+	doi = {10.1088/1742-6596/2374/1/012046},
+	journal = {Journal of Physics: Conference Series},
+	month = {nov},
+	number = {1},
+	pages = {012046},
+	publisher = {IOP Publishing},
+	title = {Opportunities of Si-microstrip LGAD for next-generation space detectors},
+	url = {https://dx.doi.org/10.1088/1742-6596/2374/1/012046},
+	volume = {2374},
+	year = {2022},
+	bdsk-url-1 = {https://dx.doi.org/10.1088/1742-6596/2374/1/012046}}
 
 @article{bib:Timing,
 	author = {Duranti, Matteo and {et al.}},
