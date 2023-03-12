@@ -1,3 +1,50 @@
+# v1.7.39.4
+## 02/22/2023
+
+1. [](#bugfix)
+    * Reverted a reorganization of `account.yaml` that caused username to be disabled [admin#2344](https://github.com/getgrav/grav-plugin-admin/issues/2344)
+
+# v1.7.39.3
+## 02/21/2023
+
+1. [](#bugfix)
+    * Fix for overzealous modular page template rendering fix in 1.7.39 causing Feed plugin to break [#3689](https://github.com/getgrav/grav/issues/3689)
+
+# v1.7.39.2
+## 02/20/2023
+
+1. [](#bugfix)
+    * Fix for invalid session breaking Flex Accounts (when switching from Regular to Flex)
+
+# v1.7.39.1
+## 02/20/2023
+
+1. [](#bugfix)
+    * Fix for broken image CSS with the latest version of DebugBar
+
+# v1.7.39
+## 02/19/2023
+
+1. [](#improved)
+    * Vendor library updates to latest versions
+1. [](#bugfix)
+    * Various PHP 8.2 fixes
+    * Fixed an issue with modular pages rendering thew wrong template when dynamically changing the page
+    * Fixed an issue with `email` validation that was failing on UTF-8 characters. Following best practices and now only check for `@` and length.
+    * Fixed PHPUnit tests to remove deprecation warnings
+
+# v1.7.38
+## 01/02/2023
+
+1. [](#new)
+    * New `onBeforeSessionStart()` event to be used to store data lost during session regeneration (e.g. login)
+1. [](#improved)
+   * Vendor library updates to latest versions
+   * Updated `bin/composer.phar` to latest `2.4.4` version [#3627](https://github.com/getgrav/grav/issues/3627)
+1. [](#bugfix)
+   * Don't fail hard if pages recurse with same path
+   * Github workflows security hardening [#3624](https://github.com/getgrav/grav/pull/3624)
+
 # v1.7.37.1
 ## 10/05/2022
 
