@@ -11,8 +11,43 @@ markdown:
 
 %% This BibTeX bibliography file was created using BibDesk.
 %% http://bibdesk.sourceforge.net/
-%% Created for Bozzo at 2023-03-12 08:26:14 +0100 
+%% Created for Bozzo at 2023-04-22 10:27:00 +0200 
 %% Saved with string encoding Unicode (UTF-8) 
+
+@article{bib:paper23,
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
+	collaboration = {AMS Collaboration},
+	date-added = {2023-04-22 10:26:31 +0200},
+	date-modified = {2023-04-22 10:26:44 +0200},
+	doi = {10.1103/PhysRevLett.130.161001},
+	issue = {16},
+	journal = {Phys. Rev. Lett.},
+	month = {Apr},
+	numpages = {11},
+	pages = {161001},
+	publisher = {American Physical Society},
+	title = {Temporal Structures in Electron Spectra and Charge Sign Effects in Galactic Cosmic Rays},
+	url = {https://link.aps.org/doi/10.1103/PhysRevLett.130.161001},
+	volume = {130},
+	year = {2023},
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.130.161001},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.130.161001}}
+
+@article{bib:POX,
+	adsnote = {Provided by the SAO/NASA Astrophysics Data System},
+	adsurl = {https://ui.adsabs.harvard.edu/abs/2022MmSAI..93b.256D},
+	author = {{D'Urso}, D. and {...} and {M. Duranti} and {et al.}},
+	date-modified = {2023-03-17 08:24:54 +0100},
+	doi = {10.36116/MEMSAIT_93N2_3.2022.31/2022MemSAIT},
+	journal = {Memorie della Societ{\`a} Astronomica Italiana},
+	keywords = {Particle detector, silicon tracker, gamma-ray, cosmic rays},
+	month = nov,
+	number = {2-3},
+	pages = {256},
+	title = {{POX - PANGU Optimization and eXperimental verification: design and perfor- mance}},
+	volume = {93},
+	year = 2022,
+	bdsk-url-1 = {https://doi.org/10.36116/MEMSAIT_93N2_3.2022.31/2022MemSAIT}}
 
 @article{bib:TIC_proceeding2,
 	abstract = {A space-based detector dedicated to measurements of &gamma;-rays and charged particles has to achieve a balance between different instrumental requirements. A good angular resolution is necessary for the &gamma;-rays, whereas an excellent geometric factor is needed for the charged particles. The tracking reference technique of &gamma;-ray physics is based on a pair-conversion telescope made of passive material (e.g., tungsten) coupled with sensitive layers (e.g., silicon microstrip). However, this kind of detector has a limited acceptance because of the large lever arm between the active layers, needed to improve the track reconstruction capability. Moreover, the passive material can induce fragmentation of nuclei, thus worsening charge reconstruction performances. The Tracker-In-Calorimeter (TIC) project aims to solve all these drawbacks. In the TIC proposal, the silicon sensors are moved inside a highly-segmented isotropic calorimeter with a couple of external scintillators dedicated to charge reconstruction. In principle, this configuration has a good geometrical factor, and the angle of the &gamma;-rays can be precisely reconstructed from the lateral profile of the electromagnetic shower sampled, at different depths in the calorimeter, by silicon strips. The effectiveness of this approach has been studied with Monte Carlo simulations and validated with beam test data of a small prototype.},
