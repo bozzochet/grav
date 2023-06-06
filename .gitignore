@@ -28,6 +28,7 @@ user/themes/*
 !user/themes/my-*
 user/localhost/config/security.yaml
 user/config/security.yaml
+user/**/config/security.yaml
 
 # Environments
 .env
@@ -50,7 +51,10 @@ tests/cache/*
 tests/error.log
 system/templates/testing/*
 /user/config/versions.yaml
+<<<<<<< HEAD
 /user/cli/config/security.yaml
 
 # emacs
 *~
+=======
+>>>>>>> d4c617ff199d7feadad72cf1de797fa92b73f605
