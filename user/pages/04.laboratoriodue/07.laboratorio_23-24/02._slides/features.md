@@ -10,30 +10,28 @@ features:
         url: laboratorio_23-24/_slides/Introduzione.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Segnale e DAQ'
-        text: null
-        url: laboratorio_23-24/_slides/Segnale.pdf
-
-visible: false
----
-<!---
-    -
-        icon: 'fa fa-file-pdf-o'
         header: 'Test auto-valutazione'
         text: null
         url: laboratorio_23-24/_slides/Questionario_risposte.pdf
-
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Segnale e DAQ'
+        text: null
+        url: laboratorio_23-24/_slides/Segnale.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Amplificatore operazionale'
         text: null
         url: laboratorio_23-24/_slides/Operazionali.pdf
+visible: false
+---
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Montaggio LED'
         text: null
         url: laboratorio_23-24/_slides/MontaggioLED.pdf
-    -
+     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 0: "Vocale WhatsApp"'
         text: null
