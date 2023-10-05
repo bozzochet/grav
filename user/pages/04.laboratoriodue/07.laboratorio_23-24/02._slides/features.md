@@ -23,6 +23,11 @@ features:
         header: 'Amplificatore operazionale'
         text: null
         url: laboratorio_23-24/_slides/Operazionali.pdf
+     -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Esperienza 0: "Vocale WhatsApp"'
+        text: null
+        url: laboratorio_23-24/_slides/Esp0_Audio.pdf
 visible: false
 ---
 <!---
@@ -31,11 +36,6 @@ visible: false
         header: 'Montaggio LED'
         text: null
         url: laboratorio_23-24/_slides/MontaggioLED.pdf
-     -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Esperienza 0: "Vocale WhatsApp"'
-        text: null
-        url: laboratorio_23-24/_slides/Esp0_Audio.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 1: "Operazionali"'
