@@ -28,29 +28,11 @@ features:
         header: 'Esperienza 0: "Vocale WhatsApp"'
         text: null
         url: laboratorio_23-24/_slides/Esp0_Audio.pdf
-visible: false
----
-<!---
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Montaggio LED'
-        text: null
-        url: laboratorio_23-24/_slides/MontaggioLED.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 1: "Operazionali"'
         text: null
         url: laboratorio_23-24/_slides/Esp1_Operazionale.pdf
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Comparatore - FlashADC - LM35"'
-        text: null
-        url: laboratorio_23-24/_slides/Comparatore-FlashADC-LM35.pdf
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Esperienza 2: "Flash ADC + LM35"'
-        text: null
-        url: laboratorio_23-24/_slides/Esp2_FlashADC-LM35.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: Transistor
@@ -61,6 +43,24 @@ visible: false
         header: 'Elettronica Digitale (prima parte)'
         text: null
         url: laboratorio_23-24/_slides/ElettronicaDigitale_1parte.pdf
+visible: false
+---
+<!---
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Montaggio LED'
+        text: null
+        url: laboratorio_23-24/_slides/MontaggioLED.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Comparatore - FlashADC - LM35"'
+        text: null
+        url: laboratorio_23-24/_slides/Comparatore-FlashADC-LM35.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Esperienza 2: "Flash ADC + LM35"'
+        text: null
+        url: laboratorio_23-24/_slides/Esp2_FlashADC-LM35.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Elettronica Digitale (seconda parte)'
