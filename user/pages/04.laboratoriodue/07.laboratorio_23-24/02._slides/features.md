@@ -43,9 +43,11 @@ features:
         header: 'Elettronica Digitale (prima parte)'
         text: null
         url: laboratorio_23-24/_slides/ElettronicaDigitale_1parte.pdf
-visible: false
----
-<!---
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Elettronica Digitale (seconda parte)'
+        text: null
+        url: laboratorio_23-24/_slides/ElettronicaDigitale_2parte.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Montaggio LED'
@@ -53,19 +55,9 @@ visible: false
         url: laboratorio_23-24/_slides/MontaggioLED.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Comparatore - FlashADC - LM35"'
-        text: null
-        url: laboratorio_23-24/_slides/Comparatore-FlashADC-LM35.pdf
-    -
-        icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 2: "Flash ADC + LM35"'
         text: null
         url: laboratorio_23-24/_slides/Esp2_FlashADC-LM35.pdf
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Elettronica Digitale (seconda parte)'
-        text: null
-        url: laboratorio_23-24/_slides/ElettronicaDigitale_2parte.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: Fotodiodo
@@ -76,6 +68,10 @@ visible: false
         header: 'Esperienza 3: "Fotodiodo e misura di g"'
         text: null
         url: laboratorio_23-24/_slides/Esp3_Fotodiodo.pdf
+
+visible: false
+---
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Analisi segnali (parte 1) - Segnali periodici e aperiodici'
