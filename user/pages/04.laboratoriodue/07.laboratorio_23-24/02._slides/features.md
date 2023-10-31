@@ -68,20 +68,14 @@ features:
         header: 'Esperienza 3: "Fotodiodo e misura di g"'
         text: null
         url: laboratorio_23-24/_slides/Esp3_Fotodiodo.pdf
-
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Analisi segnali'
+        text: null
+        url: laboratorio_23-24/_slides/Analisi_Segnali.pdf
 visible: false
 ---
 <!---
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Analisi segnali (parte 1) - Segnali periodici e aperiodici'
-        text: null
-        url: laboratorio_23-24/_slides/Analisi_Segnali_pt1.pdf
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Analisi segnali (parte 2) - Segnali a tempo discreto'
-        text: null
-        url: laboratorio_23-24/_slides/Analisi_Segnali_pt2.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'FPGA + Esperienza 4'
