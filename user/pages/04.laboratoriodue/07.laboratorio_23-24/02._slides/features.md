@@ -73,14 +73,6 @@ features:
         header: 'Analisi segnali'
         text: null
         url: laboratorio_23-24/_slides/Analisi_Segnali.pdf
-visible: false
----
-<!---
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'FPGA + Esperienza 4'
-        text: null
-        url: laboratorio_23-24/_slides/FPGA.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 5: "GarageBand"'
@@ -121,4 +113,27 @@ visible: false
         header: 'Esp. 5: distorta_pezzo.wav'
         text: null
         url: laboratorio_23-24/_slides/distorta_pezzo.wav
+    -
+        icon: 'fa fa-file-text-o'
+        header: 'Esp. 5: data1.txt'
+        text: null
+        url: laboratorio_23-24/_slides/data1.txt
+    -
+        icon: 'fa fa-file-text-o'
+        header: 'Esp. 5: data2.txt'
+        text: null
+        url: laboratorio_23-24/_slides/data2.txt
+    -
+        icon: 'fa fa-file-text-o'
+        header: 'Esp. 5: data3.txt'
+        text: null
+        url: laboratorio_23-24/_slides/data3.txt
+visible: false
+---
+<!---
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'FPGA + Esperienza 4'
+        text: null
+        url: laboratorio_23-24/_slides/FPGA.pdf
 -->
