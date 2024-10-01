@@ -31,6 +31,6 @@ then
     mv -v grav-plugin-about-me aboutme
     cd -
 fi
-../composer.phar update
+./composer.phar update
 
 bin/gpm update -y
