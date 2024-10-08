@@ -6,6 +6,11 @@ features:
     -
         icon: 'fa fa-wrench'
         header: null
+        text: 'Laboratorio di Elettronica e Tecniche di Acquisizione Dati - 2024-2025'
+        url: laboratoriodue/laboratorio_24-25
+    -
+        icon: 'fa fa-wrench'
+        header: null
         text: 'Laboratorio di Elettronica e Tecniche di Acquisizione Dati - 2023-2024'
         url: laboratoriodue/laboratorio_23-24
     -
@@ -30,3 +35,4 @@ features:
         url: laboratoriodue/laboratorio_14-15
 visible: false
 ---
+
