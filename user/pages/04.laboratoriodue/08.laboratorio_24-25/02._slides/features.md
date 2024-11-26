@@ -45,6 +45,12 @@ features:
         url: laboratorio_24-25/_slides/ElettronicaDigitale_1parte.pdf
     -
         icon: 'fa fa-file-pdf-o'
+        header: 'Elettronica Digitale (seconda parte)'
+        text: null
+        url: laboratorio_24-25/_slides/ElettronicaDigitale_2parte.pdf
+
+    -
+        icon: 'fa fa-file-pdf-o'
         header: 'Montaggio LED'
         text: null
         url: laboratorio_24-25/_slides/MontaggioLED.pdf
@@ -67,11 +73,6 @@ visible: false
 ---
 
 <!---
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Elettronica Digitale (seconda parte)'
-        text: null
-        url: laboratorio_23-24/_slides/ElettronicaDigitale_2parte.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Analisi segnali'
