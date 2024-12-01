@@ -70,6 +70,11 @@ features:
         url: laboratorio_23-24/_slides/Esp3_Fotodiodo.pdf
     -
         icon: 'fa fa-file-pdf-o'
+        header: 'FPGA + Esperienza 4'
+        text: null
+        url: laboratorio_23-24/_slides/FPGA.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
         header: 'Analisi segnali'
         text: null
         url: laboratorio_23-24/_slides/Analisi_Segnali.pdf
@@ -131,9 +136,4 @@ features:
 visible: false
 ---
 <!---
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'FPGA + Esperienza 4'
-        text: null
-        url: laboratorio_23-24/_slides/FPGA.pdf
 -->

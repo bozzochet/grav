@@ -69,15 +69,20 @@ features:
         header: 'Esperienza 3: "Fotodiodo e misura di g"'
         text: null
         url: laboratorio_24-25/_slides/Esp3_Fotodiodo.pdf
-visible: false
----
-
-<!---
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'FPGA + Esperienza 4'
+        text: null
+        url: laboratorio_24-25/_slides/FPGA.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Analisi segnali'
         text: null
-        url: laboratorio_23-24/_slides/Analisi_Segnali.pdf
+        url: laboratorio_24-25/_slides/Analisi_Segnali.pdf
+visible: false
+---
+
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 5: "GarageBand"'
@@ -133,9 +138,4 @@ visible: false
         header: 'Esp. 5: data3.txt'
         text: null
         url: laboratorio_23-24/_slides/data3.txt
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'FPGA + Esperienza 4'
-        text: null
-        url: laboratorio_23-24/_slides/FPGA.pdf
 -->
