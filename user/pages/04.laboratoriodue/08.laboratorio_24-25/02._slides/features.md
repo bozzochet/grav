@@ -79,63 +79,74 @@ features:
         header: 'Analisi segnali'
         text: null
         url: laboratorio_24-25/_slides/Analisi_Segnali.pdf
-visible: false
----
-
-<!---
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Esperienza 5: "GarageBand"'
+        header: 'Esperienza 5: "Moises"'
         text: null
-        url: laboratorio_23-24/_slides/Esp5_GarageBand.pdf
-    -
-        icon: 'fa fa-file-audio-o'
-        header: 'Esp. 5: diapason.wav'
-        text: null
-        url: laboratorio_23-24/_slides/diapason.wav
-    -
-        icon: 'fa fa-file-audio-o'
-        header: 'Esp. 5: pulita_semplice.wav'
-        text: null
-        url: laboratorio_23-24/_slides/pulita_semplice.wav
-    -
-        icon: 'fa fa-file-audio-o'
-        header: 'Esp. 5: pulita_media.wav'
-        text: null
-        url: laboratorio_23-24/_slides/pulita_media.wav
-    -
-        icon: 'fa fa-file-audio-o'
-        header: 'Esp. 5: pulita_difficile.wav'
-        text: null
-        url: laboratorio_23-24/_slides/pulita_difficile.wav
-    -
-        icon: 'fa fa-file-audio-o'
-        header: 'Esp. 5: pulita_pezzo.wav'
-        text: null
-        url: laboratorio_23-24/_slides/pulita_pezzo.wav
-    -
-        icon: 'fa fa-file-audio-o'
-        header: 'Esp. 5: distorta.wav'
-        text: null
-        url: laboratorio_23-24/_slides/distorta.wav
-    -
-        icon: 'fa fa-file-audio-o'
-        header: 'Esp. 5: distorta_pezzo.wav'
-        text: null
-        url: laboratorio_23-24/_slides/distorta_pezzo.wav
+        url: laboratorio_24-25/_slides/Esp5_Moises.pdf
     -
         icon: 'fa fa-file-text-o'
         header: 'Esp. 5: data1.txt'
         text: null
-        url: laboratorio_23-24/_slides/data1.txt
+        url: laboratorio_24-25/_slides/data1.txt
     -
         icon: 'fa fa-file-text-o'
         header: 'Esp. 5: data2.txt'
         text: null
-        url: laboratorio_23-24/_slides/data2.txt
+        url: laboratorio_24-25/_slides/data2.txt
     -
         icon: 'fa fa-file-text-o'
         header: 'Esp. 5: data3.txt'
         text: null
-        url: laboratorio_23-24/_slides/data3.txt
+        url: laboratorio_24-25/_slides/data3.txt
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: diapason.wav'
+        text: null
+        url: laboratorio_24-25/_slides/diapason.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: pulita_semplice.wav'
+        text: null
+        url: laboratorio_24-25/_slides/pulita_semplice.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: pulita_media.wav'
+        text: null
+        url: laboratorio_24-25/_slides/pulita_media.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: pulita_difficile.wav'
+        text: null
+        url: laboratorio_24-25/_slides/pulita_difficile.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: pulita_pezzo.wav'
+        text: null
+        url: laboratorio_24-25/_slides/pulita_pezzo.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: distorta.wav'
+        text: null
+        url: laboratorio_24-25/_slides/distorta.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: distorta_pezzo.wav'
+        text: null
+        url: laboratorio_24-25/_slides/distorta_pezzo.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: distorta.wav'
+        text: null
+        url: laboratorio_24-25/_slides/primo.wav
+    -
+        icon: 'fa fa-file-audio-o'
+        header: 'Esp. 5: distorta_pezzo.wav'
+        text: null
+        url: laboratorio_24-25/_slides/seconda.wav
+visible: false
+---
+
+<!---
+
 -->
