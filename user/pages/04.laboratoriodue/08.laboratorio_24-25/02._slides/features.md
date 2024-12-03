@@ -143,7 +143,7 @@ features:
         icon: 'fa fa-file-audio-o'
         header: 'Esp. 5: distorta_pezzo.wav'
         text: null
-        url: laboratorio_24-25/_slides/seconda.wav
+        url: laboratorio_24-25/_slides/secondo.wav
 visible: false
 ---
 
