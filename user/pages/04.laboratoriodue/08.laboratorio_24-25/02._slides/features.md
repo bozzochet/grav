@@ -48,7 +48,6 @@ features:
         header: 'Elettronica Digitale (seconda parte)'
         text: null
         url: laboratorio_24-25/_slides/ElettronicaDigitale_2parte.pdf
-
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Montaggio LED'
@@ -136,12 +135,12 @@ features:
         url: laboratorio_24-25/_slides/distorta_pezzo.wav
     -
         icon: 'fa fa-file-audio-o'
-        header: 'Esp. 5: distorta.wav'
+        header: 'Esp. 5: primo.wav'
         text: null
         url: laboratorio_24-25/_slides/primo.wav
     -
         icon: 'fa fa-file-audio-o'
-        header: 'Esp. 5: distorta_pezzo.wav'
+        header: 'Esp. 5: secondo.wav'
         text: null
         url: laboratorio_24-25/_slides/secondo.wav
 visible: false
