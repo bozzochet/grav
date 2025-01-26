@@ -10,9 +10,96 @@ markdown:
 [bibtexify hideMissing=true]
 
 %% This BibTeX bibliography file was created using BibDesk.
-%% http://bibdesk.sourceforge.net/
-%% Created for Bozzo at 2024-02-28 18:41:37 +0100 
+%% https://bibdesk.sourceforge.io/
+%% Created for Bozzo at 2024-11-06 12:15:58 +0100 
 %% Saved with string encoding Unicode (UTF-8) 
+
+@article{bib:CaloCube2024,
+	abstract = {Direct observation of cosmic rays nuclei is currently limited to energies of the order of hundreds of TeV. In order to extend these observations to higher energies, detectors capable of operating in space with high geometric factor and energy resolution are needed. In particular, highly performing calorimeters based on the CaloCube design can allow to carry out cosmic ray measurements in the PeV energy region. The CaloCube R&D project foresees the installation in space of a homogeneous and isotropic calorimeter composed of cubic scintillator crystals arranged to form a cube of about tons weight, with a high acceptance and capable of detecting particles coming from any direction. A prototype, composed of 5 {\~A} 5 {\~A} 18 CsI(Tl) crystals, has been tested on high-energy particle beams at CERN SPS accelerator and the results relative to the calorimeter response to protons are reported in this document.},
+	author = {O. Adriani and {...} and {M. Duranti} and {et al.}},
+	date-added = {2024-11-06 12:15:39 +0100},
+	date-modified = {2024-11-06 12:15:50 +0100},
+	doi = {https://doi.org/10.1016/j.nima.2024.169079},
+	issn = {0168-9002},
+	journal = {Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment},
+	keywords = {Calorimeters, Space instrumentation, Scintillation detectors, Cosmic rays},
+	pages = {169079},
+	title = {The CaloCube calorimeter for high-energy cosmic-ray measurements in space: Response of a large-scale prototype to protons},
+	url = {https://www.sciencedirect.com/science/article/pii/S0168900224000056},
+	volume = {1061},
+	year = {2024},
+	bdsk-url-1 = {https://www.sciencedirect.com/science/article/pii/S0168900224000056},
+	bdsk-url-2 = {https://doi.org/10.1016/j.nima.2024.169079}}
+
+@article{bib:ASTRA_NIM,
+	abstract = {ASTRA-64 (Adaptable Silicon sTrip Read-out ASIC) is a 64-channel mixed-signal ASIC designed for reading out micro-strip silicon detectors. Its initial application is on serving as the read-out for the Silicon Charge Detector of the HERD experiment, slated for installation aboard the Chinese space station in 2027 to facilitate tracking and supplementary charge measurement. Designed using 110 nm technology, ASTRA-64 comprises two identical mirrored blocks, each accommodating 32 channels. Each channel integrates a Charge-Sensitive Amplifier featuring two programmable gain settings suitable for both positive and negative input signal polarities. Following this is a shaper with adjustable peaking time, allowing for noise performance optimization based on the detector capacitance. The front-end gain is calibrated to enable linear charge measurement of up to 160 fC and 80 fC depending on the gain configuration. ASTRA-64 offers two distinct readout modes. In the analog readout mode, sampled voltages are sent off-chip via an analog multiplexer linked with a differential output buffer. Conversely, the digital readout mode employs a Wilkinson ADC in each channel to digitize sampled voltages, with a shared serializer transmitting digital data through an SLVS driver. Additionally, a fast shaper, in tandem with a leading-edge hysteresis discriminator, is integrated, and the outputs of the 32 channel discriminators are merged using a FAST-OR logic to produce a rapid trigger signal off-chip. Remarkably, the ASIC{\^a}s power dissipation is kept below 600 {\^I}{\OE}W per channel, aligning with stringent power consumption requirements for space applications. We will present the tests, characterization, and performance of ASTRA-64.},
+	author = {Mattia Barbanera and {...} and {M. Duranti} and {et al.}},
+	date-added = {2024-11-06 12:13:13 +0100},
+	date-modified = {2024-11-06 12:14:09 +0100},
+	doi = {https://doi.org/10.1016/j.nima.2024.169835},
+	issn = {0168-9002},
+	journal = {Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment},
+	keywords = {Micro-strip, Front-end electronics, ASTRA, HERD},
+	pages = {169835},
+	title = {Tests and characterization of a mixed-signal read out ASIC for silicon micro-strip detectors},
+	url = {https://www.sciencedirect.com/science/article/pii/S0168900224007617},
+	volume = {1069},
+	year = {2024},
+	bdsk-url-1 = {https://www.sciencedirect.com/science/article/pii/S0168900224007617},
+	bdsk-url-2 = {https://doi.org/10.1016/j.nima.2024.169835}}
+
+@article{bib:RealTimeMonitoring,
+	abstract = {The International Space Station (ISS) orbits at an average altitude of 400 km, in the Low Earth Orbit (LEO) and is regularly occupied by astronauts. The material of the Station, the residual atmosphere and the geomagnetic field offer a partial protection against the cosmic radiation to the crew and the equipment. The solar activity can cause sporadic bursts of particles with energies between {\^a}{\OE}10 keV and several GeVs called Solar Energetic Particles (SEPs). SEP emissions can last for hours or even days and can represent an actual risk for ISS occupants and equipment. The Alpha Magnetic Spectrometer (AMS) was installed on the ISS in 2011 and is expected to take data until the decommissioning of the Station itself. The instrument detects cosmic rays continuously and can also be used to monitor SEPs in real-time. A detection algorithm developed for the monitoring measures temporary increases in the trigger rates of AMS, using McIlwain{\^a}s L-parameter to characterize different conditions of the data-taking environment. A real-time monitor for SEPs has been realized reading data from the AMS Monitoring Interface (AMI) database and processing them using the custom algorithm that was developed.},
+	article-number = {38},
+	author = {Serpolla, Andrea and {...} and {M. Duranti} and {et al.}},
+	date-added = {2024-11-06 12:10:59 +0100},
+	date-modified = {2024-11-06 12:11:12 +0100},
+	doi = {10.3390/instruments7040038},
+	issn = {2410-390X},
+	journal = {Instruments},
+	number = {4},
+	title = {Real-Time Monitoring of Solar Energetic Particles Using the Alpha Magnetic Spectrometer on the International Space Station},
+	url = {https://www.mdpi.com/2410-390X/7/4/38},
+	volume = {7},
+	year = {2023},
+	bdsk-url-1 = {https://www.mdpi.com/2410-390X/7/4/38},
+	bdsk-url-2 = {https://doi.org/10.3390/instruments7040038}}
+
+@article{bib:paper27,
+	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
+	collaboration = {AMS Collaboration},
+	date-added = {2024-11-06 12:07:28 +0100},
+	date-modified = {2024-11-06 12:09:42 +0100},
+	doi = {10.1103/PhysRevLett.132.261001},
+	issue = {26},
+	journal = {Phys. Rev. Lett.},
+	month = {Jun},
+	numpages = {8},
+	pages = {261001},
+	publisher = {American Physical Society},
+	title = {Properties of Cosmic Deuterons Measured by the Alpha Magnetic Spectrometer},
+	url = {https://link.aps.org/doi/10.1103/PhysRevLett.132.261001},
+	volume = {132},
+	year = {2024},
+	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.132.261001},
+	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.132.261001}}
+
+@article{bib:ASAPPeditorial,
+	abstract = {In the last decades, breakthrough advances in understanding the mechanisms of the Universe and fundamental physics have been achieved through the exploitation of data on cosmic rays and high-energy radiation gathered via orbiting experiments, in a synergic and complementary international effort that combines space-based instrument data with ground-based space observatories, accelerator, and collider experiments [...]},
+	article-number = {45},
+	author = {Duranti, Matteo and {et al.}},
+	date-added = {2024-11-06 12:02:53 +0100},
+	date-modified = {2024-11-06 12:03:39 +0100},
+	doi = {10.3390/instruments8040045},
+	issn = {2410-390X},
+	journal = {Instruments},
+	number = {4},
+	title = {Advances in Space Astroparticle Physics: Frontier Technologies for Particle Measurements in Space},
+	url = {https://www.mdpi.com/2410-390X/8/4/45},
+	volume = {8},
+	year = {2024},
+	bdsk-url-1 = {https://www.mdpi.com/2410-390X/8/4/45},
+	bdsk-url-2 = {https://doi.org/10.3390/instruments8040045}}
 
 @article{bib:paper26,
 	author = {Aguilar, M. and {...} and {M. Duranti} and {et al.}},
