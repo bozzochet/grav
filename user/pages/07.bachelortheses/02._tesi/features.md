@@ -5,6 +5,11 @@ class: offset-box
 features:
     -
         icon: 'fa fa-graduation-cap'
+        header: 'Alessandro Kotchian </br> (2023-2024)'
+        text: 'Sviluppo del firmware di comunicazione FPGA-FPGA ad uso di esperimenti di nuova generazione'
+        url: bachelortheses/_tesi/TesiTriennaleKotchian.pdf
+    -
+        icon: 'fa fa-graduation-cap'
         header: 'Gianmarco Aristei </br> (2020-2021)'
         text: 'Valutazioni delle prestazioni di un rivelatore per fotoni di bassa energia a bordo di un CubeSat'
         url: bachelortheses/_tesi/TesiTriennaleAristei.pdf
