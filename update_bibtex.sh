@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# quando non funziona il plugin:
+# - ci sono accenti non messi in latex
+# - c'è il campo "correspondance_address"
+
 #SHORTEN_AUTHORS=0
 SHORTEN_AUTHORS=1
 
