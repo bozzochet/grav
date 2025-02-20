@@ -5,6 +5,11 @@ class: offset-box
 features:
     -
         icon: 'fa fa-graduation-cap'
+        header: 'Martina Savinelli </br> (2023-2024)'
+        text: 'Caratterizzazione di dispositivi LGAD e sviluppo di strategie innovative per la lettura per applicazioni spaziali'
+        url: bachelortheses/_tesi/TesiTriennaleSavinelli.pdf
+    -
+        icon: 'fa fa-graduation-cap'
         header: 'Alessandro Kotchian </br> (2023-2024)'
         text: 'Sviluppo del firmware di comunicazione FPGA-FPGA ad uso di esperimenti di nuova generazione'
         url: bachelortheses/_tesi/TesiTriennaleKotchian.pdf
