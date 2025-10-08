@@ -7,8 +7,9 @@ description: "_A revolution is not a dinner party, or writing an essay, or paint
 picture_src:
   user/plugins/aboutme/assets/avatars/pict1245.jpg:
     name: pict1245.jpg
-    type: image/jpg
-    size: 289121
+    full_path: pict1245.jpg
+    type: image/jpeg
+    size: 1053289
     path: user/plugins/aboutme/assets/avatars/pict1245.jpg
 gravatar:
   enabled: false
