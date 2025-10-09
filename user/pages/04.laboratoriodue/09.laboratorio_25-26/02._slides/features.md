@@ -23,14 +23,14 @@ features:
         header: 'Esperienza 0: "Vocale WhatsApp"'
         text: null
         url: laboratorio_25-26/_slides/Esp0_Audio.pdf
-visible: false
----
-<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Amplificatore operazionale'
         text: null
-        url: laboratorio_24-25/_slides/Operazionali.pdf
+        url: laboratorio_25-26/_slides/Operazionali.pdf
+visible: false
+---
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 1: "Operazionali"'
