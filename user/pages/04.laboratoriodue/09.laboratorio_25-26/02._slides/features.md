@@ -15,7 +15,7 @@ features:
         url: laboratorio_25-26/_slides/Segnale.pdf
     -
         icon: 'fa fa-file-pdf-o'
-        header: 'Test auto-valutazione'
+        header: 'Test auto-valutazione (con risposte)'
         text: null
         url: laboratorio_25-26/_slides/Questionario_risposte.pdf
     -
@@ -28,19 +28,19 @@ features:
         header: 'Amplificatore operazionale'
         text: null
         url: laboratorio_25-26/_slides/Operazionali.pdf
-visible: false
----
-<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 1: "Operazionali"'
         text: null
-        url: laboratorio_24-25/_slides/Esp1_Operazionale.pdf
+        url: laboratorio_25-26/_slides/Esp1_Operazionale.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: Transistor
         text: null
-        url: laboratorio_24-25/_slides/Transistor.pdf
+        url: laboratorio_25-26/_slides/Transistor.pdf
+visible: false
+---
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Elettronica Digitale (prima parte)'
