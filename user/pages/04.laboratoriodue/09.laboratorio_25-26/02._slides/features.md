@@ -38,39 +38,39 @@ features:
         header: Transistor
         text: null
         url: laboratorio_25-26/_slides/Transistor.pdf
-visible: false
----
-<!---
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Elettronica Digitale (prima parte)'
-        text: null
-        url: laboratorio_24-25/_slides/ElettronicaDigitale_1parte.pdf
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Elettronica Digitale (seconda parte)'
-        text: null
-        url: laboratorio_24-25/_slides/ElettronicaDigitale_2parte.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Montaggio LED'
         text: null
-        url: laboratorio_24-25/_slides/MontaggioLED.pdf
+        url: laboratorio_25-26/_slides/MontaggioLED.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'LM35'
+        text: null
+        url: laboratorio_25-26/_slides/LM35.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 2: "Flash ADC + LM35"'
         text: null
-        url: laboratorio_24-25/_slides/Esp2_FlashADC-LM35.pdf
+        url: laboratorio_25-26/_slides/Esp2_FlashADC-LM35.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: Fotodiodo
         text: null
-        url: laboratorio_24-25/_slides/FotodiodoLED.pdf
+        url: laboratorio_25-26/_slides/FotodiodoLED.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 3: "Fotodiodo e misura di g"'
         text: null
-        url: laboratorio_24-25/_slides/Esp3_Fotodiodo.pdf
+        url: laboratorio_25-26/_slides/Esp3_Fotodiodo.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
+        header: 'Elettronica Digitale'
+        text: null
+        url: laboratorio_25-26/_slides/ElettronicaDigitale.pdf
+visible: false
+---
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'FPGA + Esperienza 4'
