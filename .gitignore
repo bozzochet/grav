@@ -51,10 +51,10 @@ tests/cache/*
 tests/error.log
 system/templates/testing/*
 /user/config/versions.yaml
-<<<<<<< HEAD
-/user/cli/config/security.yaml
+/system/recovery.window
+tmp/*
+#needs_fixing.txt
+/AGENTS.md
 
 # emacs
 *~
-=======
->>>>>>> d4c617ff199d7feadad72cf1de797fa92b73f605
