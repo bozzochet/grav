@@ -70,6 +70,11 @@ features:
         url: laboratorio_25-26/_slides/ElettronicaDigitale.pdf
     -
         icon: 'fa fa-file-pdf-o'
+        header: 'FPGA + Esperienza 4'
+        text: null
+        url: laboratorio_25-26/_slides/FPGA.pdf
+    -
+        icon: 'fa fa-file-pdf-o'
         header: 'Analisi segnali'
         text: null
         url: laboratorio_25-26/_slides/Analisi_Segnali.pdf
@@ -141,13 +146,5 @@ features:
 visible: false
 ---
 <!---
-        url: laboratorio_25-26/_slides/ElettronicaDigitale.pdf
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'FPGA + Esperienza 4'
-        text: null
-        url: laboratorio_25-26/_slides/FPGA.pdf
-    -
-        icon: 'fa fa-file-pdf-o'
-        header: 'Analisi segnali'
+a
 -->
