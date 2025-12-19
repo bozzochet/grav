@@ -11,8 +11,53 @@ markdown:
 
 %% This BibTeX bibliography file was created using BibDesk.
 %% https://bibdesk.sourceforge.io/
-%% Created for Bozzo at 2025-10-17 18:55:05 +0200 
+%% Created for Bozzo at 2025-12-19 13:15:36 +0100 
 %% Saved with string encoding Unicode (UTF-8) 
+
+@conference{bib:HERD_SCD_ICRC2023,
+	author = {Altomare, C. and {...} and {M. Duranti} and {et al.}},
+	date-added = {2025-12-19 13:08:28 +0100},
+	date-modified = {2025-12-19 13:10:14 +0100},
+	journal = {Proceedings of Science},
+	note = {Cited by: 0},
+	publication_stage = {Final},
+	source = {Scopus},
+	title = {The Silicon Charge Detector of the High Energy Cosmic Radiation Detection facility},
+	type = {Conference paper},
+	url = {https://www.scopus.com/inward/record.uri?eid=2-s2.0-85212289749&partnerID=40&md5=7183f4b0e0c6850d4b1b3017cdc178fe},
+	volume = {444},
+	year = {2024},
+	bdsk-url-1 = {https://www.scopus.com/inward/record.uri?eid=2-s2.0-85212289749&partnerID=40&md5=7183f4b0e0c6850d4b1b3017cdc178fe}}
+
+@conference{bib:HERDFIT2,
+	author = {Adriani, O. and {...} and {M. Duranti} and {et al.}},
+	date-added = {2025-12-19 13:07:49 +0100},
+	date-modified = {2025-12-19 13:13:36 +0100},
+	journal = {Proceedings of Science},
+	note = {Cited by: 1},
+	publication_stage = {Final},
+	source = {Scopus},
+	title = {The scintillating-fiber tracker (FIT) of the HERD space mission from design to performance},
+	type = {Conference paper},
+	url = {https://www.scopus.com/inward/record.uri?eid=2-s2.0-85212275758&partnerID=40&md5=cb4255148234ae411b7df9216438aa38},
+	volume = {444},
+	year = {2024},
+	bdsk-url-1 = {https://www.scopus.com/inward/record.uri?eid=2-s2.0-85212275758&partnerID=40&md5=cb4255148234ae411b7df9216438aa38}}
+
+@conference{bib:PANproc,
+	author = {Sukhonos, D. and {...} and {M. Duranti} and {et al.}},
+	date-added = {2025-12-19 13:04:35 +0100},
+	date-modified = {2025-12-19 13:04:46 +0100},
+	journal = {Proceedings of Science},
+	note = {Cited by: 0},
+	publication_stage = {Final},
+	source = {Scopus},
+	title = {Penetrating particle ANalyzer (PAN)},
+	type = {Conference paper},
+	url = {https://www.scopus.com/inward/record.uri?eid=2-s2.0-85212300326&partnerID=40&md5=0accd7e4457e63ebddaa6235d43a93c6},
+	volume = {444},
+	year = {2024},
+	bdsk-url-1 = {https://www.scopus.com/inward/record.uri?eid=2-s2.0-85212300326&partnerID=40&md5=0accd7e4457e63ebddaa6235d43a93c6}}
 
 @article{bib:HERDCaloNuclei,
 	abstract = {HERD is a space-borne calorimetric experiment that aims to extend current direct measurements of cosmic rays to the PeV energy range. The main feature of the instrument is its ability to measure particles coming from all directions, with the main detector being a deep, homogeneous 3D calorimeter. A large prototype of the calorimeter was tested at CERN in 2023 as part of an extensive beam test campaign. This paper describes the data analysis and performance of the calorimeter prototype for high-energy nuclei. Several important information and parameters for the calibration of the HERD calorimeter are reported.},
@@ -278,19 +323,6 @@ markdown:
 	year = {2023},
 	bdsk-url-1 = {https://link.aps.org/doi/10.1103/PhysRevLett.131.151002},
 	bdsk-url-2 = {https://doi.org/10.1103/PhysRevLett.131.151002}}
-
-@article{bib:HERD_SCD_ICRC2023,
-	author = {Altomare, C. and {...} and {M. Duranti} and {et al.}},
-	collaboration = {HERD},
-	date-added = {2023-11-21 16:26:04 +0100},
-	date-modified = {2023-11-21 16:26:25 +0100},
-	doi = {10.22323/1.444.0087},
-	journal = {PoS},
-	pages = {087},
-	title = {{The Silicon Charge Detector of the High Energy Cosmic Radiation Detection facility}},
-	volume = {ICRC2023},
-	year = {2023},
-	bdsk-url-1 = {https://doi.org/10.22323/1.444.0087}}
 
 @conference{bib:HERDGamma,
 	abbrev_source_title = {Proc. Sci.},
