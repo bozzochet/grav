@@ -5,6 +5,11 @@ class: offset-box
 features:
     -
         icon: 'fa fa-graduation-cap'
+        header: 'Laura Francesca Iacob </br> (2024-2025)'
+        text: 'Il Photon Detection System di DUNE: primi risultati da ProtoDUNE-VD'
+        url: bachelortheses/_tesi/TesiTriennaleIacob.pdf
+    -
+        icon: 'fa fa-graduation-cap'
         header: 'Martina Savinelli </br> (2023-2024)'
         text: 'Caratterizzazione di dispositivi LGAD e sviluppo di strategie innovative per la lettura per applicazioni spaziali'
         url: bachelortheses/_tesi/TesiTriennaleSavinelli.pdf
