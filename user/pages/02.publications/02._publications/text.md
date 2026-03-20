@@ -11,8 +11,52 @@ markdown:
 
 %% This BibTeX bibliography file was created using BibDesk.
 %% https://bibdesk.sourceforge.io/
-%% Created for Bozzo at 2025-12-19 13:15:36 +0100 
+%% Created for Bozzo at 2026-02-26 16:41:17 +0100 
 %% Saved with string encoding Unicode (UTF-8) 
+
+@article{bib:L0Cinese,
+	archiveprefix = {arXiv},
+	author = {Miao, Dexing and {...} and {M. Duranti} and {et al.}},
+	date-added = {2026-02-26 16:31:17 +0100},
+	date-modified = {2026-02-26 16:31:44 +0100},
+	eprint = {2505.23050},
+	month = {5},
+	primaryclass = {physics.ins-det},
+	title = {{A Silicon Microstrip Detector for Power-Limited and Large Sensitive Area Applications}},
+	year = {2025}}
+
+@inproceedings{bib:IEEE2025LGAD,
+	author = {Barbanera, M. and {...} and {M. Duranti} and {et al.}},
+	booktitle = {{2025 IEEE Nuclear Science Symposium, Medical Imaging Conference, and Room-Temperature Semiconductor Detectors Symposium}},
+	date-added = {2026-02-26 16:29:18 +0100},
+	date-modified = {2026-02-26 16:29:36 +0100},
+	doi = {10.1109/NSS/MIC/RTSD57106.2025.11287529},
+	month = {11},
+	title = {{Si-Microstrip LGAD Detectors for Cosmic-Ray Space-Borne Instruments}},
+	year = {2025},
+	bdsk-url-1 = {https://doi.org/10.1109/NSS/MIC/RTSD57106.2025.11287529}}
+
+@inproceedings{bib:IEEE2025L0,
+	author = {Ambrosi, G. and {...} and {M. Duranti} and {et al.}},
+	booktitle = {{2025 IEEE Nuclear Science Symposium, Medical Imaging Conference, and Room-Temperature Semiconductor Detectors Symposium}},
+	date-added = {2026-02-26 16:28:54 +0100},
+	date-modified = {2026-02-26 16:29:06 +0100},
+	doi = {10.1109/NSS/MIC/RTSD57106.2025.11286721},
+	month = {11},
+	title = {{AMS-L0 Upgrade: Real-Time FPGA-based Data Compression for the AMS-02 Silicon Tracker}},
+	year = {2025},
+	bdsk-url-1 = {https://doi.org/10.1109/NSS/MIC/RTSD57106.2025.11286721}}
+
+@article{bib:SatBandiera,
+	archiveprefix = {arXiv},
+	author = {Monti-Guarnieri, Pietro and {...} and {M. Duranti} and {et al.}},
+	date-added = {2026-02-26 16:28:15 +0100},
+	date-modified = {2026-02-26 16:28:30 +0100},
+	eprint = {2601.04129},
+	month = {1},
+	primaryclass = {astro-ph.HE},
+	title = {{Satellite-borne {\ensuremath{\gamma}}-ray astrophysics from coherent interactions in oriented crystals}},
+	year = {2026}}
 
 @conference{bib:HERD_SCD_ICRC2023,
 	author = {Altomare, C. and {...} and {M. Duranti} and {et al.}},
@@ -97,14 +141,14 @@ markdown:
 	abstract = {The Pentadimensional Tracking Space Detector (PTSD) project aims to develop a demonstrator to increase the Technological Readiness Level (TRL), for space applications, of Low Gain Avalanche Diodes (LGAD) based Si-{\^I}{\OE}strip tracking detectors. LGAD is a consolidated technology developed for particle detectors at colliders which allows for simultaneous and accurate time (&lt; 100 ps) and position ({\^a}{\OE} 10 {\^I}{\OE}m) resolutions with segmented Si sensors. It is a candidate technology that could enable for the first time 4D tracking (position and time) in space. One of the goals of the project is to not only use this innovative technology to add the time measurement capability to the Si-{\^I}{\OE}strip tracking system of a space detector, but also to keep its consolidated charge measurement capability, therefore enabling 5D tracking in space. The charge measurement, indeed, is generally required by space applications of Si tracking systems although, in the layout currently adopted by particle collider applications, it is not foreseen. In addition, the intrinsic gain of LGAD sensors also allows to decrease the sensor thickness while achieving signal yields similar to those of Si-{\^I}{\OE}strips currently operated in space. One of the limiting factors towards the realization of large area (single channel area at the level of cm^2) Si sensors is the large input capacitance to be managed by the Front End Electronics (FEE). The PTSD project includes the development and test of a capacitance mitigation strategy for the aforementioned applications. This paper discusses the proposed mitigation strategy and the first results obtained by laboratory measurements.},
 	author = {Duranti, Matteo and {et al.}},
 	date-added = {2025-10-17 18:52:49 +0200},
-	date-modified = {2025-10-17 18:52:59 +0200},
+	date-modified = {2026-02-26 16:41:14 +0100},
 	doi = {10.1088/1748-0221/20/07/C07029},
 	journal = {Journal of Instrumentation},
 	month = {jul},
 	number = {07},
 	pages = {C07029},
 	publisher = {IOP Publishing},
-	title = {Serial read out of Si-{\^I}{\OE}strip LGAD detectors for cosmic-ray space-borne instruments},
+	title = {Serial read out of Si-$\mu$strip LGAD detectors for cosmic-ray space-borne instruments},
 	url = {https://doi.org/10.1088/1748-0221/20/07/C07029},
 	volume = {20},
 	year = {2025},

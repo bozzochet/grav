@@ -5,8 +5,13 @@ class: offset-box
 features:
     -
         icon: 'fa fa-graduation-cap'
+        header: 'Claudio Brugnoni </br> (XXXVIII Ciclo)'
+        text: 'Electron/proton discrimination in high-granularity space-borne calorimeters'
+        url: phdtheses/_tesi/TesiPhDBrugnoni.pdf
+    -
+        icon: 'fa fa-graduation-cap'
         header: 'Yaozu Jiang </br> (XXXVII Ciclo)'
-        text: 'Characterization of the performance of very long silicondetectors'
+        text: 'Characterization of the performance of very long silicon detectors'
         url: phdtheses/_tesi/TesiPhDJiang.pdf
     -
         icon: 'fa fa-graduation-cap'
