@@ -23,7 +23,9 @@ git pull
 pesco dal default (origin/master) ma posso scegliere di aggiornare anche rispetto a quello da cui ho forkato
 
 
-git pull original master
+#git pull original master
+# misà che ora si chiama develop...
+git pull original develop
 
 dove devo specificare ESPLICITAMENTE:
 - il remote: original (invece che origin)
