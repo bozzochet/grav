@@ -52,6 +52,7 @@ tests/error.log
 system/templates/testing/*
 /user/config/versions.yaml
 /system/recovery.window
+/tmp
 tmp/*
 #needs_fixing.txt
 /AGENTS.md
