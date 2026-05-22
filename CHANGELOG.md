@@ -1,79 +1,33 @@
-# v1.7.50.9
-## 11/09/2025
-
-1. [](#improved)
-    * Better error warnings regarding upgrading from 1.7 -> 1.7 vs 1.7 -> 1.8
-1. [](#bugfix)
-    * Fix for update-provided `Install.php` not used if local version called first
-    * Fix class loading error when trying to use `bin/gpm self-upgrade --safe`
-
-# v1.7.50.8
-## 11/06/2025
-
-1. [](#bugfix)
-    * Removed over zealous safety checks
-    * Removed .gitattributes which was causing some unintended issues
-
-# v1.7.50.7
-## 11/05/2025
-
-1. [](#improved)
-    * Exclude dev files from exports
-    * Remove dev file in clean command
-1. [](#bugfix)
-    * Ignore .github and .phan folders during self-upgrade
-    * Fixed path check in self-upgrade
-
-# v1.7.50.6
-## 11/05/2025
-
-1. [](#bugfix)
-    * Fixed an issue where non-upgradable root-level folders were snapshotted
-
-# v1.7.50.5
-## 11/05/2025
+# v1.7.52
+## 04/29/2026
 
 1. [](#new)
-    * Added new `bin/gpm preflight` command
-    * Added `--safe` and `--legacy` overrides for `bin/gpm self-upgrade` command
-1. [](#improved)
-    * Improved JS assets pipeline handling to support different loading strategies
-    * More safe-upgrade fixes around safe guarding `/user/` and maintaining permissions better
+    * GPM client now sends the running PHP version with index requests so the server can substitute PHP-aware compat fallbacks when a plugin's latest release requires a newer PHP than the client can run.
 1. [](#bugfix)
-   * Fixed a regex issue that corrupted safe-upgrade output
+    * [security] Extended default `uploads_dangerous_extensions` to include `md`, `yaml`, `yml`, `json`, `twig`, `ini` — page-content extensions that can be weaponised via permissive form-upload `accept` policies (GHSA-w4rc-p66m-x6qq, defense-in-depth alongside the Form 9.1.0 plugin fix).
 
-# v1.7.50.4
-## 10/31/2025
-
-1. [](#improved)
-    * More fixes and improvements for safe-uprade process
-
-# v1.7.50.3
-## 10/21/2025
-
-1. [](#bugfix)
-    * Restored `user/config/system.yaml` to 1.7 branch version (testing mode off)
-
-# v1.7.50.2
-## 10/21/2025
-
-1. [](#bugfix)
-    * Fix for `SafeUpgradeService::getLastManifest()` fatal error on upgrade [#3966](https://github.com/getgrav/grav/issues/3966)
-
-# v1.7.50.1
-## 10/20/2025
-
-1. [](#bugfix)
-    * Fix for broken `GRAV_ROOT`
-
-# v1.7.50
-## 10/19/2025
+# v1.7.51
+## 04/28/2026
 
 1. [](#new)
-    * Added new **Safe Core Upgrade** process with snapshots for backup and restore, better preflight and postflight checks, as well as exception checking post-install for easy rollback.
-    * Introduced recovery mode with token-gated UI, plugin quarantine, and CLI rollback support.
-    * Added `bin/gpm preflight` compatibility scanner and `bin/gpm rollback` utility.
-    * Added `wordCount` Twig filter [#3957](https://github.com/getgrav/grav/pulls/3957)
+    * Added foundation for migrating to Grav 2.0: cross-major auto-upgrades are blocked in GPM, and core now surfaces a `next_major` hint so admin can point users at the new `migrate-grav` plugin
+    * Added `compatibility:` blueprint support so plugins/themes can declare which Grav versions they support
+    * Added self-upgrade preflight that flags incompatible plugins/themes and `psr/log` / Monolog conflicts before proceeding
+    * Added upgrade resilience with automatic maintenance mode and opcache reset during self-upgrade
+    * Added new `cache-cleanup` CLI command to prune obsolete cache entries
+    * Added new `onFlexDirectoryConfigBeforeSave` event for Flex
+1. [](#improved)
+    * More readable time output in `bin/grav logviewer` [#4009](https://github.com/getgrav/grav/pull/4009)
+    * Removed legacy standalone binary build
+    * Updated vendor libraries to latest versions
+1. [](#bugfix)
+    * Fixed `selectize` field losing values when keyed options were used
+    * Fixed wrong date output in `bin/grav logviewer` [#4007](https://github.com/getgrav/grav/pull/4007)
+    * Fixed undefined array key error triggered by URL-encoded characters in paths [#4012](https://github.com/getgrav/grav/pull/4012)
+    * Fixed assorted issues in the revamped scheduler
+    * Fixed `schedule` flag not being honored in backup profiles
+    * Fixed default-language loading when using the session-based language store
+    * Allow `lang` query parameter to switch back to the default language
 
 # v1.7.49.5
 ## 09/10/2025
