@@ -53,9 +53,8 @@ system/templates/testing/*
 /user/config/versions.yaml
 /system/recovery.window
 /tmp
+/user/config/security-private.php
 tmp/*
-#needs_fixing.txt
-/AGENTS.md
 
 # emacs
 *~
