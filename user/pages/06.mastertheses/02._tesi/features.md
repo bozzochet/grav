@@ -5,6 +5,11 @@ class: offset-box
 features:
     -
         icon: 'fa fa-graduation-cap'
+        header: 'Martina Savinelli </br> (2025-2026)'
+        text: 'Studio della fattibilit`a di una missione spaziale per la misura di Raggi Cosmici con rivelatori al silicio di tipo LGAD'
+        url: mastertheses/_tesi/TesiMagistraleSavinelli.pdf
+    -
+        icon: 'fa fa-graduation-cap'
         header: 'Andrea Serpolla </br> (2021-2022)'
         text: 'Real-time monitoring of Solar Energetic Particles with Alpha Magnetic Spectrometer on the International Space Station'
         url: mastertheses/_tesi/TesiMagistraleSerpolla.pdf
