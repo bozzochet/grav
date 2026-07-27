@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Console
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -14,7 +14,6 @@ use Grav\Console\Gpm\IndexCommand;
 use Grav\Console\Gpm\InfoCommand;
 use Grav\Console\Gpm\InstallCommand;
 use Grav\Console\Gpm\PreflightCommand;
-use Grav\Console\Gpm\RollbackCommand;
 use Grav\Console\Gpm\SelfupgradeCommand;
 use Grav\Console\Gpm\UninstallCommand;
 use Grav\Console\Gpm\UpdateCommand;
@@ -39,7 +38,6 @@ class GpmApplication extends Application
             new UpdateCommand(),
             new SelfupgradeCommand(),
             new PreflightCommand(),
-            new RollbackCommand(),
             new DirectInstallCommand(),
         ]);
     }

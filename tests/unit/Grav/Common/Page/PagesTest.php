@@ -10,7 +10,7 @@ use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 /**
  * Class PagesTest
  */
-class PagesTest extends \Codeception\TestCase\Test
+class PagesTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Grav $grav */
     protected $grav;
@@ -21,8 +21,9 @@ class PagesTest extends \Codeception\TestCase\Test
     /** @var PageInterface $root_page */
     protected $root_page;
 
-    protected function _before(): void
+    protected function setUp(): void
     {
+        parent::setUp();
         $grav = Fixtures::get('grav');
         $this->grav = $grav();
         $this->pages = $this->grav['pages'];
@@ -108,8 +109,8 @@ class PagesTest extends \Codeception\TestCase\Test
         self::assertContains($folder . '/fake/simple-site/user/pages/02.blog/post-one', array_keys($subPagesSorted));
         self::assertContains($folder . '/fake/simple-site/user/pages/02.blog/post-two', array_keys($subPagesSorted));
 
-        self::assertSame(['slug' => 'post-one'], $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-one']);
-        self::assertSame(['slug' => 'post-two'], $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-two']);
+        self::assertSame('post-one', $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-one']['slug']);
+        self::assertSame('post-two', $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-two']['slug']);
 
         $subPagesSorted = $this->pages->sort($aPage, null, 'desc');
 
@@ -122,8 +123,8 @@ class PagesTest extends \Codeception\TestCase\Test
         self::assertContains($folder . '/fake/simple-site/user/pages/02.blog/post-one', array_keys($subPagesSorted));
         self::assertContains($folder . '/fake/simple-site/user/pages/02.blog/post-two', array_keys($subPagesSorted));
 
-        self::assertSame(['slug' => 'post-one'], $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-one']);
-        self::assertSame(['slug' => 'post-two'], $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-two']);
+        self::assertSame('post-one', $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-one']['slug']);
+        self::assertSame('post-two', $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-two']['slug']);
     }
 
     public function testSortCollection(): void
@@ -144,8 +145,8 @@ class PagesTest extends \Codeception\TestCase\Test
         self::assertContains($folder . '/fake/simple-site/user/pages/02.blog/post-one', array_keys($subPagesSorted));
         self::assertContains($folder . '/fake/simple-site/user/pages/02.blog/post-two', array_keys($subPagesSorted));
 
-        self::assertSame(['slug' => 'post-one'], $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-one']);
-        self::assertSame(['slug' => 'post-two'], $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-two']);
+        self::assertSame('post-one', $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-one']['slug']);
+        self::assertSame('post-two', $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-two']['slug']);
 
         $subPagesSorted = $this->pages->sortCollection($aPage->children(), $aPage->orderBy(), 'desc');
 
@@ -158,8 +159,8 @@ class PagesTest extends \Codeception\TestCase\Test
         self::assertContains($folder . '/fake/simple-site/user/pages/02.blog/post-one', array_keys($subPagesSorted));
         self::assertContains($folder . '/fake/simple-site/user/pages/02.blog/post-two', array_keys($subPagesSorted));
 
-        self::assertSame(['slug' => 'post-one'], $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-one']);
-        self::assertSame(['slug' => 'post-two'], $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-two']);
+        self::assertSame('post-one', $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-one']['slug']);
+        self::assertSame('post-two', $subPagesSorted[$folder . '/fake/simple-site/user/pages/02.blog/post-two']['slug']);
     }
 
     public function testGet(): void
@@ -185,7 +186,7 @@ class PagesTest extends \Codeception\TestCase\Test
 
         //Page existing
         $children = $this->pages->children($folder . '/fake/simple-site/user/pages/02.blog');
-        self::assertInstanceOf('Grav\Common\Page\Collection', $children);
+        self::assertInstanceOf(\Grav\Common\Page\Collection::class, $children);
 
         //Page not existing
         $children = $this->pages->children($folder . '/fake/whatever/non-existing');
@@ -259,6 +260,40 @@ class PagesTest extends \Codeception\TestCase\Test
         $translatedLanguages = $page->translatedLanguages();
         $this->assertIsArray($translatedLanguages);
         $this->assertSame(["en" => "/translatedlong/part2", "fr" => "/translatedlong/part2"], $translatedLanguages);
+    }
+
+    public function testTranslatedLanguagesLocalizedSlug(): void
+    {
+        /** @var UniformResourceLocator $locator */
+        $locator = $this->grav['locator'];
+        $folder = $locator->findResource('tests://');
+
+        $page = $this->pages->get($folder . '/fake/simple-site/user/pages/06.localized-slug');
+        $this->assertInstanceOf(PageInterface::class, $page);
+        $translatedLanguages = $page->translatedLanguages();
+        $this->assertIsArray($translatedLanguages);
+        // The fr translation declares `slug: slug-localise`, so its route must use
+        // the localized slug rather than mirroring the default-language route.
+        $this->assertSame(["en" => "/localized-slug", "fr" => "/slug-localise"], $translatedLanguages);
+    }
+
+    public function testTranslatedLanguagesLocalizedAncestorSlug(): void
+    {
+        /** @var UniformResourceLocator $locator */
+        $locator = $this->grav['locator'];
+        $folder = $locator->findResource('tests://');
+
+        $page = $this->pages->get($folder . '/fake/simple-site/user/pages/07.localized-category/01.item');
+        $this->assertInstanceOf(PageInterface::class, $page);
+        $translatedLanguages = $page->translatedLanguages();
+        $this->assertIsArray($translatedLanguages);
+        // Regression test for getgrav/grav#4186: the ancestor `localized-category`
+        // declares `slug: categorie-localisee` in fr and the leaf declares
+        // `slug: article`, so BOTH segments must be localized — not just the leaf.
+        $this->assertSame(
+            ["en" => "/localized-category/item", "fr" => "/categorie-localisee/article"],
+            $translatedLanguages
+        );
     }
 
     public function testGetTypes(): void

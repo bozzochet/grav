@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Page
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -46,7 +46,7 @@ class ImageMedium extends Medium implements ImageMediaInterface, ImageManipulate
      * @param array $items
      * @param Blueprint|null $blueprint
      */
-    public function __construct($items = [], Blueprint $blueprint = null)
+    public function __construct($items = [], ?Blueprint $blueprint = null)
     {
         parent::__construct($items, $blueprint);
 
@@ -194,6 +194,22 @@ class ImageMedium extends Medium implements ImageMediaInterface, ImageManipulate
 
         if ($locator->isStream($output)) {
             $output = (string)($locator->findResource($output, false) ?: $locator->findResource($output, false, true));
+        }
+
+        // Serving the unmodified original (no image operations queued — the same
+        // condition under which saveImage() returns the source file). Honor a
+        // `url` override here, and only here, so the original can be routed
+        // through a proxy while resized / cropped derivatives keep serving
+        // straight from `images/`. Mirrors MediaFileTrait::url().
+        if (empty($this->image)) {
+            $url = $this->get('url');
+            if ($url) {
+                if ($reset) {
+                    $this->reset();
+                }
+
+                return $url;
+            }
         }
 
         if (Utils::startsWith($output, $image_path)) {
@@ -358,9 +374,28 @@ class ImageMedium extends Medium implements ImageMediaInterface, ImageManipulate
         $args = func_get_args();
 
         $file = $args[0] ?? '1'; // using '1' because of markdown. doing ![](image.jpg?watermark) returns $args[0]='1';
-        $file = $file === '1' ? $config->get('system.images.watermark.image') : $args[0];
+        if ($file === '1') {
+            // No editor-supplied value: use the operator-configured (trusted) watermark.
+            $file = $config->get('system.images.watermark.image');
+        } else {
+            // Editor-authored watermark path from page content. Constrain it to the
+            // media sandbox: the resource locator's file:// branch only collapses
+            // `..` lexically (no realpath/containment), so an unconstrained value
+            // such as `?watermark=../secret.png` resolves to an arbitrary on-disk
+            // file and composites it into a publicly-cached, anonymously-served
+            // derivative (GHSA-w3f4-8pj2-599w). Reject parent-directory traversal
+            // and absolute paths; stream URIs (user://, image://, system://, …)
+            // stay allowed because the locator's stream branch re-globs onto a
+            // registered, contained root.
+            if (strpos((string) $file, '..') !== false || preg_match('`^(/|[a-z]:[\\\\/])`i', (string) $file)) {
+                return $this;
+            }
+        }
 
         $watermark = $locator->findResource($file);
+        if ($watermark === false) {
+            return $this;
+        }
         $watermark = ImageFile::open($watermark);
 
         // Scaling operations
@@ -370,7 +405,7 @@ class ImageMedium extends Medium implements ImageMediaInterface, ImageManipulate
         $watermark->resize($wwidth, $wheight);
 
         // Position operations
-        $position = !empty($args[1]) ? explode('-',  $args[1]) : ['center', 'center']; // todo change to config
+        $position = !empty($args[1]) ? explode('-',  (string) $args[1]) : ['center', 'center']; // todo change to config
         $positionY = $position[0] ?? $config->get('system.images.watermark.position_y', 'center');
         $positionX = $position[1] ?? $config->get('system.images.watermark.position_x', 'center');
 
@@ -491,7 +526,7 @@ class ImageMedium extends Medium implements ImageMediaInterface, ImageManipulate
                 // Do the same call for alternative media.
                 $medium->__call($method, $args_copy);
             }
-        } catch (BadFunctionCallException $e) {
+        } catch (BadFunctionCallException) {
         }
 
         return $this;

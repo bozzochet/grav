@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -46,7 +46,6 @@ use Grav\Common\Service\SessionServiceProvider;
 use Grav\Common\Service\StreamsServiceProvider;
 use Grav\Common\Service\TaskServiceProvider;
 use Grav\Common\Twig\Twig;
-use Grav\Common\Recovery\RecoveryManager;
 use Grav\Framework\DI\Container;
 use Grav\Framework\Psr7\Response;
 use Grav\Framework\RequestHandler\Middlewares\MultipartRequestSupport;
@@ -54,8 +53,10 @@ use Grav\Framework\RequestHandler\RequestHandler;
 use Grav\Framework\Route\Route;
 use Grav\Framework\Session\Messages;
 use InvalidArgumentException;
+use RuntimeException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use RocketTheme\Toolbox\Event\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -77,6 +78,17 @@ use function strlen;
  */
 class Grav extends Container
 {
+    /**
+     * Response bodies larger than this (or of unknown length) are streamed to
+     * the client in chunks instead of being cast to a string and echoed, which
+     * would otherwise buffer the whole body in memory. This keeps large file
+     * downloads (e.g. site backups) from exhausting `memory_limit`.
+     */
+    protected const STREAM_BODY_THRESHOLD = 2097152; // 2 MB
+
+    /** @var int Read size when streaming a response body directly to the client. */
+    protected const STREAM_BODY_CHUNK = 65536; // 64 KB
+
     /** @var string Processed output for the page. */
     public $output;
 
@@ -111,7 +123,6 @@ class Grav extends Container
         'scheduler'  => Scheduler::class,
         'taxonomy'   => Taxonomy::class,
         'themes'     => Themes::class,
-        'recovery'   => RecoveryManager::class,
         'twig'       => Twig::class,
         'uri'        => Uri::class,
     ];
@@ -202,7 +213,7 @@ class Grav extends Container
      * @param string|null $environment
      * @return $this
      */
-    public function setup(string $environment = null)
+    public function setup(?string $environment = null)
     {
         if (isset($this->initialized['setup'])) {
             return $this;
@@ -263,51 +274,23 @@ class Grav extends Container
 
         $container = new Container(
             [
-                'multipartRequestSupport' => function () {
-                    return new MultipartRequestSupport();
-                },
-                'initializeProcessor' => function () {
-                    return new InitializeProcessor($this);
-                },
-                'backupsProcessor' => function () {
-                    return new BackupsProcessor($this);
-                },
-                'pluginsProcessor' => function () {
-                    return new PluginsProcessor($this);
-                },
-                'themesProcessor' => function () {
-                    return new ThemesProcessor($this);
-                },
-                'schedulerProcessor' => function () {
-                    return new SchedulerProcessor($this);
-                },
-                'requestProcessor' => function () {
-                    return new RequestProcessor($this);
-                },
-                'tasksProcessor' => function () {
-                    return new TasksProcessor($this);
-                },
-                'assetsProcessor' => function () {
-                    return new AssetsProcessor($this);
-                },
-                'twigProcessor' => function () {
-                    return new TwigProcessor($this);
-                },
-                'pagesProcessor' => function () {
-                    return new PagesProcessor($this);
-                },
-                'debuggerAssetsProcessor' => function () {
-                    return new DebuggerAssetsProcessor($this);
-                },
-                'renderProcessor' => function () {
-                    return new RenderProcessor($this);
-                },
+                'multipartRequestSupport' => fn() => new MultipartRequestSupport(),
+                'initializeProcessor' => fn() => new InitializeProcessor($this),
+                'backupsProcessor' => fn() => new BackupsProcessor($this),
+                'pluginsProcessor' => fn() => new PluginsProcessor($this),
+                'themesProcessor' => fn() => new ThemesProcessor($this),
+                'schedulerProcessor' => fn() => new SchedulerProcessor($this),
+                'requestProcessor' => fn() => new RequestProcessor($this),
+                'tasksProcessor' => fn() => new TasksProcessor($this),
+                'assetsProcessor' => fn() => new AssetsProcessor($this),
+                'twigProcessor' => fn() => new TwigProcessor($this),
+                'pagesProcessor' => fn() => new PagesProcessor($this),
+                'debuggerAssetsProcessor' => fn() => new DebuggerAssetsProcessor($this),
+                'renderProcessor' => fn() => new RenderProcessor($this),
             ]
         );
 
-        $default = static function () {
-            return new Response(404, ['Expires' => 0, 'Cache-Control' => 'no-store, max-age=0'], 'Not Found');
-        };
+        $default = static fn() => new Response(404, ['Expires' => 0, 'Cache-Control' => 'no-store, max-age=0'], 'Not Found');
 
         $collection = new RequestHandler($this->middleware, $default, $container);
 
@@ -328,7 +311,7 @@ class Grav extends Container
             $etag = md5($body);
             $response = $response->withHeader('ETag', '"' . $etag . '"');
 
-            $search = trim($this['request']->getHeaderLine('If-None-Match'), '"');
+            $search = trim((string) $this['request']->getHeaderLine('If-None-Match'), '"');
             if ($noCache === false && $search === $etag) {
                 $response = $response->withStatus(304);
                 $body = '';
@@ -337,6 +320,16 @@ class Grav extends Container
 
         // Echo page content.
         $this->header($response);
+
+        // A large or unknown-length body (e.g. a file-backed download stream) is
+        // streamed straight to the client rather than echoed, which would buffer
+        // the whole thing in memory. Streaming flushes output and thus commits the
+        // headers, so the debugger and shutdown handler — both of which would try
+        // to write to an already-sent response — are skipped.
+        if ($this->streamResponseBody($body)) {
+            exit();
+        }
+
         echo $body;
 
         $this['debugger']->render();
@@ -366,6 +359,73 @@ class Grav extends Container
     }
 
     /**
+     * Whether a response body should be streamed to the client in chunks rather
+     * than echoed as one string.
+     *
+     * A plain string body (the common Twig-rendered page) reports a small, known
+     * size and is echoed as before. A body that is large or of unknown length —
+     * typically a file resource wrapped in a stream, as used for backup and media
+     * downloads — is streamed so it never has to be materialised in memory.
+     *
+     * @param string|StreamInterface $body
+     * @return bool
+     */
+    protected function isStreamedBody($body): bool
+    {
+        if (!$body instanceof StreamInterface || !$body->isReadable()) {
+            return false;
+        }
+
+        $size = $body->getSize();
+
+        // Unknown length (e.g. a pipe) or larger than the buffer threshold.
+        return $size === null || $size > static::STREAM_BODY_THRESHOLD;
+    }
+
+    /**
+     * Stream a large response body straight to the client in chunks.
+     *
+     * Casting a big stream to a string (via `echo`) buffers the whole payload in
+     * memory, which fails with an HTTP 500 once it exceeds `memory_limit` — the
+     * failure mode behind malformed backup downloads. Reading and flushing in
+     * fixed-size chunks keeps memory flat regardless of file size.
+     *
+     * Returns false without consuming the body when it is small enough to echo
+     * normally, so the caller falls back to the existing buffered path.
+     *
+     * @param string|StreamInterface $body
+     * @return bool True when the body was streamed (output already sent).
+     */
+    protected function streamResponseBody($body): bool
+    {
+        if (!$this->isStreamedBody($body)) {
+            return false;
+        }
+
+        /** @var StreamInterface $body */
+
+        // Drop any output buffering so bytes go straight to the socket instead of
+        // piling up in a buffer that would hit the same memory ceiling.
+        $this->cleanOutputBuffers();
+
+        if ($body->isSeekable()) {
+            $body->rewind();
+        }
+
+        while (!$body->eof()) {
+            if (connection_status() !== CONNECTION_NORMAL) {
+                break;
+            }
+            echo $body->read(static::STREAM_BODY_CHUNK);
+            flush();
+        }
+
+        $body->close();
+
+        return true;
+    }
+
+    /**
      * Terminates Grav request with a response.
      *
      * Please use this method instead of calling `die();` or `exit();`. Note that you need to create a response object.
@@ -375,6 +435,16 @@ class Grav extends Container
      */
     public function close(ResponseInterface $response): void
     {
+        // In CLI, throw instead of exit() so commands can report the problem
+        // rather than terminate silently. A plugin calling redirect()/close()
+        // during a console command (e.g. inside onPluginsInitialized) would
+        // otherwise kill the process with no error visible to the user.
+        if (\PHP_SAPI === 'cli') {
+            $location = $response->getHeaderLine('Location');
+            $detail = $location !== '' ? " (redirect to {$location})" : '';
+            throw new RuntimeException("Grav::close() called in CLI context{$detail}");
+        }
+
         $this->cleanOutputBuffers();
 
         // Close the session.
@@ -400,12 +470,15 @@ class Grav extends Container
             $response = $response->withHeader('Cache-Control', 'no-store, max-age=0');
         }
 
-        // Handle ETag and If-None-Match headers.
-        if ($response->getHeaderLine('ETag') === '1') {
+        // Handle ETag and If-None-Match headers. A streamed body (large or of
+        // unknown length) is left untouched: hashing it here would read the whole
+        // thing into memory, defeating the point of streaming, and file downloads
+        // don't need a content ETag.
+        if ($response->getHeaderLine('ETag') === '1' && !$this->isStreamedBody($body)) {
             $etag = md5($body);
             $response = $response->withHeader('ETag', '"' . $etag . '"');
 
-            $search = trim($this['request']->getHeaderLine('If-None-Match'), '"');
+            $search = trim((string) $this['request']->getHeaderLine('If-None-Match'), '"');
             if ($noCache === false && $search === $etag) {
                 $response = $response->withStatus(304);
                 $body = '';
@@ -414,7 +487,9 @@ class Grav extends Container
 
         // Echo page content.
         $this->header($response);
-        echo $body;
+        if (!$this->streamResponseBody($body)) {
+            echo $body;
+        }
         exit();
     }
 
@@ -463,7 +538,7 @@ class Grav extends Container
             if (null === $code) {
                 // Check for redirect code in the route: e.g. /new/[301], /new[301]/route or /new[301].html
                 $regex = '/.*(\[(30[1-7])\])(.\w+|\/.*?)?$/';
-                preg_match($regex, $route, $matches);
+                preg_match($regex, (string) $route, $matches);
                 if ($matches) {
                     $route = str_replace($matches[1], '', $matches[0]);
                     $code = $matches[2];
@@ -476,9 +551,9 @@ class Grav extends Container
                 $url = rtrim($uri->rootUrl(), '/') . '/';
 
                 if ($this['config']->get('system.pages.redirect_trailing_slash', true)) {
-                    $url .= trim($route, '/'); // Remove trailing slash
+                    $url .= trim((string) $route, '/'); // Remove trailing slash
                 } else {
-                    $url .= ltrim($route, '/'); // Support trailing slash default routes
+                    $url .= ltrim((string) $route, '/'); // Support trailing slash default routes
                 }
             }
         } elseif ($route instanceof Route) {
@@ -524,7 +599,7 @@ class Grav extends Container
      * @param ResponseInterface|null $response
      * @return void
      */
-    public function header(ResponseInterface $response = null): void
+    public function header(?ResponseInterface $response = null): void
     {
         if (null === $response) {
             /** @var PageInterface $page */
@@ -535,7 +610,7 @@ class Grav extends Container
         header("HTTP/{$response->getProtocolVersion()} {$response->getStatusCode()} {$response->getReasonPhrase()}");
         foreach ($response->getHeaders() as $key => $values) {
             // Skip internal Grav headers.
-            if (strpos($key, 'Grav-Internal-') === 0) {
+            if (str_starts_with((string) $key, 'Grav-Internal-')) {
                 continue;
             }
             foreach ($values as $i => $value) {
@@ -554,7 +629,7 @@ class Grav extends Container
         // Initialize Locale if set and configured.
         if ($this['language']->enabled() && $this['config']->get('system.languages.override_locale')) {
             $language = $this['language']->getLanguage();
-            setlocale(LC_ALL, strlen($language) < 3 ? ($language . '_' . strtoupper($language)) : $language);
+            setlocale(LC_ALL, strlen((string) $language) < 3 ? ($language . '_' . strtoupper((string) $language)) : $language);
         } elseif ($this['config']->get('system.default_locale')) {
             setlocale(LC_ALL, $this['config']->get('system.default_locale'));
         }
@@ -568,7 +643,7 @@ class Grav extends Container
     {
         /** @var EventDispatcherInterface $events */
         $events = $this['events'];
-        $eventName = get_class($event);
+        $eventName = $event::class;
 
         $timestamp = microtime(true);
         $event = $events->dispatch($event);
@@ -587,7 +662,7 @@ class Grav extends Container
      * @param  Event|null $event
      * @return Event
      */
-    public function fireEvent($eventName, Event $event = null)
+    public function fireEvent($eventName, ?Event $event = null)
     {
         /** @var EventDispatcherInterface $events */
         $events = $this['events'];
@@ -600,7 +675,9 @@ class Grav extends Container
 
         /** @var Debugger $debugger */
         $debugger = $this['debugger'];
-        $debugger->addEvent($eventName, $event, $events, $timestamp);
+        if ($debugger->enabled()) {
+            $debugger->addEvent($eventName, $event, $events, $timestamp);
+        }
 
         return $event;
     }
@@ -634,23 +711,36 @@ class Grav extends Container
                 // Unfortunately without FastCGI there is no way to force close the connection.
                 // We need to ask browser to close the connection for us.
 
-                if ($config->get('system.cache.gzip')) {
-                    // Flush gzhandler buffer if gzip setting was enabled to get the size of the compressed output.
-                    ob_end_flush();
-                } elseif ($config->get('system.cache.allow_webserver_gzip')) {
-                    // Let web server to do the hard work.
-                    header('Content-Encoding: identity');
-                } elseif (function_exists('apache_setenv')) {
-                    // Without gzip we have no other choice than to prevent server from compressing the output.
-                    // This action turns off mod_deflate which would prevent us from closing the connection.
-                    @apache_setenv('no-gzip', '1');
-                } else {
-                    // Fall back to unknown content encoding, it prevents most servers from deflating the content.
-                    header('Content-Encoding: none');
+                // Check if external compression is active (e.g., zlib.output_compression in php.ini).
+                if (!ini_get('zlib.output_compression')) {
+                    // We can only send an accurate Content-Length (and thus let the client
+                    // close the connection early) when we are sure the webserver will not
+                    // recompress the body underneath us.
+                    $canSetContentLength = true;
+
+                    if ($config->get('system.cache.gzip') || $config->get('system.cache.allow_webserver_gzip')) {
+                        // Let web server handle compression.
+                        header('Content-Encoding: identity');
+                    } elseif (function_exists('apache_setenv')) {
+                        // Without gzip we have no other choice than to prevent server from compressing the output.
+                        // This action turns off mod_deflate which would prevent us from closing the connection.
+                        @apache_setenv('no-gzip', '1');
+                    } else {
+                        // We cannot reliably stop the webserver from compressing here. Previously we emitted
+                        // `Content-Encoding: none` to trick most servers into skipping compression, but `none`
+                        // is not a valid content-coding and stricter HTTP clients (e.g. Java's
+                        // HttpsURLConnection) reject the whole response. Rather than send a spec-violating
+                        // header, skip the Content-Length/early-close optimization for this fallback and let
+                        // the response close cleanly via `Connection: close` instead (#2619).
+                        $canSetContentLength = false;
+                    }
+
+                    if ($canSetContentLength) {
+                        // Get length and close the connection (only when not using compression).
+                        header('Content-Length: ' . ob_get_length());
+                    }
                 }
 
-                // Get length and close the connection.
-                header('Content-Length: ' . ob_get_length());
                 header('Connection: close');
 
                 ob_end_flush();
@@ -736,9 +826,7 @@ class Grav extends Container
             if (is_int($serviceKey)) {
                 $this->register(new $serviceClass);
             } else {
-                $this[$serviceKey] = function ($c) use ($serviceClass) {
-                    return new $serviceClass($c);
-                };
+                $this[$serviceKey] = fn($c) => new $serviceClass($c);
             }
         }
     }
@@ -799,11 +887,38 @@ class Grav extends Container
             if (isset($media[$media_file])) {
                 /** @var Medium $medium */
                 $medium = $media[$media_file];
-                foreach ($uri->query(null, true) as $action => $params) {
-                    if (in_array($action, ImageMedium::$magic_actions, true)) {
-                        call_user_func_array([&$medium, $action], explode(',', $params));
+
+                // URL-based media actions (e.g. `image.jpg?resize=600,400`) let an
+                // unauthenticated visitor drive image transforms straight from the
+                // query string. They are opt-in and disabled by default: the normal
+                // resize path is Twig/Markdown media methods, which run with
+                // developer-controlled arguments and are unaffected by this toggle.
+                if ($config->get('system.images.url_actions', false)) {
+                    $max_pixels = (int) $config->get('system.images.max_pixels', 25000000);
+                    foreach ($uri->query(null, true) as $action => $params) {
+                        if (in_array($action, ImageMedium::$magic_actions, true)) {
+                            $args = explode(',', (string) $params);
+                            // Reject request-derived resize dimensions above the
+                            // total-pixel ceiling. The GD/Imagick output buffer is
+                            // allocated as width*height*4 bytes outside PHP's
+                            // memory_limit, so an unbounded request exhausts RAM.
+                            // The output width/height are the last two positions in
+                            // each $magic_resize_actions entry (crop is x,y,w,h).
+                            if ($max_pixels > 0 && isset(ImageMedium::$magic_resize_actions[$action])) {
+                                $positions = ImageMedium::$magic_resize_actions[$action];
+                                $w_pos = $positions[count($positions) - 2] ?? null;
+                                $h_pos = $positions[count($positions) - 1] ?? null;
+                                $width = ($w_pos !== null && isset($args[$w_pos]) && is_numeric($args[$w_pos])) ? (int) $args[$w_pos] : 0;
+                                $height = ($h_pos !== null && isset($args[$h_pos]) && is_numeric($args[$h_pos])) ? (int) $args[$h_pos] : 0;
+                                if ($width > 0 && $height > 0 && ($width * $height) > $max_pixels) {
+                                    return false;
+                                }
+                            }
+                            call_user_func_array([&$medium, $action], $args);
+                        }
                     }
                 }
+
                 Utils::download($medium->path(), false);
             }
 
@@ -818,7 +933,7 @@ class Grav extends Container
 
             if ($extension) {
                 $download = true;
-                if (in_array(ltrim($extension, '.'), $config->get('system.media.unsupported_inline_types', []), true)) {
+                if (in_array(ltrim((string) $extension, '.'), $config->get('system.media.unsupported_inline_types', []), true)) {
                     $download = false;
                 }
                 Utils::download($page->path() . DIRECTORY_SEPARATOR . $uri->basename(), $download);

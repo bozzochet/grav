@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Backup
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -45,16 +45,27 @@ class Backups
     /** @var array|null */
     protected static $backups;
 
+    /** @var bool */
+    protected $initialized = false;
+
     /**
      * @return void
      */
     public function init()
     {
+        // Guard against double-initialization: init() runs from BackupsProcessor
+        // during a normal request, but consumers that short-circuit the middleware
+        // (e.g. the API plugin) may also call it to attach the scheduler listener.
+        if ($this->initialized) {
+            return;
+        }
+        $this->initialized = true;
+
         $grav = Grav::instance();
 
         /** @var EventDispatcher $dispatcher */
         $dispatcher = $grav['events'];
-        $dispatcher->addListener('onSchedulerInitialized', [$this, 'onSchedulerInitialized']);
+        $dispatcher->addListener('onSchedulerInitialized', $this->onSchedulerInitialized(...));
 
         $grav->fireEvent('onBackupsInitialized', new Event(['backups' => $this]));
     }
@@ -85,19 +96,26 @@ class Backups
         /** @var Inflector $inflector */
         $inflector = $grav['inflector'];
 
-        foreach (static::getBackupProfiles() as $id => $profile) {
-            if (!($profile['schedule'] ?? false)) {
-                continue;
-            }
+        $status = $grav['config']->get('scheduler.status');
 
+        foreach (static::getBackupProfiles() as $id => $profile) {
             $at = $profile['schedule_at'];
             $name = $inflector::hyphenize($profile['name']);
             $logs = 'logs/backup-' . $name . '.out';
+            $environment = $profile['schedule_environment'] ?? null;
             /** @var Job $job */
-            $job = $scheduler->addFunction('Grav\Common\Backup\Backups::backup', [$id], $name);
+            $job = $scheduler->addFunction('Grav\Common\Backup\Backups::backup', [$id, null, $environment], $name);
             $job->at($at);
             $job->output($logs);
             $job->backlink('/tools/backups');
+
+            // Always register the job so it stays visible in the scheduler. The
+            // profile `schedule` flag seeds the default enabled state (out of
+            // rotation when false), while an explicit scheduler `status` entry
+            // set via the Enabled/Disabled toggle always wins.
+            if (!isset($status[$name])) {
+                $job->setEnabled((bool)($profile['schedule'] ?? false));
+            }
         }
     }
 
@@ -110,7 +128,7 @@ class Backups
     {
         $param_sep = Grav::instance()['config']->get('system.param_sep', ':');
         $download = urlencode(base64_encode(Utils::basename($backup)));
-        $url      = rtrim(Grav::instance()['uri']->rootUrl(true), '/') . '/' . trim(
+        $url      = rtrim((string) Grav::instance()['uri']->rootUrl(true), '/') . '/' . trim(
             $base_url,
             '/'
         ) . '/task' . $param_sep . 'backup/download' . $param_sep . $download . '/admin-nonce' . $param_sep . Utils::getNonce('admin-form');
@@ -162,7 +180,8 @@ class Backups
             static::$backups = [];
 
             $grav = Grav::instance();
-            $backups_itr = new GlobIterator(static::$backup_dir . '/*.zip', FilesystemIterator::KEY_AS_FILENAME);
+            $grav['backups']->setup();
+            $backups_itr = new GlobIterator(static::$backup_dir . '/*.zip', FilesystemIterator::KEY_AS_FILENAME | \FilesystemIterator::SKIP_DOTS);
             $inflector = $grav['inflector'];
             $long_date_format = DATE_RFC2822;
 
@@ -196,11 +215,18 @@ class Backups
      *
      * @param int $id
      * @param callable|null $status
+     * @param string|null $environment Optional environment to load config from
      * @return string|null
      */
-    public static function backup($id = 0, callable $status = null)
+    public static function backup($id = 0, ?callable $status = null, ?string $environment = null)
     {
         $grav = Grav::instance();
+
+        // If environment is specified and different from current, reload config
+        if ($environment && $environment !== $grav['config']->get('setup.environment')) {
+            $grav->setup($environment);
+            $grav['config']->reload();
+        }
 
         $profiles = static::getBackupProfiles();
         /** @var UniformResourceLocator $locator */
@@ -214,7 +240,8 @@ class Backups
 
         $name = $grav['inflector']->underscorize($backup->name);
         $date = date(static::BACKUP_DATE_FORMAT, time());
-        $filename = trim($name, '_') . '--' . $date . '.zip';
+        $filename = trim((string) $name, '_') . '--' . $date . '.zip';
+        $grav['backups']->setup();
         $destination = static::$backup_dir . DS . $filename;
         $max_execution_time = ini_set('max_execution_time', '600');
         $backup_root = $backup->root;
@@ -228,6 +255,28 @@ class Backups
         if (!$backup_root || !file_exists($backup_root)) {
             throw new RuntimeException("Backup location: {$backup_root} does not exist...");
         }
+
+        // Security: Resolve real path and ensure it's within GRAV_ROOT to prevent path traversal
+        $realBackupRoot = realpath($backup_root);
+        $realGravRoot = realpath(GRAV_ROOT);
+
+        if ($realBackupRoot === false || $realGravRoot === false) {
+            throw new RuntimeException("Invalid backup location: {$backup_root}");
+        }
+
+        // Positive containment (GHSA-fch7-cpv4-w7hg): the resolved backup root must
+        // BE GRAV_ROOT or a directory beneath it. The previous deny-list only rejected
+        // a fixed set of system paths, so a non-blocklisted external directory (e.g.
+        // /opt, /mnt, /srv) still fell through and had its contents archived. Comparing
+        // against GRAV_ROOT with a trailing separator also prevents a sibling directory
+        // (e.g. `/var/www/site-evil` next to `/var/www/site`) from matching by prefix.
+        $isWithinGravRoot = $realBackupRoot === $realGravRoot
+            || strpos($realBackupRoot, $realGravRoot . DIRECTORY_SEPARATOR) === 0;
+        if (!$isWithinGravRoot) {
+            throw new RuntimeException("Backup location not allowed (outside site root): {$backup_root}");
+        }
+
+        $backup_root = $realBackupRoot;
 
         $options = [
             'exclude_files' => static::convertExclude($backup->exclude_files ?? ''),

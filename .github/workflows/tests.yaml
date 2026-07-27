@@ -2,9 +2,9 @@ name: PHP Tests
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, 1.8 ]
   pull_request:
-    branches: [ develop ]
+    branches: [ develop, 1.8 ]
 
 permissions:
   contents: read # to fetch code (actions/checkout)
@@ -13,13 +13,13 @@ jobs:
   unit-tests:
     strategy:
       matrix:
-        php: ['8.3', '8.2', '8.1', '8.0', '7.4', '7.3']
+        php: [8.5, 8.4, 8.3]
         os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -36,7 +36,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -46,7 +46,7 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Run test suite
-        run: vendor/bin/codecept run
+        run: php -d register_argc_argv=On vendor/bin/codecept run
 
 #  slack:
 #      name: Slack

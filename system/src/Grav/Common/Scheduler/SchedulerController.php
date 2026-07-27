@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Scheduler
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -81,15 +81,22 @@ class SchedulerController
         if (!($config['webhook']['enabled'] ?? false)) {
             return $this->jsonResponse(['error' => 'Webhook triggers disabled'], 403);
         }
-        
+
+        // Fail closed: an enabled webhook with no configured token must reject
+        // anonymous callers rather than accept them. (GHSA-xwv3-2mv2-w33x)
+        $configuredToken = $config['webhook']['token'] ?? null;
+        if (!is_string($configuredToken) || $configuredToken === '') {
+            return $this->jsonResponse(['error' => 'Webhook token is not configured'], 403);
+        }
+
         // Get authorization header
         $authHeader = $request->getHeaderLine('Authorization');
         $token = null;
-        
+
         if (preg_match('/Bearer\s+(.+)$/i', $authHeader, $matches)) {
             $token = $matches[1];
         }
-        
+
         // Get query parameters
         $params = $request->getQueryParams();
         $jobId = $params['job'] ?? null;
@@ -170,7 +177,7 @@ class SchedulerController
         $html = '<div class="scheduler-health">';
         $html .= '<p>Status: ' . $statusBadge;
         if ($message) {
-            $html .= ' - ' . htmlspecialchars($message);
+            $html .= ' - ' . htmlspecialchars((string) $message);
         }
         $html .= '</p>';
         
@@ -236,7 +243,7 @@ class SchedulerController
                 'systemd' => 'Systemd Timer',
                 'webhook' => 'Webhook Triggers',
                 'external' => 'External Triggers',
-                default => ucfirst($trigger)
+                default => ucfirst((string) $trigger)
             };
             
             $html .= '<li>' . $icon . ' <strong>' . $label . '</strong> <span class="badge badge-success">Active</span></li>';

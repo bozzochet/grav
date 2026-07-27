@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Page
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -48,6 +48,8 @@ use function in_array;
 use function is_array;
 use function is_int;
 use function is_string;
+use function json_encode;
+use function md5;
 
 /**
  * Class Pages
@@ -96,8 +98,20 @@ class Pages
     protected $initialized = false;
     /** @var string */
     protected $active_lang;
+    /** @var string|null */
+    protected $page_extension_regex;
     /** @var bool */
     protected $fire_events = false;
+    /** @var PageIndexStore|null Per-page store backing a lazily hydrated regular pages index. */
+    protected $index_store;
+    /** @var bool Guard against recursive rebuilds when a lazily indexed page fails to load. */
+    protected $index_store_rebuilding = false;
+    /** @var bool Routes live in the index store; $this->routes only overlays runtime additions and memoized reads. */
+    protected $routes_lazy = false;
+    /** @var bool Children lists live in the index store; $this->children only overlays runtime additions and memoized reads. */
+    protected $children_lazy = false;
+    /** @var bool Sort orders live in the index store; $this->sort only overlays runtime-built orders and memoized reads. */
+    protected $sort_lazy = false;
     /** @var Types|null */
     protected static $types;
     /** @var string|null */
@@ -168,7 +182,7 @@ class Pages
      */
     public function baseRoute($lang = null)
     {
-        $key = $lang ?: $this->active_lang ?: 'default';
+        $key = ($lang ?: $this->active_lang) ?: 'default';
 
         if (!isset($this->baseRoute[$key])) {
             /** @var Language $language */
@@ -217,7 +231,7 @@ class Pages
 
         // Start by checking that referrer came from our site.
         $root = $this->grav['base_url_absolute'];
-        if (!is_string($referrer) || !str_starts_with($referrer, $root)) {
+        if (!is_string($referrer) || !str_starts_with($referrer, (string) $root)) {
             return null;
         }
 
@@ -395,6 +409,10 @@ class Pages
      */
     public function instances()
     {
+        // Full listings hydrate every page anyway, so pull all payloads from the
+        // index store in one query instead of a point-read per page.
+        $this->hydrateIndexedPages();
+
         $instances = [];
         foreach ($this->index as $path => $instance) {
             $page = $this->get($path);
@@ -407,13 +425,124 @@ class Pages
     }
 
     /**
+     * Bulk-hydrate all lazily indexed pages from the per-page index store.
+     *
+     * @return void
+     */
+    protected function hydrateIndexedPages(): void
+    {
+        if (!$this->index_store) {
+            return;
+        }
+
+        $payloads = null;
+        foreach ($this->index as $path => $instance) {
+            if ($instance === true && !array_key_exists($path, $this->instances)) {
+                $payloads ??= $this->index_store->readAll();
+
+                $page = isset($payloads[$path]) ? @unserialize($payloads[$path]) : null;
+                if ($page instanceof PageInterface) {
+                    $this->instances[$path] = $page;
+                }
+                // Missing rows fall through to get(), which rebuilds the index.
+            }
+        }
+    }
+
+    /**
+     * Report how the pages index is being served this request, for the debugger.
+     *
+     * 'mode' is 'lazy' (per-page index store), 'blob' (classic single cache
+     * entry) or 'flex'. For lazy/blob, 'total' is the number of pages in the
+     * index and 'hydrated' is how many Page objects this request has actually
+     * built - the ratio shows whether the lazy index is saving work.
+     *
+     * @return array
+     */
+    public function getIndexStats(): array
+    {
+        if ($this->directory) {
+            return ['mode' => 'flex'];
+        }
+
+        $stats = [
+            'mode' => $this->index_store ? 'lazy' : 'blob',
+            'total' => count($this->index),
+            'hydrated' => count($this->instances),
+        ];
+        if ($this->index_store) {
+            $stats['engine'] = $this->index_store->getEngine();
+        }
+
+        return $stats;
+    }
+
+    /**
      * Returns a list of all routes.
      *
      * @return array
      */
     public function routes()
     {
+        if ($this->routes_lazy && $this->index_store) {
+            // Load the full stored map once; runtime-added routes win over stored ones.
+            $this->routes = array_replace($this->index_store->readAllRoutes(), $this->routes);
+            $this->routes_lazy = false;
+        }
+
         return $this->routes;
+    }
+
+    /**
+     * Resolve a route to a page path, using the index store for point lookups
+     * when the route map is lazy.
+     *
+     * @param string $route
+     * @return string|null
+     */
+    protected function routeToPath(string $route): ?string
+    {
+        $path = $this->routes[$route] ?? null;
+        if (null === $path && $this->routes_lazy && $this->index_store) {
+            $path = $this->index_store->readRoute($route);
+            if (null !== $path) {
+                $this->routes[$route] = $path;
+            }
+        }
+
+        return $path;
+    }
+
+    /**
+     * Get the children list of a parent path, reading through to the index
+     * store when the children map is lazy.
+     *
+     * @param string $path
+     * @return array
+     */
+    protected function childrenOf(string $path): array
+    {
+        if ($this->children_lazy && $this->index_store && !array_key_exists($path, $this->children)) {
+            $this->children[$path] = $this->index_store->readChildren($path) ?? [];
+        }
+
+        return $this->children[$path] ?? [];
+    }
+
+    /**
+     * Get the precomputed sort orders of a parent path, reading through to the
+     * index store when the sort map is lazy.
+     *
+     * @param string $path
+     * @return array
+     */
+    protected function sortOf(string $path): array
+    {
+        if ($this->sort_lazy && $this->index_store && !array_key_exists($path, $this->sort)) {
+            $this->sort[$path] = $this->index_store->readSort($path) ?? [];
+        }
+
+        return $this->sort[$path] ?? [];
     }
 
     /**
@@ -432,7 +561,11 @@ class Pages
         $route = $page->route($route);
         $parent = $page->parent();
         if ($parent) {
-            $this->children[$parent->path() ?? ''][$path] = ['slug' => $page->slug()];
+            $parentPath = $parent->path() ?? '';
+            // Materialize the stored children first so the runtime addition
+            // extends the list instead of shadowing it.
+            $this->children[$parentPath] = $this->childrenOf($parentPath);
+            $this->children[$parentPath][$path] = ['slug' => $page->slug()];
         }
         $this->routes[$route] = $path;
 
@@ -470,7 +603,7 @@ class Pages
             /** @var Uri $uri */
             $uri = $this->grav['uri'];
             foreach ($context['taxonomies'] as $taxonomy) {
-                $param = $uri->param(rawurlencode($taxonomy));
+                $param = $uri->param(rawurlencode((string) $taxonomy));
                 $items = is_string($param) ? explode(',', $param) : [];
                 foreach ($items as $item) {
                     $params['taxonomies'][$taxonomy][] = htmlspecialchars_decode(rawurldecode($item), ENT_QUOTES);
@@ -534,8 +667,8 @@ class Pages
             }
 
             // Convert non-type to type.
-            if (str_starts_with($type, 'non-')) {
-                $type = substr($type, 4);
+            if (str_starts_with((string) $type, 'non-')) {
+                $type = substr((string) $type, 4);
                 $filter = !$filter;
             }
 
@@ -610,9 +743,7 @@ class Pages
 
             if (is_array($sort_flags)) {
                 $sort_flags = array_map('constant', $sort_flags); //transform strings to constant value
-                $sort_flags = array_reduce($sort_flags, static function ($a, $b) {
-                    return $a | $b;
-                }, 0); //merge constant values using bit or
+                $sort_flags = array_reduce($sort_flags, static fn($a, $b) => $a | $b, 0); //merge constant values using bit or
             }
 
             $collection = $collection->order($by, $dir, $custom, $sort_flags);
@@ -645,7 +776,7 @@ class Pages
      * @param PageInterface|null $self
      * @return Collection
      */
-    protected function evaluate($value, PageInterface $self = null)
+    protected function evaluate($value, ?PageInterface $self = null)
     {
         // Parse command.
         if (is_string($value)) {
@@ -757,6 +888,10 @@ class Pages
                 break;
         }
 
+        if (!$collection instanceof Collection) {
+            $collection = new Collection($collection->toArray());
+        }
+
         return $collection;
     }
 
@@ -782,13 +917,13 @@ class Pages
             return [];
         }
 
-        $children = $this->children[$path] ?? [];
+        $children = $this->childrenOf($path);
 
         if (!$children) {
             return $children;
         }
 
-        if (!isset($this->sort[$path][$order_by])) {
+        if (!isset($this->sortOf($path)[$order_by])) {
             $this->buildSort($path, $children, $order_by, $page->orderManual(), $sort_flags);
         }
 
@@ -818,7 +953,7 @@ class Pages
         }
 
         $lookup = md5(json_encode($items) . json_encode($orderManual) . $orderBy . $orderDir);
-        if (!isset($this->sort[$lookup][$orderBy])) {
+        if (!isset($this->sortOf($lookup)[$orderBy])) {
             $this->buildSort($lookup, $items, $orderBy, $orderManual, $sort_flags);
         }
 
@@ -832,11 +967,27 @@ class Pages
     }
 
     /**
+     * Check whether a page path has already been hydrated into memory, without
+     * triggering hydration.
+     *
+     * Collection flag filters use this to prefer a page's live flags (which a
+     * plugin may have changed at runtime, e.g. the Login plugin's dynamic page
+     * visibility) over the flags frozen in the children index, while still
+     * avoiding a load for pages that are only lazily indexed. See getgrav/grav#4201.
+     *
+     * @param string $path
+     * @return bool
+     */
+    public function isInstantiated($path): bool
+    {
+        return array_key_exists((string)$path, $this->instances);
+    }
+
+    /**
      * Get a page instance.
      *
      * @param  string $path The filesystem full path of the page
      * @return PageInterface|null
-     * @throws RuntimeException
      */
     public function get($path)
     {
@@ -851,7 +1002,10 @@ class Pages
         }
 
         $instance = $this->index[$path] ?? null;
-        if (is_string($instance)) {
+        if ($instance === true) {
+            // Lazily hydrate a regular page from the per-page index store.
+            $instance = $this->loadIndexedPage($path);
+        } elseif (is_string($instance)) {
             if ($this->directory) {
                 /** @var Language $language */
                 $language = $this->grav['language'];
@@ -890,6 +1044,43 @@ class Pages
     }
 
     /**
+     * Hydrate a single regular page from the per-page index store.
+     *
+     * A missing or unreadable row means the store and the cached index have
+     * drifted apart (for example the file was deleted mid-request), so the
+     * whole index is rebuilt once from the filesystem as a fallback.
+     *
+     * @param string $path
+     * @return PageInterface|null
+     */
+    protected function loadIndexedPage(string $path): ?PageInterface
+    {
+        $payload = $this->index_store ? $this->index_store->read($path) : null;
+        $instance = is_string($payload) ? @unserialize($payload) : null;
+        if ($instance instanceof PageInterface) {
+            return $instance;
+        }
+
+        if (!$this->index_store_rebuilding) {
+            $this->index_store_rebuilding = true;
+
+            /** @var Debugger $debugger */
+            $debugger = $this->grav['debugger'];
+            $debugger->addMessage(sprintf('Lazily indexed page %s is missing or broken, rebuilding pages..', $path), 'debug');
+
+            $this->resetPages($this->getPagesPaths());
+            $this->index_store_rebuilding = false;
+
+            $instance = $this->index[$path] ?? null;
+            if ($instance instanceof PageInterface) {
+                return $instance;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get children of the path.
      *
      * @param string $path
@@ -897,8 +1088,7 @@ class Pages
      */
     public function children($path)
     {
-        $children = $this->children[(string)$path] ?? [];
-
+        $children = $this->childrenOf((string)$path);
         return new Collection($children, [], $this);
     }
 
@@ -963,12 +1153,12 @@ class Pages
         $route = urldecode((string)$route);
 
         // Fetch page if there's a defined route to it.
-        $path = $this->routes[$route] ?? null;
+        $path = $this->routeToPath($route);
         $page = null !== $path ? $this->get($path) : null;
 
         // Try without trailing slash
         if (null === $page && Utils::endsWith($route, '/')) {
-            $path = $this->routes[rtrim($route, '/')] ?? null;
+            $path = $this->routeToPath(rtrim($route, '/'));
             $page = null !== $path ? $this->get($path) : null;
         }
 
@@ -1007,9 +1197,9 @@ class Pages
         } else {
             // Use reverse order because of B/C (previously matched multiple and returned the last match).
             foreach (array_reverse($site_routes, true) as $pattern => $replace) {
-                $pattern = '#^' . str_replace('/', '\/', ltrim($pattern, '^')) . '#';
+                $pattern = '#^' . str_replace('/', '\/', ltrim((string) $pattern, '^')) . '#';
                 try {
-                    $found = preg_replace($pattern, $replace, $route);
+                    $found = preg_replace($pattern, (string) $replace, $route);
                     if ($found && $found !== $route) {
                         $page = $this->find($found);
                         if ($page) {
@@ -1087,11 +1277,11 @@ class Pages
         $site_redirects = $config->get('site.redirects');
         if (is_array($site_redirects)) {
             foreach ((array)$site_redirects as $pattern => $replace) {
-                $pattern = ltrim($pattern, '^');
+                $pattern = ltrim((string) $pattern, '^');
                 $pattern = '#^' . str_replace('/', '\/', $pattern) . '#';
                 try {
                     /** @var string $found */
-                    $found = preg_replace($pattern, $replace, $source_url);
+                    $found = preg_replace($pattern, (string) $replace, $source_url);
                     if ($found && $found !== $source_url) {
                         $this->grav->redirectLangSafe($found);
                     }
@@ -1138,7 +1328,7 @@ class Pages
 
         try {
             $blueprint = $this->blueprints->get($type);
-        } catch (RuntimeException $e) {
+        } catch (RuntimeException) {
             $blueprint = $this->blueprints->get('default');
         }
 
@@ -1156,7 +1346,7 @@ class Pages
      * @param PageInterface|null $current
      * @return Collection
      */
-    public function all(PageInterface $current = null)
+    public function all(?PageInterface $current = null)
     {
         $all = new Collection();
 
@@ -1196,10 +1386,17 @@ class Pages
     {
         $grav = Grav::instance();
 
-        /** @var Pages $pages */
-        $pages = $grav['pages'];
+        /** @var Cache $cache */
+        $cache = $grav['cache'];
+        $cache_id = 'parents-' . ($rawRoutes ? 'raw-' : '') . $grav['language']->getActive();
+        $parents = $cache->fetch($cache_id);
 
-        $parents = $pages->getList(null, 0, $rawRoutes);
+        if ($parents === false) {
+            /** @var Pages $pages */
+            $pages = $grav['pages'];
+            $parents = $pages->getList(null, 0, $rawRoutes);
+            $cache->save($cache_id, $parents);
+        }
 
         if (isset($grav['admin'])) {
             // Remove current route from parents
@@ -1230,7 +1427,7 @@ class Pages
      * @param bool $limitLevels
      * @return array
      */
-    public function getList(PageInterface $current = null, $level = 0, $rawRoutes = false, $showAll = true, $showFullpath = false, $showSlug = false, $showModular = false, $limitLevels = false)
+    public function getList(?PageInterface $current = null, $level = 0, $rawRoutes = false, $showAll = true, $showFullpath = false, $showSlug = false, $showModular = false, $limitLevels = false)
     {
         if (!$current) {
             if ($level) {
@@ -1250,7 +1447,7 @@ class Pages
             }
 
             if ($showFullpath) {
-                $option = htmlspecialchars($current->route());
+                $option = htmlspecialchars((string) $current->route());
             } else {
                 $extra  = $showSlug ? '(' . $current->slug() . ') ' : '';
                 $option = str_repeat('&mdash;-', $level). '&rtrif; ' . $extra . htmlspecialchars($current->title());
@@ -1333,7 +1530,7 @@ class Pages
             $locator = $grav['locator'];
             foreach ($types as $type => $paths) {
                 foreach ($paths as $k => $path) {
-                    if (strpos($path, 'blueprints://') === 0) {
+                    if (str_starts_with((string) $path, 'blueprints://')) {
                         unset($paths[$k]);
                     }
                 }
@@ -1389,15 +1586,11 @@ class Pages
 
             $type = $page && $page->isModule() ? 'modular' : 'standard';
         }
-
-        switch ($type) {
-            case 'standard':
-                return static::types();
-            case 'modular':
-                return static::modularTypes();
-        }
-
-        return [];
+        return match ($type) {
+            'standard' => static::types(),
+            'modular' => static::modularTypes(),
+            default => [],
+        };
     }
 
     /**
@@ -1471,13 +1664,13 @@ class Pages
                         } else {
                             $home = $home_aliases[$default];
                         }
-                    } catch (ErrorException $e) {
+                    } catch (ErrorException) {
                         $home = $home_aliases[$default];
                     }
                 }
             }
 
-            self::$home_route = trim($home, '/');
+            self::$home_route = trim((string) $home, '/');
         }
 
         return self::$home_route;
@@ -1725,21 +1918,8 @@ class Pages
             /** @var Language $language */
             $language = $this->grav['language'];
 
-            // how should we check for last modified? Default is by file
-            switch ($this->check_method) {
-                case 'none':
-                case 'off':
-                    $hash = 0;
-                    break;
-                case 'folder':
-                    $hash = Folder::lastModifiedFolder($pages_dirs);
-                    break;
-                case 'hash':
-                    $hash = Folder::hashAllFiles($pages_dirs);
-                    break;
-                default:
-                    $hash = Folder::lastModifiedFile($pages_dirs);
-            }
+            $interval = (int)$config->get('system.cache.check.interval', 0);
+            $hash = $this->resolvePagesHash($pages_dirs, $interval, (string)$this->check_method);
 
             $this->simple_pages_hash = json_encode($pages_dirs) . $hash . $config->checksum();
             $this->pages_cache_id = md5($this->simple_pages_hash . $language->getActive());
@@ -1748,13 +1928,34 @@ class Pages
             $cache = $this->grav['cache'];
             $cached = $cache->fetch($this->pages_cache_id);
             if ($cached && $this->getVersion() === $cached[0]) {
-                [, $this->index, $this->routes, $this->children, $taxonomy_map, $this->sort] = $cached;
+                // A lazy index stores true-markers instead of Page objects; the pages
+                // themselves live in the per-page index store and hydrate on access.
+                $lazy = !empty($cached[6]);
+                $store = $lazy ? $this->openIndexStore($pages_dirs) : null;
 
-                /** @var Taxonomy $taxonomy */
-                $taxonomy = $this->grav['taxonomy'];
-                $taxonomy->taxonomy($taxonomy_map);
+                if (!$lazy || ($store && $store->isValid($this->pages_cache_id))) {
+                    $this->index_store = $store;
+                    [, $this->index, $this->routes, $this->children, $taxonomy_map, $this->sort] = $cached;
 
-                return;
+                    /** @var Taxonomy $taxonomy */
+                    $taxonomy = $this->grav['taxonomy'];
+                    if ($lazy) {
+                        // Routes, children lists, sort orders and the taxonomy map
+                        // live in the index store and load on first use.
+                        $this->routes_lazy = true;
+                        $this->children_lazy = true;
+                        $this->sort_lazy = true;
+                        $taxonomy->setLoader(
+                            fn() => $this->index_store ? $this->index_store->readTaxonomy() : [],
+                            fn(string $type, string $value) => $this->index_store ? $this->index_store->readTaxonomyValue($type, $value) : [],
+                            $language->getLanguage()
+                        );
+                    } else {
+                        $taxonomy->taxonomy($taxonomy_map);
+                    }
+
+                    return;
+                }
             }
 
             $this->grav['debugger']->addMessage('Page cache missed, rebuilding pages..');
@@ -1789,24 +1990,140 @@ class Pages
      */
     public function resetPages(array $pages_dirs): void
     {
+        // A full rebuild produces complete in-memory maps, so any lazy state from
+        // a previously loaded cache no longer applies.
+        $this->routes_lazy = false;
+        $this->children_lazy = false;
+        $this->sort_lazy = false;
         $this->sort = [];
+
+        /** @var Taxonomy $taxonomy */
+        $taxonomy = $this->grav['taxonomy'];
+        $taxonomy->setLoader(null);
 
         foreach ($pages_dirs as $dir) {
             $this->recurse($dir);
         }
 
         $this->buildRoutes();
+        $this->enrichChildrenIndex();
 
         // cache if needed
         if ($this->grav['config']->get('system.cache.enabled')) {
             /** @var Cache $cache */
             $cache = $this->grav['cache'];
-            /** @var Taxonomy $taxonomy */
-            $taxonomy = $this->grav['taxonomy'];
+
+            // Store each page as its own row - along with the route, children, sort
+            // and taxonomy maps - so warm requests hydrate only what they touch,
+            // instead of unserializing data for every page on the site. The full
+            // in-memory index built above keeps its objects for this request.
+            $index = $this->index;
+            $lazy = false;
+            if ($this->pages_cache_id) {
+                $store = $this->index_store ?? $this->openIndexStore($pages_dirs);
+                if ($store && $store->rebuild($this->pages_cache_id, [
+                    'pages' => $this->serializeIndex(),
+                    'routes' => $this->routes,
+                    'children' => $this->children,
+                    'sorts' => $this->sort,
+                    'taxonomy' => $taxonomy->taxonomy(),
+                ])) {
+                    $this->index_store = $store;
+                    $lazy = true;
+                    $index = array_fill_keys(array_keys($this->index), true);
+                }
+            }
 
             // save pages, routes, taxonomy, and sort to cache
-            $cache->save($this->pages_cache_id, [$this->getVersion(), $this->index, $this->routes, $this->children, $taxonomy->taxonomy(), $this->sort]);
+            if ($lazy) {
+                $cache->save($this->pages_cache_id, [$this->getVersion(), $index, [], [], [], [], true]);
+            } else {
+                $cache->save($this->pages_cache_id, [$this->getVersion(), $index, $this->routes, $this->children, $taxonomy->taxonomy(), $this->sort, false]);
+            }
         }
+    }
+
+    /**
+     * Record each child's menu-relevant flags in the children index.
+     *
+     * Navigation filters a folder's children down to the visible ones, and
+     * collections filter by routable/published/module. Those flags are set at
+     * page init (folder prefix, header, publish state) and are frozen in the
+     * cache just like the rest of the page, so storing them alongside each
+     * child lets the Collection filters prune without hydrating every page
+     * first - the whole point when the index is lazy. Runs once at build time,
+     * when every page is already in memory.
+     *
+     * @return void
+     */
+    protected function enrichChildrenIndex(): void
+    {
+        foreach ($this->children as $parentPath => $list) {
+            foreach ($list as $childPath => $info) {
+                $child = $this->index[$childPath] ?? null;
+                if ($child instanceof PageInterface) {
+                    $this->children[$parentPath][$childPath] = [
+                        'slug' => $info['slug'] ?? $child->slug(),
+                        'visible' => $child->visible(),
+                        'routable' => $child->routable(),
+                        'published' => $child->published(),
+                        'module' => $child->isModule(),
+                        // Common sort keys, frozen here so ordered collections can
+                        // be sorted straight from the index without loading pages.
+                        'title' => $child->title(),
+                        'date' => $child->date(),
+                        'modified' => $child->modified(),
+                        'publish_date' => $child->publishDate(),
+                        'folder' => $child->folder(),
+                    ];
+                }
+            }
+        }
+    }
+
+    /**
+     * Serialize the in-memory page index for the per-page index store.
+     *
+     * @return \Generator<string,string>
+     */
+    protected function serializeIndex(): \Generator
+    {
+        foreach ($this->index as $path => $page) {
+            if ($page instanceof PageInterface) {
+                yield $path => serialize($page);
+            }
+        }
+    }
+
+    /**
+     * Open the per-page index store backing the lazy regular pages index.
+     * Returns null when not opted in, when Flex pages are active, or when no
+     * supported database engine (pdo_sqlite or YetiSQL) is available.
+     *
+     * The lazy index is an experimental opt-in (system.pages.lazy_index);
+     * without it the classic single-blob pages cache is used unchanged.
+     *
+     * @param array $pagesDirs
+     * @return PageIndexStore|null
+     */
+    protected function openIndexStore(array $pagesDirs): ?PageIndexStore
+    {
+        if ($this->directory || !$this->grav['config']->get('system.pages.lazy_index', false)) {
+            return null;
+        }
+
+        /** @var UniformResourceLocator $locator */
+        $locator = $this->grav['locator'];
+        $dir = $locator->findResource('cache://compiled/pages', true, true);
+        if (!is_string($dir)) {
+            return null;
+        }
+
+        // Stable name per page dirs + language; content changes are detected via
+        // the cache id stored inside the file, so the file gets rewritten in place.
+        $name = 'index-' . md5(json_encode($pagesDirs) . (string)$this->active_lang);
+
+        return PageIndexStore::open($dir, $name);
     }
 
     /**
@@ -1818,7 +2135,7 @@ class Pages
      * @throws RuntimeException
      * @internal
      */
-    protected function recurse(string $directory, PageInterface $parent = null)
+    protected function recurse(string $directory, ?PageInterface $parent = null)
     {
         $directory = rtrim($directory, DS);
         $page = new Page;
@@ -1854,40 +2171,43 @@ class Pages
             throw new RuntimeException('Fatal error when creating page instances.');
         }
 
-        // Build regular expression for all the allowed page extensions.
-        $page_extensions = $language->getFallbackPageExtensions();
-        $regex = '/^[^\.]*(' . implode('|', array_map(
-            static function ($str) {
-                return preg_quote($str, '/');
-            },
-            $page_extensions
-        )) . ')$/';
+        $page_extensions = array_flip($language->getFallbackPageExtensions());
+        
+        // $regex = $this->page_extension_regex;
 
         $folders = [];
         $page_found = null;
         $page_extension = '.md';
         $last_modified = 0;
 
+        $ignore_files = array_flip($this->ignore_files);
+        $ignore_folders = array_flip($this->ignore_folders);
+
         $iterator = new FilesystemIterator($directory);
         foreach ($iterator as $file) {
             $filename = $file->getFilename();
 
             // Ignore all hidden files if set.
-            if ($this->ignore_hidden && $filename && strpos($filename, '.') === 0) {
+            if ($this->ignore_hidden && $filename && str_starts_with($filename, '.')) {
+                continue;
+            }
+
+            // Skip broken symlinks.
+            if ($file->isLink() && $file->getRealPath() === false) {
                 continue;
             }
 
             // Handle folders later.
             if ($file->isDir()) {
                 // But ignore all folders in ignore list.
-                if (!in_array($filename, $this->ignore_folders, true)) {
+                if (!isset($ignore_folders[$filename])) {
                     $folders[] = $file;
                 }
                 continue;
             }
 
             // Ignore all files in ignore list.
-            if (in_array($filename, $this->ignore_files, true)) {
+            if (isset($ignore_files[$filename])) {
                 continue;
             }
 
@@ -1898,12 +2218,15 @@ class Pages
             }
 
             // Page is the one that matches to $page_extensions list with the lowest index number.
-            if (preg_match($regex, $filename, $matches, PREG_OFFSET_CAPTURE)) {
-                $ext = $matches[1][0];
-
-                if ($page_found === null || array_search($ext, $page_extensions, true) < array_search($page_extension, $page_extensions, true)) {
-                    $page_found = $file;
-                    $page_extension = $ext;
+            // Optimized version avoiding preg_match
+            $pos = strpos($filename, '.');
+            if ($pos !== false && $pos > 0) {
+                $ext = substr($filename, $pos);
+                if (isset($page_extensions[$ext])) {
+                    if ($page_found === null || $page_extensions[$ext] < $page_extensions[$page_extension]) {
+                        $page_found = $file;
+                        $page_extension = $ext;
+                    }
                 }
             }
         }
@@ -1990,9 +2313,9 @@ class Pages
         // Get the home route
         $home = self::resetHomeRoute();
         // Build routes and taxonomy map.
-        /** @var PageInterface|string $page */
+        /** @var PageInterface|string|bool $page */
         foreach ($this->index as $path => $page) {
-            if (is_string($page)) {
+            if (!$page instanceof PageInterface) {
                 $page = $this->get($path);
             }
 
@@ -2075,52 +2398,62 @@ class Pages
         $header_default = null;
 
         // do this header query work only once
-        if (strpos($order_by, 'header.') === 0) {
+        if (str_starts_with($order_by, 'header.')) {
             $query = explode('|', str_replace('header.', '', $order_by), 2);
             $header_query = array_shift($query) ?? '';
             $header_default = array_shift($query);
         }
 
         foreach ($pages as $key => $info) {
-            $child = $this->get($key);
-            if (!$child) {
-                throw new RuntimeException("Page does not exist: {$key}");
-            }
+            // The index entry carries the common sort keys, so load the page only
+            // when the value we need isn't already there (header sorts, etc.).
+            $meta = is_array($info) ? $info : [];
+            $child = null;
+            $load = function () use (&$child, $key) {
+                if ($child === null) {
+                    $child = $this->get($key);
+                    if (!$child) {
+                        throw new RuntimeException("Page does not exist: {$key}");
+                    }
+                }
+
+                return $child;
+            };
 
             switch ($order_by) {
                 case 'title':
-                    $list[$key] = $child->title();
+                    $list[$key] = $meta['title'] ?? $load()->title();
                     break;
                 case 'date':
-                    $list[$key] = $child->date();
+                    $list[$key] = $meta['date'] ?? $load()->date();
                     $sort_flags = SORT_REGULAR;
                     break;
                 case 'modified':
-                    $list[$key] = $child->modified();
+                    $list[$key] = $meta['modified'] ?? $load()->modified();
                     $sort_flags = SORT_REGULAR;
                     break;
                 case 'publish_date':
-                    $list[$key] = $child->publishDate();
+                    $list[$key] = $meta['publish_date'] ?? $load()->publishDate();
                     $sort_flags = SORT_REGULAR;
                     break;
                 case 'unpublish_date':
-                    $list[$key] = $child->unpublishDate();
+                    $list[$key] = $load()->unpublishDate();
                     $sort_flags = SORT_REGULAR;
                     break;
                 case 'slug':
-                    $list[$key] = $child->slug();
+                    $list[$key] = $meta['slug'] ?? $load()->slug();
                     break;
                 case 'basename':
                     $list[$key] = Utils::basename($key);
                     break;
                 case 'folder':
-                    $list[$key] = $child->folder();
+                    $list[$key] = $meta['folder'] ?? $load()->folder();
                     break;
                 case 'manual':
                 case 'default':
                 default:
                     if (is_string($header_query)) {
-                        $child_header = $child->header();
+                        $child_header = $load()->header();
                         if (!$child_header instanceof Header) {
                             $child_header = new Header((array)$child_header);
                         }
@@ -2155,9 +2488,7 @@ class Pages
                 if ($col) {
                     $col->setAttribute(Collator::NUMERIC_COLLATION, Collator::ON);
                     if (($sort_flags & SORT_NATURAL) === SORT_NATURAL) {
-                        $list = preg_replace_callback('~([0-9]+)\.~', static function ($number) {
-                            return sprintf('%032d.', $number[0]);
-                        }, $list);
+                        $list = preg_replace_callback('~([0-9]+)\.~', static fn($number) => sprintf('%032d.', $number[0]), $list);
                         if (!is_array($list)) {
                             throw new RuntimeException('Internal Error');
                         }
@@ -2226,11 +2557,56 @@ class Pages
     }
 
     /**
+     * Resolve filesystem hash for pages with optional throttling to avoid expensive scans every request.
+     */
+    protected function resolvePagesHash(array $pagesDirs, int $interval, string $method): string|int
+    {
+        if ($method === 'none' || $method === 'off') {
+            return 0;
+        }
+
+        $resolver = static function () use ($pagesDirs, $method) {
+            return match ($method) {
+                'folder' => Folder::lastModifiedFolder($pagesDirs),
+                'hash' => Folder::hashAllFiles($pagesDirs),
+                default => Folder::lastModifiedFile($pagesDirs),
+            };
+        };
+
+        if ($interval <= 0) {
+            return $resolver();
+        }
+
+        /** @var Cache $cache */
+        $cache = $this->grav['cache'];
+        if (!$cache) {
+            return $resolver();
+        }
+
+        $configChecksum = $this->grav['config']->checksum();
+        $cacheKey = 'pages-hash-' . $method . '-' . md5(json_encode($pagesDirs) . $configChecksum);
+
+        $cached = $cache->fetch($cacheKey);
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $hash = $resolver();
+        $cache->save($cacheKey, $hash, $interval);
+
+        return $hash;
+    }
+
+    /**
      * @return string
      */
     protected function getVersion(): string
     {
-        return $this->directory ? 'flex' : 'regular';
+        // 'regular3': the cached tuple gained a lazy-index flag and marker entries,
+        // and lazy caches keep routes/children/sort/taxonomy in the index store;
+        // the bump makes older and newer Grav versions rebuild instead of
+        // misreading each other's cache.
+        return $this->directory ? 'flex' : 'regular3';
     }
 
     /**

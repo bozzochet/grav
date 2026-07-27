@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Console\Gpm
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -232,7 +232,7 @@ class UpdateCommand extends GpmCommand
                     // index
                     str_pad((string)$index++, 2, '0', STR_PAD_LEFT) . '. ' .
                     // name
-                    '<cyan>' . str_pad($package->name, 15) . '</cyan> ' .
+                    '<cyan>' . str_pad((string) $package->name, 15) . '</cyan> ' .
                     // version
                     "[v<magenta>{$package->version}</magenta> -> v<green>{$package->available}</green>]" .
                     // compat badges
@@ -254,10 +254,6 @@ class UpdateCommand extends GpmCommand
                 return 1;
             }
         }
-
-        /** @var \Grav\Common\Recovery\RecoveryManager $recovery */
-        $recovery = Grav::instance()['recovery'];
-        $recovery->markUpgradeWindow('package-update', ['scope' => 'core']);
 
         // finally update
         $install_command = $this->getApplication()->find('install');

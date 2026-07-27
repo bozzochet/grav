@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Console
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -20,7 +20,6 @@ use Grav\Console\Cli\NewProjectCommand;
 use Grav\Console\Cli\PageSystemValidatorCommand;
 use Grav\Console\Cli\SandboxCommand;
 use Grav\Console\Cli\SchedulerCommand;
-use Grav\Console\Cli\SafeUpgradeRunCommand;
 use Grav\Console\Cli\SecurityCommand;
 use Grav\Console\Cli\ServerCommand;
 use Grav\Console\Cli\YamlLinterCommand;
@@ -50,7 +49,6 @@ class GravApplication extends Application
             new YamlLinterCommand(),
             new ServerCommand(),
             new PageSystemValidatorCommand(),
-            new SafeUpgradeRunCommand(),
         ]);
     }
 }

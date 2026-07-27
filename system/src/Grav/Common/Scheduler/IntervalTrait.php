@@ -3,13 +3,12 @@
 /**
  * @package    Grav\Common\Scheduler
  * @author     Originally based on peppeocchi/php-cron-scheduler modified for Grav integration
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
 namespace Grav\Common\Scheduler;
 
-use Cron\CronExpression;
 use InvalidArgumentException;
 use function is_string;
 
@@ -21,14 +20,18 @@ trait IntervalTrait
 {
     /**
      * Set the Job execution time.
-     *compo
+     *
      * @param  string  $expression
      * @return self
      */
     public function at($expression)
     {
         $this->at = $expression;
-        $this->executionTime = CronExpression::factory($expression);
+        // The parsed CronExpression is built lazily in isDue(); parsing here would
+        // load and run the cron parser for every registered job even when nothing
+        // in the request ever checks the schedule. Invalid expressions still
+        // resolve to null there, keeping the same never-due behavior.
+        $this->executionTime = null;
 
         return $this;
     }

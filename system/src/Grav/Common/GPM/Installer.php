@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\GPM
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -43,6 +43,8 @@ class Installer
     public const ZIP_EXTRACT_ERROR = 64;
     /** @const Invalid source file */
     public const INVALID_SOURCE = 128;
+    /** @const Archive exceeds the configured extraction limits (decompression bomb / inode exhaustion / excessive nesting) */
+    public const ZIP_LIMITS_ERROR = 256;
 
     /** @var string Destination folder on which validation checks are applied */
     protected static $target;
@@ -81,7 +83,7 @@ class Installer
     {
         $destination = rtrim($destination, DS);
         $options = array_merge(self::$options, $options);
-        $install_path = rtrim($destination . DS . ltrim($options['install_path'], DS), DS);
+        $install_path = rtrim($destination . DS . ltrim((string) $options['install_path'], DS), DS);
 
         if (!self::isGravInstance($destination) || !self::isValidDestination(
             $install_path,
@@ -179,12 +181,82 @@ class Installer
         $archive = $zip->open($zip_file);
 
         if ($archive === true) {
+            // GHSA-w48r-jppp-rcfw: validate every entry name before extraction.
+            // ZipArchive::extractTo would otherwise honour `../` segments and
+            // absolute paths, letting a crafted plugin/theme ZIP write files
+            // anywhere the web server can reach (Zip Slip, CVE-2018-1000544
+            // family). Note: this hardens the path layer; it does NOT and
+            // cannot defend against a well-formed but malicious plugin whose
+            // own PHP code is the payload — that's a "trust the source"
+            // problem the admin must own when using directInstall.
+            // GHSA-2vcx-h8p2-9pg9: bound what extractTo() will write to disk.
+            // ZipArchive::extractTo applies no limit on total uncompressed size,
+            // entry count, or directory depth, so a crafted archive can fill the
+            // disk / exhaust inodes (decompression bomb, CWE-409) or nest deeply
+            // enough that the recursive cleanup (Folder::delete) overflows the
+            // stack (CWE-674). Reject anything over the configured limits *before*
+            // creating the destination or extracting, so nothing lands on disk.
+            // GHSA-8h9x-89f2-m7x3: the declared uncompressed size is forgeable, so
+            // the size cap is enforced again during streamed extraction below.
+            [$maxSize, $maxFiles, $maxDepth] = self::archiveLimits();
+            $numFiles = $zip->numFiles;
+
+            if ($maxFiles > 0 && $numFiles > $maxFiles) {
+                self::$error = self::ZIP_LIMITS_ERROR;
+                $zip->close();
+                return false;
+            }
+
+            $totalSize = 0;
+            for ($i = 0; $i < $numFiles; $i++) {
+                $entryName = (string) $zip->getNameIndex($i);
+                if (!self::isSafeArchiveEntry($entryName)) {
+                    self::$error = self::ZIP_EXTRACT_ERROR;
+                    $zip->close();
+                    return false;
+                }
+
+                if ($maxDepth > 0) {
+                    // Count path segments (folder nesting). Trailing slash on
+                    // directory entries is harmless to the split count.
+                    $depth = count(array_filter(preg_split('#[\\\\/]+#', trim($entryName, '/\\'))));
+                    if ($depth > $maxDepth) {
+                        self::$error = self::ZIP_LIMITS_ERROR;
+                        $zip->close();
+                        return false;
+                    }
+                }
+
+                if ($maxSize > 0) {
+                    // Advisory only: statIndex()['size'] is the central-directory
+                    // declared size, which the archive author can forge small
+                    // (GHSA-8h9x-89f2-m7x3). Good for an early reject of honest
+                    // oversized archives; the real cap is enforced during the
+                    // streamed extraction below, against bytes actually inflated.
+                    $stat = $zip->statIndex($i);
+                    if (is_array($stat) && isset($stat['size'])) {
+                        $totalSize += (int) $stat['size'];
+                        if ($totalSize > $maxSize) {
+                            self::$error = self::ZIP_LIMITS_ERROR;
+                            $zip->close();
+                            return false;
+                        }
+                    }
+                }
+            }
+
             Folder::create($destination);
 
-            $unzip = $zip->extractTo($destination);
-
-
-            if (!$unzip) {
+            if ($maxSize > 0) {
+                // Enforce the uncompressed-size cap against bytes actually written,
+                // so a forged-small declared size cannot smuggle a bomb past the
+                // advisory pre-pass above (GHSA-8h9x-89f2-m7x3). On failure the
+                // helper sets self::$error and removes the destination.
+                if (!self::extractStreamed($zip, $destination, $numFiles, $maxSize)) {
+                    $zip->close();
+                    return false;
+                }
+            } elseif (!$zip->extractTo($destination)) {
                 self::$error = self::ZIP_EXTRACT_ERROR;
                 Folder::delete($destination);
                 $zip->close();
@@ -198,6 +270,8 @@ class Installer
             $package_folder_name = preg_replace('#\./$#', '', $package_folder_name);
             $zip->close();
 
+            self::$error = self::OK;
+
             return $destination . '/' . $package_folder_name;
         }
 
@@ -205,6 +279,141 @@ class Installer
         self::$error_zip = $archive;
 
         return false;
+    }
+
+    /**
+     * Reject Zip Slip primitives in archive entry names: empty names, NUL
+     * bytes, absolute paths, or any path segment that is `..`. Forward and
+     * back slashes are both treated as separators so Windows-authored
+     * archives are also covered.
+     *
+     * @internal Public for testing.
+     */
+    public static function isSafeArchiveEntry(string $name): bool
+    {
+        if ($name === '' || str_contains($name, "\0")) {
+            return false;
+        }
+        if (str_starts_with($name, '/') || str_starts_with($name, '\\')) {
+            return false;
+        }
+        // Windows drive letter: C:\..., D:/...
+        if (preg_match('#^[A-Za-z]:[/\\\\]#', $name) === 1) {
+            return false;
+        }
+        // Any `..` path segment, regardless of slash flavour.
+        foreach (preg_split('#[\\\\/]+#', $name) as $segment) {
+            if ($segment === '..') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Extraction safety limits for unZip(), read from
+     * `system.gpm.archive.*` with conservative defaults that comfortably
+     * clear any legitimate Grav, plugin, or theme package. Set any value to
+     * 0 to disable that particular check.
+     *
+     * @return array{0:int,1:int,2:int} [maxUncompressedBytes, maxFiles, maxDepth]
+     */
+    protected static function archiveLimits(): array
+    {
+        $config = Grav::instance()['config'] ?? null;
+
+        $maxSize  = $config ? (int) $config->get('system.gpm.archive.max_uncompressed_size', 1073741824) : 1073741824; // 1 GiB
+        $maxFiles = $config ? (int) $config->get('system.gpm.archive.max_files', 50000) : 50000;
+        $maxDepth = $config ? (int) $config->get('system.gpm.archive.max_depth', 48) : 48;
+
+        return [$maxSize, $maxFiles, $maxDepth];
+    }
+
+    /**
+     * Extract every entry through a counting stream, aborting the moment the
+     * cumulative inflated size exceeds $maxSize. Enforces the cap against bytes
+     * actually written rather than the attacker-controlled sizes declared in the
+     * central directory, so a forged archive cannot fill the disk
+     * (GHSA-8h9x-89f2-m7x3). Entry paths were validated by isSafeArchiveEntry()
+     * in unZip()'s pre-pass, so they are safe to write here.
+     *
+     * On failure this sets self::$error and removes $destination; the caller is
+     * responsible for closing the archive.
+     *
+     * @param ZipArchive $zip
+     * @param string $destination
+     * @param int $numFiles
+     * @param int $maxSize
+     * @return bool true on success, false if a limit was hit or an entry failed to write
+     */
+    protected static function extractStreamed(ZipArchive $zip, string $destination, int $numFiles, int $maxSize): bool
+    {
+        $written = 0;
+        $chunkSize = 262144; // 256 KiB
+
+        for ($i = 0; $i < $numFiles; $i++) {
+            $name = $zip->getNameIndex($i);
+            if ($name === false) {
+                continue;
+            }
+
+            $relative = str_replace('\\', '/', $name);
+            $target = $destination . '/' . $relative;
+
+            if (str_ends_with($relative, '/')) {
+                Folder::create($target);
+                continue;
+            }
+
+            $dir = dirname($target);
+            if (!is_dir($dir)) {
+                Folder::create($dir);
+            }
+
+            $stream = $zip->getStream($name);
+            if ($stream === false) {
+                self::$error = self::ZIP_EXTRACT_ERROR;
+                Folder::delete($destination);
+                return false;
+            }
+
+            $out = fopen($target, 'wb');
+            if ($out === false) {
+                fclose($stream);
+                self::$error = self::ZIP_EXTRACT_ERROR;
+                Folder::delete($destination);
+                return false;
+            }
+
+            while (!feof($stream)) {
+                $buffer = fread($stream, $chunkSize);
+                if ($buffer === false) {
+                    break;
+                }
+
+                $written += strlen($buffer);
+                if ($written > $maxSize) {
+                    fclose($out);
+                    fclose($stream);
+                    self::$error = self::ZIP_LIMITS_ERROR;
+                    Folder::delete($destination);
+                    return false;
+                }
+
+                if ($buffer !== '' && fwrite($out, $buffer) === false) {
+                    fclose($out);
+                    fclose($stream);
+                    self::$error = self::ZIP_EXTRACT_ERROR;
+                    Folder::delete($destination);
+                    return false;
+                }
+            }
+
+            fclose($out);
+            fclose($stream);
+        }
+
+        return true;
     }
 
     /**
@@ -312,11 +521,24 @@ class Installer
             $path = $install_path . DS . $file->getFilename();
 
             if ($file->isDir()) {
-                Folder::delete($path);
-                if ($keep_source) {
-                    Folder::copy($file->getPathname(), $path);
-                } else {
-                    Folder::move($file->getPathname(), $path);
+                try {
+                    Folder::delete($path);
+                    if ($keep_source) {
+                        Folder::copy($file->getPathname(), $path);
+                    } else {
+                        Folder::move($file->getPathname(), $path);
+                    }
+                } catch (\Throwable) {
+                    // The fast path replaces a directory by deleting it and
+                    // dropping the new one in. That fails on shared-folder
+                    // filesystems (VirtualBox vboxsf, CIFS/SMB, some Docker bind
+                    // mounts) when the directory holds an open file — most
+                    // notably bin/, which contains bin/gpm, the very script
+                    // running this upgrade: those mounts refuse to unlink a file
+                    // that is currently open. Fall back to merging the new files
+                    // in place. Overwriting works even for the in-use script,
+                    // since PHP already holds it in memory (getgrav/grav#4171).
+                    self::mergeInstall($file->getPathname(), $path);
                 }
 
                 if ($file->getFilename() === 'bin') {
@@ -339,6 +561,69 @@ class Installer
         }
 
         return true;
+    }
+
+    /**
+     * Merge a directory into an existing one in place, without deleting the
+     * destination first.
+     *
+     * The standard install replaces a directory by removing it and copying the
+     * new one in. On shared-folder filesystems that refuse to unlink an open
+     * file (vboxsf, CIFS/SMB, some Docker bind mounts), that delete fails when
+     * the directory holds a file in use — e.g. bin/gpm during a CLI
+     * self-upgrade. Overwriting a file in place succeeds where unlinking does
+     * not, so this copies every entry from the new package over the existing
+     * tree and then best-effort prunes anything the new release no longer ships,
+     * matching the delete-then-replace result without the destructive delete.
+     *
+     * @param  string $source_path  Directory from the update package.
+     * @param  string $install_path Directory being upgraded, overwritten in place.
+     * @return void
+     */
+    protected static function mergeInstall($source_path, $install_path)
+    {
+        if (!is_dir($install_path)) {
+            Folder::create($install_path);
+        }
+
+        $keep = [];
+        foreach (new DirectoryIterator($source_path) as $file) {
+            if ($file->isDot()) {
+                continue;
+            }
+            $name = $file->getFilename();
+            $keep[$name] = true;
+            $target = $install_path . DS . $name;
+
+            if ($file->isDir()) {
+                self::mergeInstall($file->getPathname(), $target);
+            } else {
+                // Overwrite in place. copy() truncates the destination, which
+                // works even when the file is open (the running bin/gpm) on
+                // mounts that would reject an unlink of the same file.
+                @copy($file->getPathname(), $target);
+            }
+        }
+
+        // Best-effort prune of files the new release dropped, so an in-place
+        // merge leaves the same result as delete-then-replace. Suppressed: a
+        // leftover we cannot remove (in use, or a shared-folder quirk) must not
+        // abort an otherwise successful upgrade.
+        foreach (new DirectoryIterator($install_path) as $file) {
+            if ($file->isDot() || isset($keep[$file->getFilename()])) {
+                continue;
+            }
+            $stale = $file->getPathname();
+            if ($file->isDir()) {
+                try {
+                    Folder::delete($stale);
+                } catch (\Throwable) {
+                    // leave it; pruning is best-effort
+                }
+            } else {
+                @unlink($stale);
+            }
+        }
     }
 
     /**
@@ -526,8 +811,12 @@ class Installer
                 $msg = 'Invalid source file';
                 break;
 
+            case self::ZIP_LIMITS_ERROR:
+                $msg = 'The package exceeds the allowed extraction limits (uncompressed size, file count, or directory depth) and was rejected';
+                break;
+
             default:
-                $msg = 'Unknown Error';
+                $msg = 'Unknown installer error (code: ' . self::$error . ')';
                 break;
         }
 

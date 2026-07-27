@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -194,12 +194,12 @@ class Assets extends PropertyObject
                 }
 
                 $params = array_merge([$location], $params);
-                call_user_func_array([$this, 'add'], $params);
+                call_user_func_array($this->add(...), $params);
             }
         } elseif (isset($this->collections[$asset])) {
             array_shift($args);
             $args = array_merge([$this->collections[$asset]], $args);
-            call_user_func_array([$this, 'add'], $args);
+            call_user_func_array($this->add(...), $args);
         } else {
             // Get extension
             $path = parse_url($asset, PHP_URL_PATH);
@@ -209,11 +209,11 @@ class Assets extends PropertyObject
             if ($extension !== '') {
                 $extension = strtolower($extension);
                 if ($extension === 'css') {
-                    call_user_func_array([$this, 'addCss'], $args);
+                    call_user_func_array($this->addCss(...), $args);
                 } elseif ($extension === 'js') {
-                    call_user_func_array([$this, 'addJs'], $args);
+                    call_user_func_array($this->addJs(...), $args);
                 } elseif ($extension === 'mjs') {
-                    call_user_func_array([$this, 'addJsModule'], $args);
+                    call_user_func_array($this->addJsModule(...), $args);
                 }
             }
         }
@@ -261,7 +261,7 @@ class Assets extends PropertyObject
                     $default = 'before';
                 }
 
-                $options['position'] = $options['position'] ?? $default;
+                $options['position'] ??= $default;
             }
 
             unset($options['pipeline']);
@@ -401,9 +401,10 @@ class Assets extends PropertyObject
                 if ($type === 'jsmodule') {
                     $type = 'js_module';
                 }
+                $type = strtolower($type);
 
-                if ($asset->getRemote() && $this->{strtolower($type) . '_pipeline_include_externals'} === false && $asset['position'] === 'pipeline') {
-                    if ($this->{strtolower($type) . '_pipeline_before_excludes'}) {
+                if ($asset->getRemote() && $this->{$type . '_pipeline_include_externals'} === false && $asset->getProperty('position') === 'pipeline') {
+                    if ($this->{$type . '_pipeline_before_excludes'}) {
                         $asset->setPosition('after');
                     } else {
                         $asset->setPosition('before');
@@ -412,10 +413,9 @@ class Assets extends PropertyObject
                 }
             }
 
-            if ($asset[$key] === $value) {
-                return true;
-            }
-            return false;
+            // Direct property access; ArrayAccess on assets goes through the
+            // dot-path machinery, and these keys are always flat.
+            return $asset->getProperty($key) === $value;
         });
 
         if ($sort && !empty($results)) {
@@ -432,9 +432,7 @@ class Assets extends PropertyObject
      */
     protected function sortAssets($assets)
     {
-        uasort($assets, static function ($a, $b) {
-            return $b['priority'] <=> $a['priority'] ?: $a['order'] <=> $b['order'];
-        });
+        uasort($assets, static fn($a, $b) => $b->getProperty('priority') <=> $a->getProperty('priority') ?: $a->getProperty('order') <=> $b->getProperty('order'));
 
         return $assets;
     }
@@ -474,7 +472,23 @@ class Assets extends PropertyObject
                 $group_attributes = array_merge($attributes, $pipeline_group['attributes']);
 
                 $pipeline = new Pipeline($options);
-                $pipeline_output .= $pipeline->$render_pipeline($pipeline_group['assets'], $group, $group_attributes);
+                $result = $pipeline->$render_pipeline($pipeline_group['assets'], $group, $group_attributes);
+
+                // Handle different return types from pipeline
+                if ($result === false) {
+                    // No assets to render
+                    continue;
+                } elseif (is_array($result)) {
+                    // Array result contains pipelined output and any failed assets
+                    $pipeline_output .= $result['output'];
+                    // Render failed assets individually (they couldn't be minified)
+                    foreach ($result['failed'] as $asset) {
+                        $pipeline_output .= $asset->render();
+                    }
+                } else {
+                    // String result (no minification or CSS)
+                    $pipeline_output .= $result;
+                }
             }
         } else {
             foreach ($pipeline_assets as $asset) {
@@ -587,18 +601,11 @@ class Assets extends PropertyObject
      */
     protected function getBaseType($type)
     {
-        switch ($type) {
-            case $this::JS_TYPE:
-            case $this::INLINE_JS_TYPE:
-                $base_type = $this::JS;
-                break;
-            case $this::JS_MODULE_TYPE:
-            case $this::INLINE_JS_MODULE_TYPE:
-                $base_type = $this::JS_MODULE;
-                break;
-            default:
-                $base_type = $this::CSS;
-        }
+        $base_type = match ($type) {
+            $this::JS_TYPE, $this::INLINE_JS_TYPE => $this::JS,
+            $this::JS_MODULE_TYPE, $this::INLINE_JS_MODULE_TYPE => $this::JS_MODULE,
+            default => $this::CSS,
+        };
 
         return $base_type;
     }

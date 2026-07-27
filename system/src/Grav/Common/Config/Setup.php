@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Config
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -12,7 +12,6 @@ namespace Grav\Common\Config;
 use BadMethodCallException;
 use Grav\Common\File\CompiledYamlFile;
 use Grav\Common\Data\Data;
-use Grav\Common\Utils;
 use InvalidArgumentException;
 use Pimple\Container;
 use Psr\Http\Message\ServerRequestInterface;
@@ -140,6 +139,12 @@ class Setup extends Data
                 '' => ['user://images', 'system://images']
             ]
         ],
+        'media' => [
+            'type' => 'Stream',
+            'prefixes' => [
+                '' => ['environment://media', 'user://media']
+            ]
+        ],
         'page' => [
             'type' => 'ReadOnlyStream',
             'prefixes' => [
@@ -202,7 +207,7 @@ class Setup extends Data
         $setupFile = defined('GRAV_SETUP_PATH') ? GRAV_SETUP_PATH : (getenv('GRAV_SETUP_PATH') ?: null);
         if (null !== $setupFile) {
             // Make sure that the custom setup file exists. Terminates the script if not.
-            if (!str_starts_with($setupFile, '/')) {
+            if (!str_starts_with((string) $setupFile, '/')) {
                 $setupFile = GRAV_WEBROOT . '/' . $setupFile;
             }
             if (!is_file($setupFile)) {
@@ -253,7 +258,37 @@ class Setup extends Data
 
         // Set up environment.
         $this->def('environment', static::$environment);
-        $this->def('streams.schemes.environment.prefixes', ['' => [$envPath]]);
+
+        // Refuse to register a non-existent per-host env folder as a writable
+        // stream target. A multi-site config save that reaches the server with
+        // a hostname variant the operator never set up (e.g. bare host vs.
+        // `www.`, mismatched proxy headers) would otherwise materialize a
+        // brand-new `user/env/<host>/` directory and divert writes there.
+        // The dir must already exist on disk to be a valid env target — same
+        // invariant the Grav 1.7 admin enforced via `findResource()`.
+        $envAbsolute = $this->resolveEnvAbsolutePath($envPath);
+        if ($envAbsolute !== null && !is_dir($envAbsolute)) {
+            $this->def('streams.schemes.environment.prefixes', ['' => []]);
+        } else {
+            $this->def('streams.schemes.environment.prefixes', ['' => [$envPath]]);
+        }
+    }
+
+    /**
+     * Resolve a configured env path to an absolute filesystem path for an
+     * is_dir() check. Returns null when the path uses a stream other than
+     * `user://` (custom GRAV_ENVIRONMENT_PATH) — those are trusted as-is and
+     * cleaned up later by check() if missing.
+     */
+    private function resolveEnvAbsolutePath(string $envPath): ?string
+    {
+        if (str_starts_with($envPath, 'user://')) {
+            return GRAV_WEBROOT . '/' . GRAV_USER_PATH . '/' . substr($envPath, 7);
+        }
+        if (str_starts_with($envPath, '/')) {
+            return $envPath;
+        }
+        return null;
     }
 
     /**
@@ -366,29 +401,29 @@ class Setup extends Data
         }
 
         try {
-            // If environment is found, remove all missing override locations (B/C compatibility).
-            if ($locator->findResource('environment://', true)) {
-                $force = $this->get('streams.schemes.environment.force', false);
-                if (!$force) {
-                    $prefixes = $this->get('streams.schemes.environment.prefixes.');
-                    $update = false;
-                    foreach ($prefixes as $i => $prefix) {
-                        if ($locator->isStream($prefix)) {
-                            if ($locator->findResource($prefix, true)) {
-                                break;
-                            }
-                        } elseif (file_exists($prefix)) {
+            // Strip missing override locations from environment://. Runs even when the env
+            // dir itself does not exist on disk, otherwise the stale prefix lingers and a
+            // later write (e.g. config save under a hostname variant) materializes the dir.
+            $force = $this->get('streams.schemes.environment.force', false);
+            if (!$force) {
+                $prefixes = $this->get('streams.schemes.environment.prefixes.');
+                $update = false;
+                foreach ($prefixes as $i => $prefix) {
+                    if ($locator->isStream($prefix)) {
+                        if ($locator->findResource($prefix, true)) {
                             break;
                         }
-
-                        unset($prefixes[$i]);
-                        $update = true;
+                    } elseif (file_exists($prefix)) {
+                        break;
                     }
 
-                    if ($update) {
-                        $this->set('streams.schemes.environment.prefixes', ['' => array_values($prefixes)]);
-                        $this->initializeLocator($locator);
-                    }
+                    unset($prefixes[$i]);
+                    $update = true;
+                }
+
+                if ($update) {
+                    $this->set('streams.schemes.environment.prefixes', ['' => array_values($prefixes)]);
+                    $this->initializeLocator($locator);
                 }
             }
 
@@ -401,21 +436,33 @@ class Setup extends Data
                 $this->initializeLocator($locator);
             }
 
-            // Create security.yaml salt if it doesn't exist into existing configuration environment if possible.
-            $securityFile = Utils::basename(static::$securityFile);
-            $securityFolder = substr(static::$securityFile, 0, -\strlen($securityFile));
-            $securityFolder = $locator->findResource($securityFolder, true) ?: $locator->findResource($securityFolder, true, true);
-            $filename = "{$securityFolder}/{$securityFile}";
+            // Guarantee the core `log` stream always resolves to a writable path.
+            // It is consumed during early bootstrap by Monolog's StreamHandler,
+            // before Grav can trap and report errors. A user override that layers
+            // `log://` solely on top of `environment://` (which is registered with
+            // an empty prefix list whenever the per-host env folder is absent, see
+            // the constructor) leaves `log://` resolving to nothing; handing that
+            // `false` to StreamHandler throws and takes the whole request down
+            // before it can even boot. Restore the built-in default location as a
+            // forced fallback so logging degrades gracefully to `logs/` instead.
+            // This never materializes the env folder, so the #4086 protection is
+            // untouched: `environment://` stays empty and env-layered writes still
+            // fall through to the shared user paths.
+            if (!$locator->findResource('log://grav.log', true, true)) {
+                $prefixes = (array) $this->get('streams.schemes.log.prefixes.', []);
+                $prefixes[''] = array_merge($prefixes[''] ?? [], [GRAV_LOG_PATH]);
 
-            $security_file = CompiledYamlFile::instance($filename);
-            $security_content = (array)$security_file->content();
-
-            if (!isset($security_content['salt'])) {
-                $security_content = array_merge($security_content, ['salt' => Utils::generateRandomString(14)]);
-                $security_file->content($security_content);
-                $security_file->save();
-                $security_file->free();
+                $this->set('streams.schemes.log.prefixes', $prefixes);
+                // Force the fallback so it survives even when `logs/` does not yet
+                // exist on disk (addPath() otherwise filters missing plain paths).
+                // StreamHandler creates the file and its parent dir on first write.
+                $this->set('streams.schemes.log.force', true);
+                $this->initializeLocator($locator);
             }
+
+            // Legacy `security.salt` auto-gen was removed in v2.0 (GHSA-3f29-pqwf-v4j4);
+            // Security::getNonceKey() now manages the equivalent value in a private
+            // PHP file outside the Config tree so sandboxed Twig cannot read it.
         } catch (RuntimeException $e) {
             throw new RuntimeException(sprintf('Grav failed to initialize: %s', $e->getMessage()), 500, $e);
         }

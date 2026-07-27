@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Processors
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -78,9 +78,6 @@ class InitializeProcessor extends ProcessorBase
         // Initialize error handlers.
         $this->initializeErrors();
 
-        // Register recovery shutdown handler early in the lifecycle.
-        $this->container['recovery']->registerHandlers();
-
         // Initialize debugger.
         $debugger = $this->initializeDebugger();
 
@@ -129,9 +126,7 @@ class InitializeProcessor extends ProcessorBase
 
         // Wrap call to next handler so that debugger can profile it.
         /** @var Response $response */
-        $response = $debugger->profile(static function () use ($handler, $request) {
-            return $handler->handle($request);
-        });
+        $response = $debugger->profile(static fn() => $handler->handle($request));
 
         // Log both request and response and return the response.
         return $debugger->logRequest($request, $response);
@@ -147,9 +142,6 @@ class InitializeProcessor extends ProcessorBase
 
         // Disable debugger.
         $this->container['debugger']->enabled(false);
-
-        // Register recovery handler for CLI commands as well.
-        $this->container['recovery']->registerHandlers();
 
         // Set timezone, locale.
         $this->initializeLocale($config);
@@ -213,14 +205,14 @@ class InitializeProcessor extends ProcessorBase
             $keys = $aliases = [];
             $env = $_ENV + $_SERVER;
             foreach ($env as $key => $value) {
-                if (!str_starts_with($key, $prefix)) {
+                if (!str_starts_with((string) $key, $prefix)) {
                     continue;
                 }
-                if (str_starts_with($key, $cPrefix)) {
-                    $key = str_replace('__', '.', substr($key, $cLen));
+                if (str_starts_with((string) $key, $cPrefix)) {
+                    $key = str_replace('__', '.', substr((string) $key, $cLen));
                     $keys[$key] = $value;
-                } elseif (str_starts_with($key, $aPrefix)) {
-                    $key = substr($key, $aLen);
+                } elseif (str_starts_with((string) $key, $aPrefix)) {
+                    $key = substr((string) $key, $aLen);
                     $aliases[$key] = $value;
                 }
             }
@@ -241,10 +233,17 @@ class InitializeProcessor extends ProcessorBase
 
     /**
      * @param Config $config
-     * @return Logger
+     * @return Logger|null
      */
-    protected function initializeLogger(Config $config): Logger
+    protected function initializeLogger(Config $config): ?Logger
     {
+        // The default file handler needs no setup here, so the logger service can stay
+        // lazy and only gets built when something actually logs. Only the syslog
+        // handler requires replacing the default handler up front.
+        if ($config->get('system.log.handler', 'file') !== 'syslog') {
+            return null;
+        }
+
         $this->startTimer('_init_logger', 'Logger');
 
         $grav = $this->container;
@@ -252,18 +251,15 @@ class InitializeProcessor extends ProcessorBase
         // Initialize Logging
         /** @var Logger $log */
         $log = $grav['log'];
+        $log->popHandler();
 
-        if ($config->get('system.log.handler', 'file') === 'syslog') {
-            $log->popHandler();
+        $facility = $config->get('system.log.syslog.facility', 'local6');
+        $tag = $config->get('system.log.syslog.tag', 'grav');
+        $logHandler = new SyslogHandler($tag, $facility);
+        $formatter = new LineFormatter("%channel%.%level_name%: %message% %extra%");
+        $logHandler->setFormatter($formatter);
 
-            $facility = $config->get('system.log.syslog.facility', 'local6');
-            $tag = $config->get('system.log.syslog.tag', 'grav');
-            $logHandler = new SyslogHandler($tag, $facility);
-            $formatter = new LineFormatter("%channel%.%level_name%: %message% %extra%");
-            $logHandler->setFormatter($formatter);
-
-            $log->pushHandler($logHandler);
-        }
+        $log->pushHandler($logHandler);
 
         $this->stopTimer('_init_logger');
 
@@ -347,10 +343,6 @@ class InitializeProcessor extends ProcessorBase
 
         // Use output buffering to prevent headers from being sent too early.
         ob_start();
-        if ($config->get('system.cache.gzip') && !@ob_start('ob_gzhandler')) {
-            // Enable zip/deflate with a fallback in case of if browser does not support compressing.
-            ob_start();
-        }
 
         $this->stopTimer('_init_ob');
     }
@@ -421,7 +413,7 @@ class InitializeProcessor extends ProcessorBase
         $this->stopTimer('_init_uri');
     }
 
-    protected function handleRedirectRequest(RequestInterface $request, int $code = null): ?ResponseInterface
+    protected function handleRedirectRequest(RequestInterface $request, ?int $code = null): ?ResponseInterface
     {
         if (!in_array($request->getMethod(), ['GET', 'HEAD'])) {
             return null;
@@ -454,7 +446,7 @@ class InitializeProcessor extends ProcessorBase
 
             try {
                 $session->init();
-            } catch (SessionException $e) {
+            } catch (SessionException) {
                 $session->init();
                 $message = 'Session corruption detected, restarting session...';
                 $this->addMessage($message);

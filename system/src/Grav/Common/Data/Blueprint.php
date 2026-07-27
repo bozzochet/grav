@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Data
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -12,6 +12,7 @@ namespace Grav\Common\Data;
 use Grav\Common\File\CompiledYamlFile;
 use Grav\Common\Grav;
 use Grav\Common\User\Interfaces\UserInterface;
+use Grav\Common\Utils;
 use RocketTheme\Toolbox\Blueprints\BlueprintForm;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use RuntimeException;
@@ -142,7 +143,7 @@ class Blueprint extends BlueprintForm
     {
         foreach ($this->dynamic as $key => $data) {
             // Locate field.
-            $path = explode('/', $key);
+            $path = explode('/', (string) $key);
             $current = &$this->items;
 
             foreach ($path as $field) {
@@ -168,7 +169,7 @@ class Blueprint extends BlueprintForm
             // Set dynamic property.
             foreach ($data as $property => $call) {
                 $action = $call['action'];
-                $method = 'dynamic' . ucfirst($action);
+                $method = 'dynamic' . ucfirst((string) $action);
                 $call['object'] = $this->object;
 
                 if (isset($this->handlers[$action])) {
@@ -434,7 +435,21 @@ class Blueprint extends BlueprintForm
             $params = [];
         }
 
-        [$o, $f] = explode('::', $function, 2);
+        // Security guard. A `data-*@` directive may come from a user-controlled
+        // source, most notably a form blueprint the Form plugin assembles from
+        // page frontmatter, and this method hands the callable and its arguments
+        // straight to call_user_func_array(). Refuse anything that could run
+        // arbitrary code: a directly dangerous top-level function (system, exec,
+        // ...), or any argument that is itself a dangerous callable. The latter
+        // is what stops a benign-looking helper from being used as a trampoline,
+        // e.g. Utils::arrayFilterRecursive($cmd, 'system'). Legitimate providers
+        // are static methods returning option arrays and never take a callable
+        // argument, so real blueprints are unaffected. (GHSA-fj2p-qj2f-74v5)
+        if (!self::isSafeDynamicCall($function, $params)) {
+            return;
+        }
+
+        [$o, $f] = explode('::', (string) $function, 2);
 
         $data = null;
         if (!$f) {
@@ -457,6 +472,134 @@ class Blueprint extends BlueprintForm
                 $field[$property] = $data;
             }
         }
+    }
+
+    /**
+     * Guard for {@see dynamicData}: decide whether a dynamic `data-*@` call is
+     * safe to execute. A bare top-level function (no `Class::method`) is refused
+     * when it is one of the dangerous functions Grav already recognises, and
+     * every argument is scanned recursively so a callable cannot be smuggled in
+     * as a parameter to a trampoline helper. (GHSA-fj2p-qj2f-74v5)
+     *
+     * Shared by {@see Blueprint::dynamicData} and Flex's
+     * {@see \Grav\Framework\Flex\FlexDirectory::dynamicDataField}, which route
+     * the same `data-*@` directive through separate dispatch paths and must
+     * enforce the same guard. (GHSA-fj2p-qj2f-74v5, GHSA-c4wf-2xxc-68qm)
+     *
+     * @param mixed $function
+     * @param array $params
+     * @return bool
+     */
+    public static function isSafeDynamicCall($function, array $params): bool
+    {
+        // A `data-*@` callable may arrive as a `[Class, method]` pair, not only
+        // as a `Class::method` string. PHP honours the array form in is_callable()
+        // and call_user_func_array() (the sink in FlexDirectory::dynamicDataField),
+        // so without normalising it here an attacker-supplied pair slips past both
+        // the allowlist and the denylist below and reaches the sink unchecked — e.g.
+        // [GPM\Installer::class, 'unZip'] to unpack an uploaded PHP shell into the
+        // docroot. Fold a two-string pair into its `Class::method` string so it is
+        // vetted like any other provider, and refuse any other array shape (an
+        // instance/closure pair cannot come from a blueprint and is not a provider
+        // we can vet). (GHSA-r94f-hx44-8jqf)
+        if (is_array($function)) {
+            if (count($function) === 2 && isset($function[0], $function[1])
+                && is_string($function[0]) && is_string($function[1])) {
+                $function = $function[0] . '::' . $function[1];
+            } else {
+                return false;
+            }
+        }
+
+        if (is_string($function) && str_contains($function, '::')) {
+            // `Class::method` providers skip the bare-function denylist below
+            // (Utils::isDangerousFunction already rejects any string containing
+            // `:` or `\`). Without a positive gate that carve-out let a page-edit
+            // account name ANY public static method as a dynamic-field provider
+            // and reach file-disclosure / file-write / secret-read gadgets
+            // (Utils::download, Folder::copy/delete, Security::getNonceKey, ...).
+            // Permit only the known-safe option providers on the allowlist.
+            // (GHSA-7pgq-cr25-xvc8, GHSA-cxv3-5jj3-cpgr)
+            if (!isset(self::$allowedDynamicCallables[strtolower(ltrim($function, '\\'))])) {
+                return false;
+            }
+
+            return !self::paramsContainDangerousCallable($params);
+        }
+
+        if (is_string($function) && Utils::isDangerousFunction($function)) {
+            return false;
+        }
+
+        return !self::paramsContainDangerousCallable($params);
+    }
+
+    /**
+     * Allowlist of `Class::method` dynamic-data providers a `data-*@` directive
+     * may invoke. Seeded from the providers first-party blueprints actually use;
+     * plugins that ship their own raw `Class::method` provider register it once
+     * via {@see self::addAllowedDynamicCallable()}. Any `Class::method` not listed
+     * is refused, which is what closes the arbitrary-static-method bypass.
+     * Keys are lowercased and stripped of a leading `\` so both `\Grav\...` and
+     * `Grav\...` spellings match (PHP class/method names are case-insensitive).
+     *
+     * @var array<string,bool>
+     */
+    private static $allowedDynamicCallables = [
+        'grav\\common\\page\\pages::pagetypes' => true,
+        'grav\\common\\page\\pages::types' => true,
+        'grav\\common\\security::pageprocessdefaults' => true,
+        'grav\\common\\security::pageprocessoptions' => true,
+        'grav\\common\\user\\group::groupnames' => true,
+        'grav\\common\\utils::dateformats' => true,
+        'grav\\common\\utils::timezones' => true,
+        'grav\\common\\flex\\types\\usergroups\\usergroupobject::groupnames' => true,
+        'grav\\plugin\\admin\\admin::adminlanguages' => true,
+        'grav\\plugin\\admin\\admin::contenteditor' => true,
+        'grav\\plugin\\admin\\admin::getlastpagename' => true,
+        'grav\\plugin\\adminplugin::pagesmodulartypes' => true,
+        'grav\\plugin\\adminplugin::pagestypes' => true,
+        'grav\\plugin\\adminplugin::themeoptions' => true,
+        'grav\\plugin\\flexobjectsplugin::directoryoptions' => true,
+    ];
+
+    /**
+     * Register an additional `Class::method` dynamic-data provider as safe. Call
+     * once at plugin init (e.g. `onPluginsInitialized`) for any blueprint that
+     * uses a raw `data-options@: 'My\Plugin::provider'` directive.
+     *
+     * @param string $callable  A `Class::method` string.
+     * @return void
+     */
+    public static function addAllowedDynamicCallable(string $callable): void
+    {
+        self::$allowedDynamicCallables[strtolower(ltrim($callable, '\\'))] = true;
+    }
+
+    /**
+     * Recursively test whether any argument value is a dangerous callable. This
+     * blocks the trampoline gadget where a safe helper is handed `system` (or a
+     * similar callable) to invoke on attacker-controlled input. (GHSA-fj2p-qj2f-74v5)
+     *
+     * @param array $params
+     * @return bool
+     */
+    private static function paramsContainDangerousCallable(array $params): bool
+    {
+        foreach ($params as $value) {
+            if (is_array($value)) {
+                if (self::paramsContainDangerousCallable($value)) {
+                    return true;
+                }
+                continue;
+            }
+
+            if (is_string($value) && Utils::isDangerousFunction($value)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -574,10 +717,9 @@ class Blueprint extends BlueprintForm
     /**
      * @param array $field
      * @param string $property
-     * @param mixed $value
      * @return void
      */
-    public static function addPropertyRecursive(array &$field, $property, $value)
+    public static function addPropertyRecursive(array &$field, $property, mixed $value)
     {
         if (is_array($value) && isset($field[$property]) && is_array($field[$property])) {
             $field[$property] = array_merge_recursive($field[$property], $value);

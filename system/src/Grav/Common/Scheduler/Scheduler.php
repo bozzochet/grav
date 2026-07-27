@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Scheduler
  * @author     Originally based on peppeocchi/php-cron-scheduler modified for Grav integration
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -162,6 +162,29 @@ class Scheduler
     }
 
     /**
+     * Register system jobs (cache maintenance, backups, plugin jobs) if not already done.
+     *
+     * This used to run in the middleware chain on every request; now it runs only when
+     * the scheduler is actually used (CLI run, webhook, health check or job listing).
+     *
+     * @return void
+     */
+    public function initializeJobs(): void
+    {
+        if (count($this->jobs) === 0) {
+            $grav = Grav::instance();
+
+            // Make sure the backups listener is registered before the event fires.
+            if (isset($grav['backups'])) {
+                $grav['backups']->init();
+            }
+
+            // Trigger event to load system jobs (cache-purge, cache-clear, backups, etc.)
+            $grav->fireEvent('onSchedulerInitialized', new \RocketTheme\Toolbox\Event\Event(['scheduler' => $this]));
+        }
+    }
+
+    /**
      * Get the queued jobs as background/foreground
      *
      * @param bool $all
@@ -169,6 +192,8 @@ class Scheduler
      */
     public function getQueuedJobs($all = false)
     {
+        $this->initializeJobs();
+
         $background = [];
         $foreground = [];
         foreach ($this->jobs as $job) {
@@ -260,15 +285,11 @@ class Scheduler
      * @param DateTime|null $runTime Optional, run at specific moment
      * @param bool $force force run even if not due
      */
-    public function run(DateTime $runTime = null, $force = false)
+    public function run(?DateTime $runTime = null, $force = false)
     {
-        // Initialize system jobs if not already done
-        $grav = Grav::instance();
-        if (count($this->jobs) === 0) {
-            // Trigger event to load system jobs (cache-purge, cache-clear, backups, etc.)
-            $grav->fireEvent('onSchedulerInitialized', new \RocketTheme\Toolbox\Event\Event(['scheduler' => $this]));
-        }
-        
+        $this->initializeJobs();
+
+
         $this->loadSavedJobs();
 
         [$background, $foreground] = $this->getQueuedJobs(false);
@@ -298,14 +319,14 @@ class Scheduler
                     $queuedCount++;
                 }
             }
-            
+
             if ($this->logger && $queuedCount > 0) {
                 $this->logger->debug("Queued {$queuedCount} job(s) for processing");
             }
-            
+
             // Process queue with workers
             $this->processJobsWithWorkers();
-            
+
             // When using queue, states are saved by executeJob when jobs complete
             // Don't save states here as jobs may still be processing
         } else {
@@ -391,16 +412,12 @@ class Scheduler
      */
     public function getVerboseOutput($type = 'text')
     {
-        switch ($type) {
-            case 'text':
-                return implode("\n", $this->output_schedule);
-            case 'html':
-                return implode('<br>', $this->output_schedule);
-            case 'array':
-                return $this->output_schedule;
-            default:
-                throw new InvalidArgumentException('Invalid output type');
-        }
+        return match ($type) {
+            'text' => implode("\n", $this->output_schedule),
+            'html' => implode('<br>', $this->output_schedule),
+            'array' => $this->output_schedule,
+            default => throw new InvalidArgumentException('Invalid output type'),
+        };
     }
 
     /**
@@ -434,7 +451,7 @@ class Scheduler
     public function getSchedulerCommand($php = null)
     {
         $phpBinaryFinder = new PhpExecutableFinder();
-        $php = $php ?? $phpBinaryFinder->find();
+        $php ??= $phpBinaryFinder->find();
         $command = 'cd ' . str_replace(' ', '\ ', GRAV_ROOT) . ';' . $php . ' bin/grav scheduler';
 
         return $command;
@@ -527,11 +544,10 @@ class Scheduler
 
     /**
      * Initialize modern features
-     * 
-     * @param mixed $locator
+     *
      * @return void
      */
-    protected function initializeModernFeatures($locator): void
+    protected function initializeModernFeatures(mixed $locator): void
     {
         // Set up paths
         $this->queuePath = $this->modernConfig['queue']['path'] ?? 'user-data://scheduler/queue';
@@ -711,7 +727,7 @@ class Scheduler
         if (is_callable($command)) {
             $command = is_string($command) ? $command : 'Closure';
         }
-        $output = trim($job->getOutput());
+        $output = trim((string) $job->getOutput());
         $this->addSchedulerVerboseOutput("<red>Error</red>:   <white>{$command}</white> → <normal>{$output}</normal>");
 
         return $job;
@@ -798,7 +814,7 @@ class Scheduler
                                     'background' => true
                                 ]);
                             } else {
-                                $error = trim($job->getOutput()) ?: 'Unknown error';
+                                $error = trim((string) $job->getOutput()) ?: 'Unknown error';
                                 $this->logger->error("Job '{$jobId}' failed: {$error}", [
                                     'command' => $command,
                                     'background' => true
@@ -905,7 +921,7 @@ class Scheduler
                     'command' => $command
                 ]);
             } else {
-                $error = trim($job->getOutput()) ?: 'Unknown error';
+                $error = trim((string) $job->getOutput()) ?: 'Unknown error';
                 $this->logger->error("Job '{$jobId}' failed: {$error}", [
                     'command' => $command
                 ]);
@@ -966,7 +982,7 @@ class Scheduler
                 'id' => $job->getId(),
                 'executed_at' => date('c'),
                 'success' => $job->isSuccessful(),
-                'output' => substr($job->getOutput(), 0, 1000),
+                'output' => substr((string) $job->getOutput(), 0, 1000),
             ];
         }
         
@@ -998,14 +1014,9 @@ class Scheduler
     {
         $lastRunFile = $this->status_path . '/last_run.txt';
         $lastRun = file_exists($lastRunFile) ? file_get_contents($lastRunFile) : null;
-        
-        // Initialize system jobs if not already done
-        $grav = Grav::instance();
-        if (count($this->jobs) === 0) {
-            // Trigger event to load system jobs (cache-purge, cache-clear, backups, etc.)
-            $grav->fireEvent('onSchedulerInitialized', new \RocketTheme\Toolbox\Event\Event(['scheduler' => $this]));
-        }
-        
+
+        $this->initializeJobs();
+
         // Load custom jobs
         $this->loadSavedJobs();
         
@@ -1076,21 +1087,25 @@ class Scheduler
         if (!$this->webhookEnabled) {
             return ['success' => false, 'message' => 'Webhook triggers are not enabled'];
         }
-        
-        if ($this->webhookToken && $token !== $this->webhookToken) {
+
+        // Fail closed. An enabled webhook with no configured token must not run
+        // jobs for anonymous callers: require a token to be set, and require the
+        // caller to match it with a timing-safe comparison. A previous compound
+        // check short-circuited when the token was null, letting an unconfigured
+        // token accept every request. (GHSA-xwv3-2mv2-w33x / CVE-2026-57852)
+        if (!is_string($this->webhookToken) || $this->webhookToken === '') {
+            return ['success' => false, 'message' => 'Webhook token is not configured'];
+        }
+
+        if (!is_string($token) || !hash_equals($this->webhookToken, $token)) {
             return ['success' => false, 'message' => 'Invalid webhook token'];
         }
-        
-        // Initialize system jobs if not already done
-        $grav = Grav::instance();
-        if (count($this->jobs) === 0) {
-            // Trigger event to load system jobs (cache-purge, cache-clear, backups, etc.)
-            $grav->fireEvent('onSchedulerInitialized', new \RocketTheme\Toolbox\Event\Event(['scheduler' => $this]));
-        }
-        
+
+        $this->initializeJobs();
+
         // Load custom jobs
         $this->loadSavedJobs();
-        
+
         if ($jobId) {
             // Force run specific job
             $job = $this->getJob($jobId);

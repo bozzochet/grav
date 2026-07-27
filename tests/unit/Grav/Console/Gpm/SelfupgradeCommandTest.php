@@ -1,13 +1,13 @@
 <?php
 
-use Codeception\Util\Fixtures;
 use Grav\Console\Gpm\SelfupgradeCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SelfupgradeCommandTest extends \Codeception\TestCase\Test
+class SelfupgradeCommandTest extends \PHPUnit\Framework\TestCase
 {
     public function testHandlePreflightReportSucceedsWithoutIssues(): void
     {
@@ -46,7 +46,7 @@ class SelfupgradeCommandTest extends \Codeception\TestCase\Test
     public function testHandlePreflightReportAbortsOnPendingWhenDeclined(): void
     {
         $command = new TestSelfupgradeCommand();
-        [$style] = $this->injectIo($command);
+        [$style] = $this->injectIo($command, [false]);
         $this->setAllYes($command, false);
 
         $result = $command->runHandle([
@@ -79,17 +79,6 @@ class SelfupgradeCommandTest extends \Codeception\TestCase\Test
 
     public function testHandlePreflightReportDisablesPluginsWhenRequested(): void
     {
-        $gravFactory = Fixtures::get('grav');
-        $grav = $gravFactory();
-        $stub = new class {
-            public $disabled = [];
-            public function disablePlugin(string $slug, array $context = []): void
-            {
-                $this->disabled[] = $slug;
-            }
-        };
-        $grav['recovery'] = $stub;
-
         $command = new TestSelfupgradeCommand();
         [$style] = $this->injectIo($command, ['disable']);
 
@@ -101,7 +90,7 @@ class SelfupgradeCommandTest extends \Codeception\TestCase\Test
         ]);
 
         self::assertTrue($result);
-        self::assertSame(['foo'], $stub->disabled);
+        self::assertSame(['foo'], $command->disabled);
         $output = implode("\n", $style->messages);
         self::assertStringContainsString('Continuing with conflicted plugins disabled.', $output);
     }
@@ -121,6 +110,100 @@ class SelfupgradeCommandTest extends \Codeception\TestCase\Test
         self::assertTrue($result);
         $output = implode("\n", $style->messages);
         self::assertStringContainsString('Proceeding with potential psr/log incompatibilities still active.', $output);
+    }
+
+    public function testHandlePreflightReportBlocksOnIncompatiblePackages(): void
+    {
+        $command = new TestSelfupgradeCommand();
+        [$style] = $this->injectIo($command);
+        $this->setAllYes($command, true);
+
+        $result = $command->runHandle([
+            'plugins_pending' => [],
+            'psr_log_conflicts' => [],
+            'monolog_conflicts' => [],
+            'warnings' => [],
+            'is_major_minor_upgrade' => true,
+            'blocking' => [],
+            'incompatible_packages' => [
+                'blocking' => [
+                    'old-plugin' => [
+                        'type' => 'plugin',
+                        'version' => '1.0.0',
+                        'compatibility' => ['grav' => ['1.7'], 'api' => []],
+                        'enabled' => true,
+                    ],
+                ],
+                'warnings' => [],
+                'target' => '1.8',
+            ],
+        ]);
+
+        self::assertFalse($result);
+        $output = implode("\n", $style->messages);
+        self::assertStringContainsString('old-plugin', $output);
+        self::assertStringContainsString('not marked as compatible', $output);
+    }
+
+    public function testHandlePreflightReportDisablesIncompatibleWhenRequested(): void
+    {
+        $command = new TestSelfupgradeCommand();
+        [$style] = $this->injectIo($command, ['disable']);
+
+        $result = $command->runHandle([
+            'plugins_pending' => [],
+            'psr_log_conflicts' => [],
+            'monolog_conflicts' => [],
+            'warnings' => [],
+            'is_major_minor_upgrade' => true,
+            'blocking' => [],
+            'incompatible_packages' => [
+                'blocking' => [
+                    'old-plugin' => [
+                        'type' => 'plugin',
+                        'version' => '1.0.0',
+                        'compatibility' => ['grav' => ['1.7'], 'api' => []],
+                        'enabled' => true,
+                    ],
+                ],
+                'warnings' => [],
+                'target' => '1.8',
+            ],
+        ]);
+
+        self::assertTrue($result);
+        self::assertSame(['old-plugin'], $command->disabled);
+    }
+
+    public function testHandlePreflightReportContinuesWithIncompatibleOverride(): void
+    {
+        $command = new TestSelfupgradeCommand();
+        [$style] = $this->injectIo($command, ['continue']);
+
+        $result = $command->runHandle([
+            'plugins_pending' => [],
+            'psr_log_conflicts' => [],
+            'monolog_conflicts' => [],
+            'warnings' => [],
+            'is_major_minor_upgrade' => true,
+            'blocking' => [],
+            'incompatible_packages' => [
+                'blocking' => [
+                    'old-plugin' => [
+                        'type' => 'plugin',
+                        'version' => '1.0.0',
+                        'compatibility' => ['grav' => ['1.7'], 'api' => []],
+                        'enabled' => true,
+                    ],
+                ],
+                'warnings' => [],
+                'target' => '1.8',
+            ],
+        ]);
+
+        self::assertTrue($result);
+        $output = implode("\n", $style->messages);
+        self::assertStringContainsString('Proceeding despite incompatible', $output);
     }
 
     /**
@@ -159,9 +242,17 @@ class SelfupgradeCommandTest extends \Codeception\TestCase\Test
 
 class TestSelfupgradeCommand extends SelfupgradeCommand
 {
+    /** @var array<int, string> */
+    public $disabled = [];
+
     public function runHandle(array $report): bool
     {
         return $this->handlePreflightReport($report);
+    }
+
+    protected function disablePluginConfig(string $slug): void
+    {
+        $this->disabled[] = $slug;
     }
 }
 
@@ -199,7 +290,7 @@ class SelfUpgradeMemoryStyle extends SymfonyStyle
         parent::writeln($messages, $type);
     }
 
-    public function askQuestion($question)
+    public function askQuestion(Question $question): mixed
     {
         if ($this->responses) {
             return array_shift($this->responses);
@@ -208,12 +299,12 @@ class SelfUpgradeMemoryStyle extends SymfonyStyle
         return parent::askQuestion($question);
     }
 
-    public function choice($question, array $choices, $default = null, $attempts = null, $errorMessage = 'Invalid value.')
+    public function choice(string $question, array $choices, mixed $default = null, bool $multiSelect = false): mixed
     {
         if ($this->responses) {
             return array_shift($this->responses);
         }
 
-        return parent::choice($question, $choices, $default, $attempts, $errorMessage);
+        return parent::choice($question, $choices, $default, $multiSelect);
     }
 }

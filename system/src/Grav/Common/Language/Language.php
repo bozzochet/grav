@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Language
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -15,6 +15,7 @@ use Grav\Common\Config\Config;
 use Negotiation\AcceptLanguage;
 use Negotiation\LanguageNegotiator;
 use function array_key_exists;
+use function array_keys;
 use function count;
 use function in_array;
 use function is_array;
@@ -134,7 +135,17 @@ class Language
      */
     public function setLanguages($langs)
     {
-        $this->languages = $langs;
+        // Validate and sanitize language codes to prevent regex injection
+        $validLangs = [];
+        foreach ((array)$langs as $lang) {
+            $lang = (string)$lang;
+            // Only allow valid language codes (alphanumeric, hyphens, underscores)
+            // Examples: en, en-US, en_US, zh-Hans, pt-BR
+            if (preg_match('/^[a-zA-Z]{2,3}(?:[-_][a-zA-Z0-9]{2,8})?$/', $lang)) {
+                $validLangs[] = $lang;
+            }
+        }
+        $this->languages = $validLangs;
 
         $this->init();
     }
@@ -149,9 +160,7 @@ class Language
     {
         $languagesArray = $this->languages; //Make local copy
 
-        $languagesArray = array_map(static function ($value) use ($delimiter) {
-            return preg_quote($value, $delimiter);
-        }, $languagesArray);
+        $languagesArray = array_map(static fn($value) => preg_quote((string) $value, $delimiter), $languagesArray);
 
         sort($languagesArray);
 
@@ -236,7 +245,8 @@ class Language
      */
     public function setActiveFromUri($uri)
     {
-        $regex = '/(^\/(' . $this->getAvailable() . '))(?:\/|\?|$)/i';
+        // Pass delimiter '/' to getAvailable() to properly escape language codes for regex
+        $regex = '/(^\/(' . $this->getAvailable('/') . '))(?:\/|\?|$)/i';
 
         // if languages set
         if ($this->enabled()) {
@@ -284,10 +294,18 @@ class Language
                     $this->config->get('system.languages.http_accept_language') &&
                     $accept = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? false) {
                     $negotiator = new LanguageNegotiator();
-                    $best_language = $negotiator->getBest($accept, $this->languages);
+                    $fallbacks = $this->getHttpLanguageFallbacks();
+                    $languages = $this->languages;
+
+                    foreach (array_keys($fallbacks) as $language) {
+                        $languages[] = $language;
+                    }
+
+                    $best_language = $negotiator->getBest($accept, $languages);
 
                     if ($best_language instanceof AcceptLanguage) {
-                        $this->setActive($best_language->getType());
+                        $language = $best_language->getType();
+                        $this->setActive($fallbacks[$language] ?? $language);
                     } else {
                         $this->setActive($this->getDefault());
                     }
@@ -378,7 +396,7 @@ class Language
      * @param bool $assoc  Return values in ['en' => '.en.md', ...] format.
      * @return array Key is the language code, value is the file extension to be used.
      */
-    public function getFallbackPageExtensions(string $fileExtension = null, string $languageCode = null, bool $assoc = false)
+    public function getFallbackPageExtensions(?string $fileExtension = null, ?string $languageCode = null, bool $assoc = false)
     {
         $fileExtension = $fileExtension ?: CONTENT_EXT;
         $key = $fileExtension . '-' . ($languageCode ?? 'default') . '-' . (int)$assoc;
@@ -431,7 +449,7 @@ class Language
      * @param bool $includeDefault  If true, list contains '', which can be used for default
      * @return array
      */
-    public function getFallbackLanguages(string $languageCode = null, bool $includeDefault = false)
+    public function getFallbackLanguages(?string $languageCode = null, bool $includeDefault = false)
     {
         // Handle default.
         if ($languageCode === '' || !$this->enabled()) {
@@ -509,7 +527,7 @@ class Language
      * @param bool  $html_out
      * @return string|string[]
      */
-    public function translate($args, array $languages = null, $array_support = false, $html_out = false)
+    public function translate($args, ?array $languages = null, $array_support = false, $html_out = false)
     {
         if (is_array($args)) {
             $lookup = array_shift($args);
@@ -613,7 +631,7 @@ class Language
      */
     public function getBrowserLanguages($accept_langs = [])
     {
-        user_error(__CLASS__ . '::' . __FUNCTION__ . '() is deprecated since Grav 1.6, no longer used', E_USER_DEPRECATED);
+        user_error(self::class . '::' . __FUNCTION__ . '() is deprecated since Grav 1.6, no longer used', E_USER_DEPRECATED);
 
         if (empty($this->http_accept_language)) {
             if (empty($accept_langs) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
@@ -624,7 +642,7 @@ class Language
 
             $langs = [];
 
-            foreach (explode(',', $accept_langs) as $k => $pref) {
+            foreach (explode(',', (string) $accept_langs) as $k => $pref) {
                 // split $pref again by ';q='
                 // and decorate the language entries by inverted position
                 if (false !== ($i = strpos($pref, ';q='))) {
@@ -679,5 +697,47 @@ class Language
         $languages[] = 'en';
 
         return array_values(array_unique($languages));
+    }
+
+    /**
+     * Get valid browser language fallbacks.
+     *
+     * @return array<string, string>
+     */
+    protected function getHttpLanguageFallbacks(): array
+    {
+        $fallbacks = $this->config->get('system.languages.http_accept_language_fallback', []);
+        if (!is_array($fallbacks)) {
+            return [];
+        }
+
+        $languages = [];
+
+        foreach ($fallbacks as $source => $targets) {
+            // Lowercase to match the negotiator, which normalizes matched types to lowercase.
+            $source = strtolower((string) $source);
+
+            // Supported languages should always resolve directly.
+            if (!preg_match('/^[a-zA-Z]{2,3}(?:[-_][a-zA-Z0-9]{2,8})?$/', $source)
+                || in_array($source, $this->languages, true)
+            ) {
+                continue;
+            }
+
+            if (!is_array($targets)) {
+                $targets = [$targets];
+            }
+
+            foreach ($targets as $target) {
+                $target = (string) $target;
+
+                if (in_array($target, $this->languages, true)) {
+                    $languages[$source] = $target;
+                    break;
+                }
+            }
+        }
+
+        return $languages;
     }
 }

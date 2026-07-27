@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -78,6 +78,10 @@ class Debugger
     protected $enabled = false;
     /** @var bool */
     protected $initialized = false;
+    /** @var bool True once init() has read the config and decided whether the debugger is enabled. */
+    protected $decided = false;
+    /** @var bool Guards the once-per-request pages index summary message. */
+    protected $pages_index_info_added = false;
     /** @var array */
     protected $timers = [];
     /** @var array */
@@ -139,12 +143,33 @@ class Debugger
         $this->enabled = (bool)$this->config->get('system.debugger.enabled');
         $this->censored = (bool)$this->config->get('system.debugger.censored', false);
 
+        // The enabled decision is now made; when disabled, timers collected during
+        // early bootstrap are no longer needed and new ones can be skipped.
+        $this->decided = true;
+        if (!$this->enabled) {
+            $this->timers = [];
+        }
+
         if ($this->enabled) {
             $this->initialized = true;
 
             $clockwork = $debugbar = null;
 
-            switch ($this->config->get('system.debugger.provider', 'debugbar')) {
+            $provider = $this->config->get('system.debugger.provider', 'debugbar');
+
+            // DebugBar renders by injecting an HTML toolbar into the page, which
+            // is meaningless for API/AJAX requests that return JSON (every Admin2
+            // call, for one). Clockwork is the only provider those clients can
+            // read — via response headers and the /__clockwork endpoint — so force
+            // it whenever the request prefers JSON, whatever the configured
+            // provider. Full HTML page requests still honour the config, so a site
+            // that prefers the DebugBar toolbar on its frontend keeps it. Disabled
+            // stays disabled either way (we never reach here unless enabled).
+            if ($provider !== 'clockwork' && $this->prefersJson()) {
+                $provider = 'clockwork';
+            }
+
+            switch ($provider) {
                 case 'clockwork':
                     $this->clockwork = $clockwork = new Clockwork();
                     break;
@@ -215,6 +240,29 @@ class Debugger
         }
 
         return $this;
+    }
+
+    /**
+     * Whether the current request expects a JSON/AJAX response rather than an
+     * HTML page. Used to force the Clockwork provider, since DebugBar's injected
+     * HTML toolbar can't render into a JSON response (see init()).
+     *
+     * Reads $_SERVER directly because the PSR-7 request is not yet built when the
+     * debugger initialises.
+     *
+     * @return bool
+     */
+    protected function prefersJson(): bool
+    {
+        if (strcasecmp($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '', 'XMLHttpRequest') === 0) {
+            return true;
+        }
+
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+
+        return $accept !== ''
+            && str_contains($accept, 'application/json')
+            && !str_contains($accept, 'text/html');
     }
 
     public function finalize(): void
@@ -328,9 +376,7 @@ class Debugger
             return new Response(404, $headers, json_encode($response));
         }
 
-        $data = is_array($data) ? array_map(static function ($item) {
-            return $item->toArray();
-        }, $data) : $data->toArray();
+        $data = is_array($data) ? array_map(static fn($item) => $item->toArray(), $data) : $data->toArray();
 
         return new Response(200, $headers, json_encode($data));
     }
@@ -338,8 +384,62 @@ class Debugger
     /**
      * @return void
      */
+    /**
+     * Emit a one-line summary of how the pages index was served this request.
+     *
+     * Only reports when the pages service was actually built (so it never
+     * forces a build just to inspect it), and only once per request.
+     *
+     * @return void
+     */
+    protected function addPagesIndexInfo(): void
+    {
+        if (!$this->enabled || $this->pages_index_info_added) {
+            return;
+        }
+
+        // Never trigger a pages build just to report on it.
+        if (!$this->grav->initialized('pages')) {
+            return;
+        }
+
+        $this->pages_index_info_added = true;
+
+        $stats = $this->grav['pages']->getIndexStats();
+        $mode = $stats['mode'] ?? 'blob';
+
+        if ($mode === 'flex') {
+            $this->addMessage('Pages index: flex', 'info');
+
+            return;
+        }
+
+        $total = (int)($stats['total'] ?? 0);
+        $hydrated = (int)($stats['hydrated'] ?? 0);
+
+        if ($mode === 'lazy') {
+            $percent = $total > 0 ? round($hydrated / $total * 100) : 0;
+            $message = sprintf(
+                'Pages index: lazy [%s] - hydrated %d / %d pages (%d%%)',
+                $stats['engine'] ?? '?',
+                $hydrated,
+                $total,
+                $percent
+            );
+            if ($total > 0 && $hydrated >= $total) {
+                $message .= ' - this request touches every page, so lazy loading saves no memory here';
+            }
+        } else {
+            $message = sprintf('Pages index: standard cache blob - %d pages', $total);
+        }
+
+        $this->addMessage($message, 'info');
+    }
+
     protected function addMeasures(): void
     {
+        $this->addPagesIndexInfo();
+
         if (!$this->enabled) {
             return;
         }
@@ -544,7 +644,7 @@ class Debugger
      * @param string|null $message
      * @return mixed
      */
-    public function profile(callable $callable, string $message = null)
+    public function profile(callable $callable, ?string $message = null)
     {
         $this->startProfiling();
         $response = $callable();
@@ -585,7 +685,7 @@ class Debugger
      * @param string|null $message
      * @return array|null
      */
-    public function stopProfiling(string $message = null): ?array
+    public function stopProfiling(?string $message = null): ?array
     {
         $timings = null;
         if ($this->enabled && extension_loaded('tideways_xhprof')) {
@@ -619,17 +719,13 @@ class Debugger
     protected function buildProfilerTimings(array $timings): array
     {
         // Filter method calls which take almost no time.
-        $timings = array_filter($timings, function ($value) {
-            return $value['wt'] > 50;
-        });
+        $timings = array_filter($timings, fn($value) => $value['wt'] > 50);
 
-        uasort($timings, function (array $a, array $b) {
-            return $b['wt'] <=> $a['wt'];
-        });
+        uasort($timings, fn(array $a, array $b) => $b['wt'] <=> $a['wt']);
 
         $table = [];
         foreach ($timings as $key => $timing) {
-            $parts = explode('==>', $key);
+            $parts = explode('==>', (string) $key);
             $method = $this->parseProfilerCall(array_pop($parts));
             $context = $this->parseProfilerCall(array_pop($parts));
 
@@ -639,7 +735,7 @@ class Debugger
             }
 
             // Do not profile library calls.
-            if (strpos($context, 'Grav\\') !== 0) {
+            if (!str_starts_with((string) $context, 'Grav\\')) {
                 continue;
             }
 
@@ -697,6 +793,12 @@ class Debugger
      */
     public function startTimer($name, $description = null)
     {
+        // Timers must collect before init() has read the config; after that,
+        // a disabled debugger skips the bookkeeping (every processor calls this).
+        if ($this->decided && !$this->enabled) {
+            return $this;
+        }
+
         $this->timers[$name] = [$description, microtime(true)];
 
         return $this;
@@ -710,6 +812,10 @@ class Debugger
      */
     public function stopTimer($name)
     {
+        if ($this->decided && !$this->enabled) {
+            return $this;
+        }
+
         if (isset($this->timers[$name])) {
             $endTime = microtime(true);
             $this->timers[$name][] = $endTime;
@@ -721,12 +827,11 @@ class Debugger
     /**
      * Dump variables into the Messages tab of the Debug Bar
      *
-     * @param mixed  $message
      * @param string $label
      * @param mixed|bool $isString
      * @return $this
      */
-    public function addMessage($message, $label = 'info', $isString = true)
+    public function addMessage(mixed $message, $label = 'info', $isString = true)
     {
         if ($this->enabled) {
             if ($this->censored) {
@@ -776,10 +881,10 @@ class Debugger
      * @param float|null $time
      * @return $this
      */
-    public function addEvent(string $name, $event, EventDispatcherInterface $dispatcher, float $time = null)
+    public function addEvent(string $name, $event, EventDispatcherInterface $dispatcher, ?float $time = null)
     {
         if ($this->enabled && $this->clockwork) {
-            $time = $time ?? microtime(true);
+            $time ??= microtime(true);
             $duration = (microtime(true) - $time) * 1000;
 
             $data = null;
@@ -829,7 +934,7 @@ class Debugger
     public function setErrorHandler()
     {
         $this->errorHandler = set_error_handler(
-            [$this, 'deprecatedErrorHandler']
+            $this->deprecatedErrorHandler(...)
         );
     }
 
@@ -858,7 +963,7 @@ class Debugger
         $scope = 'unknown';
         if (stripos($errstr, 'grav') !== false) {
             $scope = 'grav';
-        } elseif (strpos($errfile, '/twig/') !== false) {
+        } elseif (str_contains($errfile, '/twig/')) {
             $scope = 'twig';
             // TODO: remove when upgrading to Twig 2+
             if (str_contains($errstr, '#[\ReturnTypeWillChange]') || str_contains($errstr, 'Passing null to parameter')) {
@@ -866,7 +971,7 @@ class Debugger
             }
         } elseif (stripos($errfile, '/yaml/') !== false) {
             $scope = 'yaml';
-        } elseif (strpos($errfile, '/vendor/') !== false) {
+        } elseif (str_contains($errfile, '/vendor/')) {
             $scope = 'vendor';
         }
 
@@ -912,7 +1017,7 @@ class Debugger
                     } elseif (is_scalar($arg)) {
                         $arg = $arg;
                     } elseif (is_object($arg)) {
-                        $arg = get_class($arg) . ' $object';
+                        $arg = $arg::class . ' $object';
                     } elseif (is_array($arg)) {
                         $arg = '$array';
                     } else {
@@ -931,14 +1036,13 @@ class Debugger
             if ($object instanceof TemplateWrapper) {
                 $reflection = new ReflectionObject($object);
                 $property = $reflection->getProperty('template');
-                $property->setAccessible(true);
                 $object = $property->getValue($object);
             }
 
             if ($object instanceof Template) {
                 $file = $current['file'] ?? null;
 
-                if (preg_match('`(Template.php|TemplateWrapper.php)$`', $file)) {
+                if (preg_match('`(Template.php|TemplateWrapper.php)$`', (string) $file)) {
                     $current = null;
                     continue;
                 }
@@ -998,7 +1102,7 @@ class Debugger
             if (!isset($current['file'])) {
                 continue;
             }
-            if (strpos($current['file'], '/vendor/') !== false) {
+            if (str_contains($current['file'], '/vendor/')) {
                 $cut = $i + 1;
                 continue;
             }
@@ -1073,7 +1177,7 @@ class Debugger
 
         /** @var array $deprecated */
         foreach ($this->deprecations as $deprecated) {
-            list($message, $scope) = $this->getDepracatedMessage($deprecated);
+            [$message, $scope] = $this->getDepracatedMessage($deprecated);
 
             $collector->addMessage($message, $scope);
         }
@@ -1140,7 +1244,7 @@ class Debugger
     protected function resolveCallable(callable $callable)
     {
         if (is_array($callable)) {
-            return get_class($callable[0]) . '->' . $callable[1] . '()';
+            return $callable[0]::class . '->' . $callable[1] . '()';
         }
 
         return 'unknown';

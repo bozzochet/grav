@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Assets
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -114,7 +114,7 @@ abstract class BaseAsset extends PropertyObject
 
         // Do some special stuff for CSS/JS (not inline)
         if (!Utils::startsWith($this->getType(), 'inline')) {
-            $this->base_url = rtrim($uri->rootUrl($config->get('system.absolute_urls')), '/') . '/';
+            $this->base_url = rtrim((string) $uri->rootUrl($config->get('system.absolute_urls')), '/') . '/';
             $this->remote = static::isRemoteLink($asset);
 
             // Move this to render?
@@ -188,11 +188,17 @@ abstract class BaseAsset extends PropertyObject
     public static function integrityHash($input)
     {
         $grav = Grav::instance();
+
+        // Check the (default off) SRI flag before doing any URL work; this runs
+        // for every rendered asset.
+        $assetsConfig = $grav['config']->get('system.assets');
+        if (empty($assetsConfig['enable_asset_sri'])) {
+            return '';
+        }
+
         $uri = $grav['uri'];
 
-        $assetsConfig = $grav['config']->get('system.assets');
-
-        if (!self::isRemoteLink($input) && !empty($assetsConfig['enable_asset_sri']) && $assetsConfig['enable_asset_sri']) {
+        if (!self::isRemoteLink($input)) {
             $input = preg_replace('#^' . $uri->rootUrl() . '#', '', $input);
             $asset = File::instance(GRAV_WEBROOT . $input);
 

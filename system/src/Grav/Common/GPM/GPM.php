@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\GPM
  *
- * @copyright  Copyright (c) 2015 - 2025 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2026 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -39,8 +39,6 @@ class GPM extends Iterator
     private $repository;
     /** @var Remote\GravCore|null Remove Grav Packages */
     private $grav;
-    /** @var bool */
-    private $refresh;
     /** @var callable|null */
     private $callback;
 
@@ -59,7 +57,7 @@ class GPM extends Iterator
      * @param bool $refresh Applies to Remote Packages only and forces a refetch of data
      * @param callable|null $callback Either a function or callback in array notation
      */
-    public function __construct($refresh = false, $callback = null)
+    public function __construct(private $refresh = false, $callback = null)
     {
         parent::__construct();
 
@@ -67,7 +65,6 @@ class GPM extends Iterator
 
         $this->cache = [];
         $this->installed = new Local\Packages();
-        $this->refresh = $refresh;
         $this->callback = $callback;
     }
 
@@ -80,12 +77,10 @@ class GPM extends Iterator
     #[\ReturnTypeWillChange]
     public function __get($offset)
     {
-        switch ($offset) {
-            case 'grav':
-                return $this->getGrav();
-        }
-
-        return parent::__get($offset);
+        return match ($offset) {
+            'grav' => $this->getGrav(),
+            default => parent::__get($offset),
+        };
     }
 
     /**
@@ -97,12 +92,10 @@ class GPM extends Iterator
     #[\ReturnTypeWillChange]
     public function __isset($offset)
     {
-        switch ($offset) {
-            case 'grav':
-                return $this->getGrav() !== null;
-        }
-
-        return parent::__isset($offset);
+        return match ($offset) {
+            'grav' => $this->getGrav() !== null,
+            default => parent::__isset($offset),
+        };
     }
 
     /**
@@ -128,7 +121,7 @@ class GPM extends Iterator
             if ($type_installed === false) {
                 continue;
             }
-            $methodInstallableType = 'getInstalled' . ucfirst($type);
+            $methodInstallableType = 'getInstalled' . ucfirst((string) $type);
             $to_install = $this->$methodInstallableType();
             $items[$type] = $to_install;
             $items['total'] += count($to_install);
@@ -288,7 +281,7 @@ class GPM extends Iterator
             if ($type_updatable === false) {
                 continue;
             }
-            $methodUpdatableType = 'getUpdatable' . ucfirst($type);
+            $methodUpdatableType = 'getUpdatable' . ucfirst((string) $type);
             $to_update = $this->$methodUpdatableType();
             $items[$type] = $to_update;
             $items['total'] += count($to_update);
@@ -369,6 +362,55 @@ class GPM extends Iterator
         }
 
         return null;
+    }
+
+    /**
+     * Get the `blocked_upgrade` hint the repository attaches to a down-served
+     * package: the next release above the one being served, and the Grav/PHP
+     * floor that keeps this install from receiving it. Null when the served
+     * package is already the latest (no down-serving happened).
+     *
+     * @param string $package_name
+     * @return array|null
+     */
+    public function getBlockedUpgrade($package_name)
+    {
+        $repository = $this->getRepository();
+        if (null === $repository) {
+            return null;
+        }
+
+        foreach (['plugins', 'themes'] as $type) {
+            $packages = $repository[$type] ?? null;
+            if ($packages && isset($packages[$package_name])) {
+                $blocked = $packages[$package_name]->blocked_upgrade;
+
+                return is_array($blocked) && $blocked ? $blocked : null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract the lowest version-like token from a composer-style constraint
+     * (`>=2.0.7` → `2.0.7`, `^8.1` → `8.1`). Returns null when there's no
+     * usable version token.
+     *
+     * @param string|null $constraint
+     * @return string|null
+     */
+    protected function extractMinConstraintVersion($constraint)
+    {
+        if (!is_string($constraint) || $constraint === '' || $constraint === '*') {
+            return null;
+        }
+
+        if (!preg_match('/\d+(?:\.\d+){0,2}(?:[.-][a-zA-Z0-9.-]+)?/', $constraint, $m)) {
+            return null;
+        }
+
+        return $m[0];
     }
 
     /**
@@ -596,7 +638,7 @@ class GPM extends Iterator
         if (null === $this->repository) {
             try {
                 $this->repository = new Remote\Packages($this->refresh, $this->callback);
-            } catch (Exception $e) {}
+            } catch (Exception) {}
         }
 
         return $this->repository;
@@ -612,7 +654,7 @@ class GPM extends Iterator
         if (null === $this->grav) {
             try {
                 $this->grav = new Remote\GravCore($this->refresh, $this->callback);
-            } catch (Exception $e) {}
+            } catch (Exception) {}
         }
 
         return $this->grav;
@@ -1063,6 +1105,44 @@ class GPM extends Iterator
                 $latestRelease = $this->getLatestVersionOfPackage($dependency_slug);
 
                 if ($this->firstVersionIsLower($latestRelease, $dependencyVersion)) {
+                    // The required version is newer than anything the GPM will
+                    // serve this install. The usual reason is that the newer
+                    // release raised its own Grav/PHP floor above what's running,
+                    // so the repository down-served an older one. When that's the
+                    // case the served package carries a `blocked_upgrade` hint —
+                    // use it to explain the real fix instead of guessing the
+                    // cache is stale.
+                    $blocked = $this->getBlockedUpgrade($dependency_slug);
+                    if ($blocked
+                        && isset($blocked['version'])
+                        && !$this->firstVersionIsLower($blocked['version'], $dependencyVersion)) {
+                        $needs = [];
+                        $gravMin = $this->extractMinConstraintVersion($blocked['grav'] ?? null);
+                        if ($gravMin && version_compare($gravMin, GRAV_VERSION, '>')) {
+                            $needs['Grav'] = $gravMin;
+                        }
+                        $phpMin = $this->extractMinConstraintVersion($blocked['php'] ?? null);
+                        if ($phpMin && version_compare($phpMin, PHP_VERSION, '>')) {
+                            $needs['PHP'] = $phpMin;
+                        }
+
+                        if ($needs) {
+                            $requires = [];
+                            $current = ['Grav' => GRAV_VERSION, 'PHP' => PHP_VERSION];
+                            foreach ($needs as $what => $min) {
+                                $requires[] = "<cyan>{$what} {$min}</cyan> (you have {$current[$what]})";
+                            }
+
+                            throw new RuntimeException(
+                                'Dependency <cyan>' . $package_yaml['name'] . '</cyan> requires version <cyan>'
+                                . $dependencyVersion . '</cyan>, but <cyan>' . $dependency_slug . ' '
+                                . $blocked['version'] . '</cyan> requires ' . implode(' and ', $requires)
+                                . '. Update ' . implode(' and ', array_keys($needs)) . ' first, then try again.',
+                                1
+                            );
+                        }
+                    }
+
                     //throw an exception if a required version cannot be found in the GPM yet
                     throw new RuntimeException(
                         'Dependency <cyan>' . $package_yaml['name'] . '</cyan> is required in version <cyan>' . $dependencyVersion . '</cyan> which is higher than the latest release, <cyan>' . $latestRelease . '</cyan>. Try running `bin/gpm -f index` to force a refresh of the GPM cache',
@@ -1266,7 +1346,7 @@ class GPM extends Iterator
      */
     public function versionFormatIsNextSignificantRelease($version): bool
     {
-        return strpos($version, '~') === 0;
+        return str_starts_with($version, '~');
     }
 
     /**
@@ -1279,7 +1359,7 @@ class GPM extends Iterator
      */
     public function versionFormatIsEqualOrHigher($version): bool
     {
-        return strpos($version, '>=') === 0;
+        return str_starts_with($version, '>=');
     }
 
     /**
