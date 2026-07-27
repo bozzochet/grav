@@ -14,6 +14,8 @@ http_x_forwarded:
   host: false
   port: true
   ip: true
+  client_ip: false
+  cf_connecting_ip: false
 languages:
   supported: null
   default_lang: null
@@ -33,10 +35,12 @@ pages:
   type: regular
   dirs:
     - 'page://'
+  lazy_index: false
   theme: my-quark
   order:
     by: default
     dir: asc
+  order_digits: 2
   list:
     count: 20
   dateformat:
@@ -46,7 +50,6 @@ pages:
   publish_dates: true
   process:
     markdown: true
-    twig: false
   twig_first: false
   never_cache_twig: false
   events:
@@ -66,6 +69,17 @@ pages:
       - id
       - class
       - classes
+    gfm:
+      task_lists: true
+      marks: true
+      tagfilter: false
+      autolinks: true
+    tables:
+      colspan: false
+      headerless: false
+      captions: false
+      attributes: false
+      multiline: false
   types:
     - html
     - htm
@@ -92,14 +106,15 @@ pages:
   hide_empty_folders: false
   url_taxonomy_filters: true
   frontmatter:
-    process_twig: false
+    process_twig: true
     ignore_fields:
       - form
       - forms
 cache:
-  enabled: true
+  enabled: false
   check:
     method: file
+    interval: 2
   driver: auto
   prefix: g
   purge_at: '0 4 * * *'
@@ -128,10 +143,10 @@ twig:
   debug: true
   auto_reload: true
   autoescape: false
-  undefined_functions: true
-  undefined_filters: true
   safe_functions: {  }
   safe_filters: {  }
+  undefined_functions: true
+  undefined_filters: true
   umask_fix: false
 assets:
   css_pipeline: false
@@ -174,6 +189,8 @@ images:
   debug: false
   auto_fix_orientation: true
   seofriendly: false
+  url_actions: false
+  max_pixels: 25000000
   cls:
     auto_sizes: false
     aspect_ratio: false
@@ -193,10 +210,11 @@ media:
   unsupported_inline_types: null
   allowed_fallback_types: null
   auto_metadata_exif: false
-  upload_limit: 8388608
+  upload_limit: 50331648
 session:
   enabled: true
   initialize: true
+  read_and_close: false
   timeout: 1800
   name: grav-site
   uniqueness: path
@@ -210,10 +228,12 @@ session:
 gpm:
   releases: stable
   official_gpm_only: true
-  method: auto
+  archive:
+    max_uncompressed_size: 1073741824
+    max_files: 50000
+    max_depth: 48
   verify_peer: true
-updates:
-  safe_upgrade: true
+  method: auto
 http:
   method: auto
   enable_proxy: true
@@ -239,5 +259,9 @@ flex:
       lifetime: 600
 strict_mode:
   yaml_compat: false
-  twig_compat: false
+  twig2_compat: false
+  twig3_compat: true
   blueprint_compat: false
+  twig_compat: false
+updates:
+  safe_upgrade: true

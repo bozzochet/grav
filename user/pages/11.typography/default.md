@@ -1,5 +1,6 @@
 ---
 title: Typography
+published: false
 ---
 
 > [!NOTE]

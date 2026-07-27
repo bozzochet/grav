@@ -1,16 +1,16 @@
 ---
 title: Contacts
 published: true
-class: small
-hero_image: DSC00903.jpg
-hero_inline: true
-hero_classes: 'hero-fullscreen overlay-light text-dark'
-hero_align: center
-hero_noarrow: true
 process:
     markdown: true
     twig: true
 twig_first: true
+hero_classes: 'hero-fullscreen overlay-light text-dark'
+hero_image: DSC00903.jpg
+class: small
+hero_inline: true
+hero_align: center
+hero_noarrow: true
 ---
 
 </br>

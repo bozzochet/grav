@@ -23,9 +23,6 @@ xss_dangerous_tags:
   - script
   - embed
   - object
-  - iframe
-  - frame
-  - frameset
   - ilayer
   - layer
   - bgsound
@@ -110,9 +107,9 @@ sanitize_svg: true
 # variable is empty inside sandboxed renders. When true, `config` is the
 # SandboxConfig facade with config_denied_paths redaction applied.
 twig_content:
-  process_enabled: false
-  editor_enabled: false
-  config_access: false
+  process_enabled: true
+  editor_enabled: true
+  config_access: true
 
 twig_sandbox:
   enabled: true

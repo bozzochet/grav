@@ -1,1 +1,5 @@
 salt: O2cxVtY7nApJiC
+
+markdown:
+  gfm:
+    tagfilter: false
