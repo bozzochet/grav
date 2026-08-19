@@ -120,7 +120,7 @@ markdown:
 	source = {Scopus},
 	title = {The scintillating-fiber tracker (FIT) of the HERD space mission from design to performance},
 	type = {Conference paper},
-	url = {}https://www.scopus.com/inward/record.uri?eid=2-s2.0-85212275758&partnerID=40&md5=cb4255148234ae411b7df9216438aa38}},
+	url = {https://www.scopus.com/inward/record.uri?eid=2-s2.0-85212275758&partnerID=40&md5=cb4255148234ae411b7df9216438aa38},
 	volume = {444},
 	year = {2024},
 	bdsk-url-1 = {https://www.scopus.com/inward/record.uri?eid=2-s2.0-85212275758&partnerID=40&md5=cb4255148234ae411b7df9216438aa38}}
