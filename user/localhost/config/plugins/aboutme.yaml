@@ -3,14 +3,14 @@ built_in_css: true
 name: 'Matteo Duranti'
 title: 'PhD in Particle Physics - Istituto Nazionale Fisica Nucleare, Sez. Perugia'
 show_title: true
-description: "_A revolution is not a dinner party, or writing an essay, or painting a picture, or doing embroidery; it cannot be so refined, so leisurely and gentle, so temperate, kind, courteous, restrained and magnanimous. A revolution is an insurrection, an act of violence..._\nMao Zedong"
+description: "**_A revolution is not a dinner party, or writing an essay, or painting a picture, or doing embroidery; it cannot be so refined, so leisurely and gentle, so temperate, kind, courteous, restrained and magnanimous. A revolution is an insurrection, an act of violence..._**\n**Mao Zedong**"
 picture_src:
-  user/plugins/aboutme/assets/avatars/pict1245.jpg:
-    name: pict1245.jpg
-    full_path: pict1245.jpg
-    type: image/jpeg
-    size: 1053289
-    path: user/plugins/aboutme/assets/avatars/pict1245.jpg
+  user/plugins/aboutme/assets/avatars/pict1245.gif:
+    name: pict1245.gif
+    full_path: pict1245.gif
+    type: image/gif
+    size: 289121
+    path: user/plugins/aboutme/assets/avatars/pict1245.gif
 gravatar:
   enabled: false
   email: bozzo1983@gmail.com
