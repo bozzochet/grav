@@ -1,8 +1,97 @@
-# v2.0.14
-## 07/26/2026
+# v2.0.20
+## 08/15/2026
+
+1. [](#improved)
+    * Updated the bundled Twig fork to the current 3.x, picking up the correctness and sandbox improvements from the 3.27 and 3.28 releases.
+    * Grav now runs on Twig 3.28 and newer, which tightened the escaping method that Grav's compatibility shim replaces and would otherwise stop the site with a server error.
+    * The Twig content sandbox now accepts the list of tests a template uses, which newer Twig versions hand to it and will require from Twig 4.
+    * The bundled Nginx configuration now sets caching headers for images, fonts, stylesheets and scripts, so visitors stop re-downloading them on every page.
+    * Script and style files whose name already contains a version, such as those the Admin panel ships, are cached permanently in that same configuration, because a change always produces a new name.
+1. [](#bugfix)
+    * A damaged page cache file is now rebuilt from the original page instead of stopping the site with a server error [#4239](https://github.com/getgrav/grav/issues/4239)
+    * Images and links in page content now work when the file name contains a colon, such as a screenshot named after a timestamp [#3933](https://github.com/getgrav/grav/issues/3933)
+    * A page that sets a full web address as its canonical route now uses that address on its own, instead of joining it onto the site's own address and breaking sitemaps and canonical links [#4023](https://github.com/getgrav/grav/issues/4023)
+    * Turning on asset timestamps now gives each stylesheet and script its own marker taken from when that file last changed, so editing one file no longer waits on an unrelated change before visitors see it [#4049](https://github.com/getgrav/grav/issues/4049)
+    * A canonical route set through the Flex pages API is now saved as written, instead of being stored in a form it could never be read back from.
+    * Flex directory blueprints no longer lose the fields the Flex Objects plugin adds when something reads the directory early in a request [#160](https://github.com/getgrav/grav-plugin-admin2/issues/160)
+
+# v2.0.19
+## 08/14/2026
+
+1. [](#new)
+    * You can now tighten the Twig content sandbox below its built-in defaults with new `denied_*` settings in `security.yaml`.
+    * The "Twig in Content" report can show the effective sandbox policy, so you can see exactly what page content is allowed to do.
+1. [](#improved)
+    * A theme or plugin that ships its own `.htaccess` can no longer switch off the protection on its own folder, which used to leave its configuration and template files downloadable [#4236](https://github.com/getgrav/grav/issues/4236)
+    * Twig in page content now renders on new installs by default, instead of appearing as raw text until the setting was turned on.
+    * The long Twig sandbox allowlists now ship built into Grav, so `security.yaml` only records your own additions and future security updates to the defaults reach every site.
+    * Existing sites that had trimmed those allowlists to tighten them keep exactly that policy after upgrading, now recorded as explicit `denied_*` entries.
+    * Removed two rarely-used Twig sandbox switches (`logging` and `admin_hint`); both behaviours are now always on.
+1. [](#bugfix)
+    * The content cross-site scripting check no longer objects to harmless `<option>` and `<select>` markup, whose original issue is fixed in the form field that actually rendered it.
+    * Sites running with the Twig 2 compatibility setting no longer crash with a server error on every page once an update clears the template cache [#4235](https://github.com/getgrav/grav/issues/4235)
+
+# v2.0.18
+## 08/11/2026
 
 1. [](#bugfix)
+    * [security] Updated the bundled DOM sanitizer to 1.0.14, which closes two further ways a crafted stylesheet could hide an external image reference from the checks added in the previous release ([GHSA-ww22-4mqv-x5w3](https://github.com/rhukster/dom-sanitizer/security/advisories/GHSA-ww22-4mqv-x5w3)).
+    * [security] Modular pages are now checked for cross-site scripting when they are saved, closing a way for a page editor to store a script that ran for every visitor ([GHSA-fg8g-663r-f366](https://github.com/getgrav/grav/security/advisories/GHSA-fg8g-663r-f366)).
+    * [security] The Twig `sort` and `find` filters no longer run a plain function name as a callable inside the content sandbox, closing a way for a page editor to execute arbitrary PHP ([GHSA-p6qj-p5m7-f62h](https://github.com/getgrav/grav/security/advisories/GHSA-p6qj-p5m7-f62h)).
+    * A blueprint that builds on another one can again fill dropdowns from its own PHP, which mostly affected themes because their page blueprints nearly always extend the default one ([getgrav/grav-plugin-email#193](https://github.com/getgrav/grav-plugin-email/issues/193)).
+    * The Scheduler no longer fails outright on hosts that disable PHP's `proc_open`, so scheduled jobs can still be viewed and edited there [getgrav/grav-admin-next#16](https://github.com/getgrav/grav-admin-next/issues/16)
+    * A scheduled job that cannot be started on such a host is now reported as failed with an explanation, instead of stopping the whole scheduler run
+    * Grav now works out who the site runs as without starting a shell, so that detail still appears when external commands are unavailable
+    * The record of when the scheduler last ran is now written to a fixed location rather than one relative to wherever the trigger happened to run from
+1. [](#improved)
+    * Grav now decides whether the scheduler is being triggered by checking that each job has run when its own schedule says it should have, instead of requiring a run in the last two minutes, so a sparse crontab, a webhook or a scheduled task on Windows all count
+
+# v2.0.17
+## 08/07/2026
+
+1. [](#bugfix)
+    * [security] Updated the bundled DOM sanitizer to 1.0.13, which stops CSS comments from hiding dangerous values and covers image loading through `image-set()`, so untrusted SVG or HTML can no longer reference external resources those ways ([GHSA-ww22-4mqv-x5w3](https://github.com/rhukster/dom-sanitizer/security/advisories/GHSA-ww22-4mqv-x5w3)).
+
+# v2.0.16
+## 08/07/2026
+
+1. [](#improved)
+    * Updated vendor libs to latest versions
+    * The list of groups on the account form is now read through the current user groups system, retiring a routine deprecated since Grav 1.7.
+1. [](#bugfix)
+    * [security] The site, system and theme settings offered to Twig written inside page content are now filtered by the same denied-paths list that already covered `config`, so a page editor can no longer read secrets such as a Redis password straight out of them ([GHSA-p597-crqc-m349](https://github.com/getgrav/grav/security/advisories/GHSA-p597-crqc-m349)).
+    * [security] Twig written into a form's email settings now runs under the same restrictions as Twig written into page content, closing a route that let someone with only page-editing rights run commands on the server ([GHSA-gh8j-q67c-j53f](https://github.com/getgrav/grav/security/advisories/GHSA-gh8j-q67c-j53f)).
+    * [security] Form security tokens are now compared with a routine that takes the same amount of time whichever characters differ, so the check can no longer hint at how much of a guess was right ([GHSA-38p6-h87p-r4cg](https://github.com/getgrav/grav/security/advisories/GHSA-38p6-h87p-r4cg)).
+    * [security] The check for whether a visitor arrived from your own site now requires a full address match, so another site whose domain merely begins with yours no longer counts as your own ([GHSA-9ccq-2jfg-qw33](https://github.com/getgrav/grav/security/advisories/GHSA-9ccq-2jfg-qw33)).
+    * [security] Scheduler job locks are now kept inside your site rather than in the shared system temp folder, so another account on the same server can no longer redirect a lock write to a file of its choosing ([GHSA-q8w8-6cq5-j4h2](https://github.com/getgrav/grav/security/advisories/GHSA-q8w8-6cq5-j4h2)).
+    * A scheduled job set to run only one at a time now refuses to start when its lock cannot be written, instead of running unprotected. Note that `bin/grav clear` removes these locks along with the rest of the temporary folder.
+    * [security] Deleting, renaming and copying a media file now check the whole path rather than just the file's own name, so a plugin calling those routines directly cannot reach a file outside the media folder ([GHSA-jq29-c7v8-rg55](https://github.com/getgrav/grav/security/advisories/GHSA-jq29-c7v8-rg55)).
+    * [security] The `media_directory()` Twig function now only accepts folders inside your site, so Twig written into page content can no longer list files or republish images from elsewhere on the server ([GHSA-47ch-6w46-6xm7](https://github.com/getgrav/grav/security/advisories/GHSA-47ch-6w46-6xm7)).
+    * Deleting a media file no longer also removes the retina copies and metadata belonging to a different file whose name merely ends with the same text, so deleting `banner.jpg` leaves `my-banner@2x.jpg` alone.
+    * A fallback page handed to `Uri::referrer()` is now returned as given, instead of being trimmed away to nothing whenever the visitor did not arrive from your site.
+    * `Pages::referrerRoute()` was comparing a full web address against a site path, so it never recognised a match and always reported that the visitor came from somewhere else.
+
+# v2.0.15
+## 08/03/2026
+
+1. [](#bugfix)
+    * A plugin's blueprints can use the data providers that plugin ships again, instead of having every one of them refused by a check that only recognised the providers core itself registers ([getgrav/grav-plugin-email#193](https://github.com/getgrav/grav-plugin-email/issues/193)). Fields defined in page frontmatter are held to the stricter rule instead, which is where the risk actually was.
+    * [security] A configuration admin can no longer reach an unvetted built-in routine by writing a blueprint field's data provider as a plain function name, a spelling that was still being checked against a list of known-bad names rather than the list of approved ones ([GHSA-f8wv-xp27-6gq7](https://github.com/getgrav/grav/security/advisories/GHSA-f8wv-xp27-6gq7)).
+    * [security] The content security scan now reads an unpaired quote inside an unquoted attribute value the way a browser does, closing another way a page editor could hide a script from it ([GHSA-vfmf-q6x9-cw96](https://github.com/getgrav/grav/security/advisories/GHSA-vfmf-q6x9-cw96)).
+    * [security] The media URL in an audio or video tag is now escaped, so a filename carrying markup can no longer add its own attributes to the player ([GHSA-6qw9-4vv5-jr97](https://github.com/getgrav/grav/security/advisories/GHSA-6qw9-4vv5-jr97)).
+    * JSON responses no longer fail outright when the data contains invalid UTF-8. `json_encode()` returns `false` on malformed bytes, and the PSR-7 response body is type-hinted `string|resource|StreamInterface`, so that `false` came back out as an unhandled `TypeError` from inside the vendor stream rather than as a response. Affected `createJsonResponse()` and both JSON error responses in `ControllerResponseTrait`, where an exception message carrying a bad byte would take out the error handler itself, plus the Clockwork data endpoint in `Debugger`. Bad bytes are now substituted, and the remaining structural failures (recursion depth, `INF`/`NAN`) raise a catchable `JsonException` instead of a silent `false`. Output for valid data is unchanged.
+    * [security] The fast static asset server now keeps a request inside the directory the site published, instead of also allowing any neighbouring directory whose name starts with the same letters ([GHSA-4v9q-p283-qc2m](https://github.com/getgrav/grav/security/advisories/GHSA-4v9q-p283-qc2m)).
+    * [security] File uploads now reject a few more extensions that browsers run script from, or that a server may hand to PHP: `xhtml`, `xht`, `svgz`, `php7`, `php8`, `pht`, `phtm` and `phps` ([GHSA-66xf-ggf4-6hmc](https://github.com/getgrav/grav/security/advisories/GHSA-66xf-ggf4-6hmc)).
+    * [security] The bundled `Caddyfile` protections did nothing. They were written as nginx-style regexes, which Caddy reads as literal paths that never match, and the `respond` they redirected to ran after the catch-all rewrite had already claimed the request. A site served with this config handed out `user/accounts/`, `user/config/`, `logs/`, `composer.lock`, page files, and the `system/` and `vendor/` folders to anyone who asked. The rules are now named `path_regexp` matchers answering `403` directly, inside a `route` block so they run before the rewrite, and they were checked request by request against the `.htaccess` behaviour.
+
+# v2.0.14
+## 07/30/2026
+
+1. [](#improved)
+    * Removed old JQuery `2.1.4`. However `2.2.4` and `3.7.1` remain for legacy support
+1. [](#bugfix)
     * [security] An administrator with account-management rights can no longer grant themselves super-admin access by saving it into a user group's permissions, a protection the account form already had ([GHSA-xhfv-7758-r9hx](https://github.com/getgrav/grav/security/advisories/GHSA-xhfv-7758-r9hx)).
+    * [security] The content security scan no longer reports a page as clean when it was unable to examine it, closing two ways a page editor could hide a script from it: a single invalid character anywhere in the content, and padding a tag out to several thousand characters ([GHSA-q2j8-x8hf-63ch](https://github.com/getgrav/grav/security/advisories/GHSA-q2j8-x8hf-63ch)).
 
 # v2.0.13
 ## 07/25/2026
@@ -90,7 +179,7 @@
     * New experimental opt-in page index (`pages.lazy_index: true`): pages, routes, children lists, sort orders and the taxonomy map load on demand from a per-page index instead of one large cache blob that has to be fully unserialized on every request, making per-request cost flat as sites grow: a 2,000 page test site renders as fast as a 2 page one and uses a quarter of the memory; SQLite powers the index when available with a pure PHP fallback, and the default behavior is completely unchanged until the flag is enabled.
     * Page collection filters (`visible`, `routable`, `published`, module) now use menu flags recorded in the page index, so building a navigation menu that filters a folder to its visible pages no longer loads every hidden sibling first. On a 500 post blog under the Quark theme this cut the pages built for a page view from all 507 to 7 and roughly halved memory; it helps every site, most of all large ones with the experimental page index enabled.
     * Sorting a page collection by date, title, or another common field now reads that value from the page index instead of loading every page in the collection just to read one field, and on single language sites the automatic translated filter that every collection applies no longer loads any pages at all. With the experimental page index enabled, a blog post showing a related posts grid dropped from loading every post on the site to only the handful it displays.
-    * The setting that scans page content for XSS moved to `security.content.xss_scan_output`, since it applies to all page content rather than only Twig in content; the previous `security.twig_content.xss_scan_output` location keeps working and is moved to the new one automatically on upgrade.
+    * The setting that scanned rendered page content for XSS is retired, as the gap it covered is now closed when the page is saved rather than every time it is viewed; the old toggle is removed from your security configuration automatically on upgrade.
 
 # v2.0.6
 ## 06/30/2026

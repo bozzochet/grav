@@ -939,8 +939,10 @@ class Page implements PageInterface
             }
             // Editor-authored content Twig is gated by process_enabled; trusted
             // modular/theme Twig renders unconditionally. XSS in assembled
-            // content Twig is caught at save time, not here. (GHSA-2c4f-86xc-cr74)
-            $process_twig = ($content_twig_requested && $content_twig_allowed) || $this->modularTwig();
+            // content Twig is caught at save time, not here (GHSA-2c4f-86xc-cr74),
+            // so both sides read the same boolean and cannot drift apart.
+            // (GHSA-fg8g-663r-f366)
+            $process_twig = Security::willProcessContentTwig($this);
 
             $cache_enable = $this->header->cache_enable ?? $config->get(
                 'system.cache.enabled',
@@ -2098,7 +2100,10 @@ class Page implements PageInterface
     /**
      * Gets the url for the Page.
      *
-     * @param bool $include_host Defaults false, but true would include http://yourhost.com
+     * @param bool $include_host Defaults false, but true would include http://yourhost.com.
+     *                            Ignored when $canonical is true and routes.canonical is an
+     *                            absolute URL: that names a different origin outright, so
+     *                            there is no meaningful host-less form of it to return.
      * @param bool $canonical    True to return the canonical URL
      * @param bool $include_base Include base url on multisite as well as language code
      * @param bool $raw_route
@@ -2128,7 +2133,12 @@ class Page implements PageInterface
         }
 
         if ($canonical) {
-            $route .= $this->routeCanonical();
+            $routeCanonical = $this->routeCanonical();
+            if (is_string($routeCanonical) && Uri::isExternal($routeCanonical)) {
+                return $routeCanonical;
+            }
+
+            $route .= $routeCanonical;
         } elseif ($raw_route) {
             $route .= $this->rawRoute();
         } else {

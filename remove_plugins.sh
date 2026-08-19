@@ -1,8 +1,8 @@
 #!/bin/bash -l
 
-bin/gpm uninstall -y facebook-feed
+#bin/gpm uninstall -y facebook-feed
 
 #this on the final server should be removed
 bin/gpm uninstall -y admin
 
-bin/gpm uninstall -y blackhole
+#bin/gpm uninstall -y blackhole

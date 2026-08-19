@@ -199,6 +199,12 @@ class Twig
                 $params['autoescape'] = 'html';
             } elseif (!empty($this->autoescape)) {
                 $params['autoescape'] = $this->autoescape ? 'html' : false;
+            } elseif (isset($params['autoescape']) && !is_string($params['autoescape']) && !is_callable($params['autoescape'])) {
+                // Twig 3 only accepts a strategy name, false, or a callable. The
+                // stock config default is the legacy boolean `true`, which Twig
+                // would treat as a callable and fatal on the first template
+                // compile in twig2_compat mode (getgrav/grav#4235).
+                $params['autoescape'] = $params['autoescape'] ? 'html' : false;
             }
 
             if (empty($params['autoescape'])) {
@@ -365,21 +371,15 @@ class Twig
      *
      * @param  PageInterface   $item    The page item to render
      * @param  string|null $content Optional content override
-     * @param  bool $scanXss When true, re-run the XSS detector on the resolved
-     *                       editor-authored content *before* the trusted
-     *                       theme/modular template wraps it. Set only for
-     *                       content whose in-page Twig was processed (the
-     *                       blueprint validator sees the raw source, so a
-     *                       payload assembled at render time — e.g.
-     *                       `{{ "on" ~ "error" }}` — passes validation but
-     *                       resolves to live markup). The scan never inspects
-     *                       the theme/modular template output, so legitimate
-     *                       template markup (embeds, form scripts, JS/CSS) can
-     *                       never trip it. (GHSA-2c4f-86xc-cr74)
+     * @param  bool $moduleTemplate When false, a module's body Twig is resolved
+     *                      but its trusted modular template is not rendered
+     *                      around it. Used by the save-time content scan, which
+     *                      must only ever inspect editor-authored output.
+     *                      (GHSA-fg8g-663r-f366)
      *
      * @return string          The rendered output
      */
-    public function processPage(PageInterface $item, $content = null)
+    public function processPage(PageInterface $item, $content = null, bool $moduleTemplate = true)
     {
         $content ??= $item->content();
         $filtered = false;
@@ -419,12 +419,13 @@ class Twig
             if ($item->shouldProcess('twig') || $item->isModule()) {
                 $name = '@Page:' . $item->path();
                 $this->setTemplate($name, $content);
-                // Replace `config` with a denied-path-filtered facade for the
-                // sandboxed render so editors can't exfiltrate plugin secrets
-                // via `config.toArray()` (GHSA-j274-39qw-32c9). The modular
-                // theme render below is unsandboxed and keeps the raw Config.
-                $sandbox_vars = $twig_vars;
-                $sandbox_vars['config'] = $this->buildSandboxConfig();
+                // Replace `config` with a denied-path-filtered facade and
+                // filter the raw `system`/`site`/`theme` arrays for the
+                // sandboxed render so editors can't exfiltrate operator
+                // secrets (GHSA-j274-39qw-32c9, GHSA-p597-crqc-m349). The
+                // modular theme render below is unsandboxed and keeps the
+                // raw Config.
+                $sandbox_vars = $this->buildSandboxVars($twig_vars, $twig_vars);
                 try {
                     $output = $content = $local_twig->render($name, $sandbox_vars);
                 } catch (SecurityError $e) {
@@ -448,7 +449,7 @@ class Twig
             // sandboxed by our SourcePolicy. The already-resolved content is
             // handed in as the `content` variable; Twig emits it as a string
             // and does not re-evaluate it.
-            if ($item->isModule()) {
+            if ($moduleTemplate && $item->isModule()) {
                 $twig_vars['content'] = $content;
                 $template = $this->getPageTwigTemplate($item);
                 $output = $local_twig->render($template, $twig_vars);
@@ -505,15 +506,14 @@ class Twig
         $this->grav->fireEvent('onTwigStringVariables');
         $vars += $this->twig_vars;
 
-        // @Var: sources are always sandboxed (GravSourcePolicy). Replace
-        // the inherited `config` with a denied-path-filtered facade so
-        // editor-derivable strings can't exfiltrate plugin secrets via
-        // `config.toArray()` (GHSA-j274-39qw-32c9). A caller-supplied
-        // `config` is left alone — internal call sites that need a custom
-        // value (e.g. tests) can still pass it through.
-        if (($vars['config'] ?? null) === ($this->twig_vars['config'] ?? null)) {
-            $vars['config'] = $this->buildSandboxConfig();
-        }
+        // @Var: sources are always sandboxed (GravSourcePolicy). Replace the
+        // inherited `config` with a denied-path-filtered facade and filter
+        // the inherited `system`/`site`/`theme` arrays so editor-derivable
+        // strings can't exfiltrate operator secrets (GHSA-j274-39qw-32c9,
+        // GHSA-p597-crqc-m349). Caller-supplied values are left alone —
+        // internal call sites that need a custom value (e.g. tests) can
+        // still pass them through.
+        $vars = $this->buildSandboxVars($vars, $this->twig_vars);
 
         $filtered = false;
 
@@ -681,10 +681,61 @@ class Twig
             // Deny every top-level subtree → `config` is effectively empty.
             $denied = $this->sandboxDeniedConfigKeys ??= array_keys($config->toArray());
         } else {
-            $denied = (array) $config->get('security.twig_sandbox.config_denied_paths', []);
+            $denied = Security::effectiveConfigDeniedPaths($config);
         }
 
         return new SandboxConfig($config, $denied);
+    }
+
+    /**
+     * Build the variable set handed to a sandboxed (editor-authored) render.
+     *
+     * `config` becomes the filtered facade above. On top of that, the raw
+     * `system`, `site` and `theme` arrays are filtered against
+     * `security.twig_sandbox.config_denied_paths`, because Twig's sandbox
+     * SecurityPolicy has no jurisdiction over them: it arbitrates method
+     * calls and property reads on objects, while key access on a plain array
+     * is always allowed. Without this, `{{ system.cache.redis.password }}` in
+     * page content renders the live value no matter how the policy or
+     * `twig_content.config_access` are set (GHSA-p597-crqc-m349).
+     *
+     * The denied list is applied to these three regardless of
+     * `config_access`, which governs the `config` facade only — blanking
+     * them wholesale would break the `site.title` / `theme.*` reads that
+     * ordinary page content relies on.
+     *
+     * Values the caller supplied itself (anything that differs from
+     * $inherited) are left untouched, so internal call sites and tests can
+     * still pass their own.
+     *
+     * @param array $vars      Variables about to be rendered.
+     * @param array $inherited The base $twig_vars they were derived from.
+     * @return array
+     */
+    private function buildSandboxVars(array $vars, array $inherited): array
+    {
+        if (($vars['config'] ?? null) === ($inherited['config'] ?? null)) {
+            $vars['config'] = $this->buildSandboxConfig();
+        }
+
+        /** @var Config $config */
+        $config = $this->grav['config'];
+
+        $filter = null;
+        foreach (['system', 'site', 'theme'] as $key) {
+            if (!array_key_exists($key, $vars) || ($vars[$key] ?? null) !== ($inherited[$key] ?? null)) {
+                continue;
+            }
+
+            $filter ??= new SandboxConfig(
+                $config,
+                Security::effectiveConfigDeniedPaths($config)
+            );
+
+            $vars[$key] = $filter->get($key, []);
+        }
+
+        return $vars;
     }
 
     /**
@@ -723,17 +774,11 @@ class Twig
     /**
      * Append a one-line HTML comment to output when the Twig sandbox blocked
      * an expression and the current user is admin.super. Regular visitors see
-     * nothing. Honors `security.twig_sandbox.admin_hint` (default: true).
+     * nothing.
      */
     private function appendSandboxAdminHint(string $output): string
     {
         $grav = $this->grav;
-
-        /** @var Config $config */
-        $config = $grav['config'];
-        if (!$config->get('security.twig_sandbox.admin_hint', true)) {
-            return $output;
-        }
 
         if (!$grav->offsetExists('user')) {
             return $output;

@@ -184,8 +184,8 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
             new TwigFilter('filter', $this->filterFunc(...), ['needs_environment' => true]),
             new TwigFilter('map', $this->mapFunc(...), ['needs_environment' => true]),
             new TwigFilter('reduce', $this->reduceFunc(...), ['needs_environment' => true]),
-            new TwigFilter('find', $this->findFunc(...), ['needs_environment' => true]),
-            new TwigFilter('sort', $this->sortFunc(...), ['needs_environment' => true]),
+            new TwigFilter('find', $this->findFunc(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
+            new TwigFilter('sort', $this->sortFunc(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
         ];
     }
 
@@ -1738,6 +1738,10 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      */
     public function mediaDirFunc($media_dir)
     {
+        if (!is_string($media_dir) || $media_dir === '') {
+            return null;
+        }
+
         /** @var UniformResourceLocator $locator */
         $locator = $this->grav['locator'];
 
@@ -1745,8 +1749,39 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
             $media_dir = $locator->findResource($media_dir);
         }
 
-        if ($media_dir && file_exists($media_dir)) {
-            return new Media($media_dir);
+        if (!$media_dir) {
+            return null;
+        }
+
+        // Resolve and verify canonical containment, the same way FileReader::read()
+        // does for read_file(). A plain path was previously handed straight to
+        // Media, so page content could point this anywhere the web server can read
+        // and enumerate it, or republish images from it through the image cache.
+        // media_directory is on the Twig sandbox allow-list and modular pages
+        // render their content Twig unconditionally, so editor-authored content
+        // reaches this without any page-Twig permission. (GHSA-47ch-6w46-6xm7)
+        $realDir = realpath($media_dir);
+        // is_readable() also keeps Media::init()'s FilesystemIterator from throwing
+        // out of a page render on a directory that exists but cannot be read.
+        if ($realDir === false || !is_dir($realDir) || !is_readable($realDir)) {
+            return null;
+        }
+        $realDir = rtrim($realDir, DIRECTORY_SEPARATOR);
+
+        // USER_DIR is listed separately from GRAV_WEBROOT on purpose: a user folder
+        // symlinked outside the install is a supported layout, and resolving it here
+        // keeps those sites working.
+        foreach ([GRAV_ROOT, GRAV_WEBROOT, USER_DIR] as $root) {
+            $realRoot = realpath($root);
+            if ($realRoot === false) {
+                continue;
+            }
+            // The trailing separator is essential. Without it `/var/grav` would
+            // prefix-match `/var/grav-evil`.
+            $realRoot = rtrim($realRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+            if (strncmp($realDir . DIRECTORY_SEPARATOR, $realRoot, strlen($realRoot)) === 0) {
+                return new Media($realDir);
+            }
         }
 
         return null;
@@ -2092,19 +2127,24 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * used by filter/map/reduce, regardless of sandbox state; a real arrow closure
      * still passes.
      *
+     * The resolved sandbox state is passed through to Twig, so a string callable is
+     * also refused whenever the render is sandboxed (GHSA-p6qj-p5m7-f62h). The
+     * denylist above is defense-in-depth, not the only guard.
+     *
      * @param Environment $env
+     * @param bool $isSandboxed
      * @param mixed $array
      * @param callable|string $arrow
      * @return mixed
      * @throws RuntimeError
      */
-    function findFunc(Environment $env, $array, $arrow)
+    function findFunc(Environment $env, bool $isSandboxed, $array, $arrow)
     {
         if (!$arrow instanceof \Closure && !is_string($arrow) || Utils::isDangerousFunction($arrow)) {
             throw new RuntimeError('Twig |find("' . $arrow . '") is not allowed.');
         }
 
-        return CoreExtension::find($env, false, $array ?? [], $arrow);
+        return CoreExtension::find($env, $isSandboxed, $array ?? [], $arrow);
     }
 
     /**
@@ -2112,18 +2152,23 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * such as `sort('system')` would otherwise be called as `system($a, $b)` when
      * rendered outside the sandbox. Plain sorts (no comparator) are unaffected.
      *
+     * The resolved sandbox state is passed through so a string comparator is refused
+     * in sandbox mode (GHSA-p6qj-p5m7-f62h); hardcoding it off left the denylist as
+     * the only guard, and the denylist does not list every two-argument callable.
+     *
      * @param Environment $env
+     * @param bool $isSandboxed
      * @param mixed $array
      * @param callable|string|null $arrow
      * @return array
      * @throws RuntimeError
      */
-    function sortFunc(Environment $env, $array, $arrow = null)
+    function sortFunc(Environment $env, bool $isSandboxed, $array, $arrow = null)
     {
         if ($arrow !== null && (!$arrow instanceof \Closure && !is_string($arrow) || Utils::isDangerousFunction($arrow))) {
             throw new RuntimeError('Twig |sort("' . $arrow . '") is not allowed.');
         }
 
-        return CoreExtension::sort($env, false, $array ?? [], $arrow);
+        return CoreExtension::sort($env, $isSandboxed, $array ?? [], $arrow);
     }
 }

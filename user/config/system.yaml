@@ -29,3 +29,7 @@ gpm:
 updates:
   safe_upgrade: true
   safe_upgrade_snapshot_limit: 5
+
+strict_mode:
+  twig2_compat: false
+  twig3_compat: true
