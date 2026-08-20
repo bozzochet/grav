@@ -2,7 +2,21 @@
 
 # quando non funziona il plugin:
 # - ci sono accenti non messi in latex
-# - c'è il campo "correspondance_address"
+# - c'è il campo "correspondance_address" --> non sono più sicuro
+# - parentesi {} a caso, tipo su Mori, title a journal, ma non per fare caratteri greci, etc...:
+# @article{bib:HERDcomputing,
+#        author = {{Mori}, N. and Ciangottini, D. and Duranti, M. and Formato, V. and Spiga, D.},
+#        date-added = {2026-05-18 15:28:14 +0200},
+#        date-modified = {2026-05-18 15:28:37 +0200},
+#        doi = {https://doi.org/10.1088/1742-6596/3206/1/012008},
+#        journal = {{J. Phys. Conf. Ser.}},
+#        number = {1},
+#        pages = {012008},
+#        title = {{A cloud-based computing infrastructure for the HERD cosmic-ray experiment}},
+#        volume = {3206},
+#        year = {2026},
+#        url = {https://iopscience.iop.org/article/10.1088/1742-6596/3206/1/012008},
+#        bdsk-url-1 = {https://doi.org/10.1088/1742-6596/3206/1/012008}}
 
 #SHORTEN_AUTHORS=0
 SHORTEN_AUTHORS=1
