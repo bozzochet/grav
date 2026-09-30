@@ -5,6 +5,11 @@ class: offset-box
 features:
     -
         icon: 'fa fa-graduation-cap'
+        header: 'Simone Cingolani </br> (2025-2026)'
+        text: 'Misure di conducibilità dell’alluminio ultrapuro ed applicazioni criogeniche nell’esperimento CUPID'
+        url: bachelortheses/_tesi/TesiTriennaleCingolani.pdf
+    -
+        icon: 'fa fa-graduation-cap'
         header: 'Laura Francesca Iacob </br> (2024-2025)'
         text: 'Il Photon Detection System di DUNE: primi risultati da ProtoDUNE-VD'
         url: bachelortheses/_tesi/TesiTriennaleIacob.pdf
