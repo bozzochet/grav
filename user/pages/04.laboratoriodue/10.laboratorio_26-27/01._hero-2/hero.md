@@ -7,5 +7,5 @@ visible: false
 ---
 
 ## Laboratorio di Elettronica e Tecniche di Acquisizione Dati
-## 2025 - 2026
+## 2026 - 2027
 ### UniPG - Corso di Laurea Triennale in Fisica

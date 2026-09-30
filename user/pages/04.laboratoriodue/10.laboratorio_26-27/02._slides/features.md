@@ -7,12 +7,15 @@ features:
         icon: 'fa fa-file-pdf-o'
         header: Introduzione
         text: null
-        url: laboratorio_25-26/_slides/Introduzione.pdf
+        url: laboratorio_26-27/_slides/Introduzione.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Segnale e DAQ'
         text: null
-        url: laboratorio_25-26/_slides/Segnale.pdf
+        url: laboratorio_26-27/_slides/Segnale.pdf
+visible: false
+---
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Test auto-valutazione (con risposte)'
@@ -143,8 +146,4 @@ features:
         header: 'Esp. 5: secondo.wav'
         text: null
         url: laboratorio_25-26/_slides/secondo.wav
-visible: false
----
-<!---
-a
 -->
