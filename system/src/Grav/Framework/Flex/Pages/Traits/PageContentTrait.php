@@ -14,6 +14,7 @@ use Grav\Common\Config\Config;
 use Grav\Common\Grav;
 use Grav\Common\Markdown\Parsedown;
 use Grav\Common\Markdown\ParsedownExtra;
+use Grav\Common\Media\MediaRouteUrls;
 use Grav\Common\Page\Header;
 use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Page\Markdown\Excerpts;
@@ -192,7 +193,15 @@ trait PageContentTrait
             $this->setProperty('media', $var);
         }
 
-        return $this->getProperty('media');
+        $media = $this->getProperty('media');
+
+        // Applied here rather than where the collection is built because the
+        // route depends on the active language and base route. See Page::media().
+        if ($this instanceof PageInterface) {
+            MediaRouteUrls::apply($this, $media);
+        }
+
+        return $media;
     }
 
     /**
@@ -697,7 +706,20 @@ trait PageContentTrait
         $twig_first = $this->getNestedProperty('header.twig_first') ?? $config->get('system.pages.twig_first', false);
         $never_cache_twig = $this->getNestedProperty('header.never_cache_twig') ?? $config->get('system.pages.never_cache_twig', false);
 
-        if ($cache_enable) {
+        // Editor-authored content Twig is request-aware even inside the sandbox, and
+        // the render cache below is keyed on the page key and the config checksum
+        // only, with no session or request dimension. Cache the markdown, re-run the
+        // Twig every request, including editor-authored module bodies. Mirrors
+        // Page::content(). (GHSA-pp89-h475-7gj6)
+        if ($process_twig) {
+            $never_cache_twig = true;
+        }
+
+        // Twig-first content that is never cached has no Twig-free stage to read
+        // back either: the Twig output is what Markdown parses.
+        $twig_first_uncached = $twig_first && $process_twig && $never_cache_twig;
+
+        if ($cache_enable && !$twig_first_uncached) {
             $cache = $this->getCache('render');
             // Mix the full config checksum into the cache id so any change
             // to system, site, security, or plugin config (including the
@@ -744,7 +766,7 @@ trait PageContentTrait
             $this->_content = $content;
             $grav->fireEvent('onPageContentRaw', new Event(['page' => $this]));
 
-            if ($twig_first && !$never_cache_twig) {
+            if ($twig_first) {
                 if ($process_twig) {
                     $this->_content = $this->processTwig($this->_content);
                 }

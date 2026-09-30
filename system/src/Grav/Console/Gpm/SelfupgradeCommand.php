@@ -146,6 +146,16 @@ class SelfupgradeCommand extends GpmCommand
                 $io->writeln("You are already running the latest version of <green>Grav v{$local}</green>");
                 $io->writeln("which was released on {$release}");
 
+                if ($this->upgrader->isNextMajorAvailable()) {
+                    $next = $this->upgrader->getNextMajorVersion();
+                    $io->newLine();
+                    $io->writeln("Grav <green>v{$next}</green> is out as a new major version, which selfupgrade does not install.");
+                    $url = $this->upgrader->getMigrationUrl();
+                    if ($url) {
+                        $io->writeln("How to move to it: <white>{$url}</white>");
+                    }
+                }
+
                 $config = Grav::instance()['config'];
                 $schema = $config->get('versions.core.grav.schema');
                 if ($schema !== GRAV_SCHEMA && version_compare($schema, GRAV_SCHEMA, '<')) {
@@ -297,17 +307,8 @@ class SelfupgradeCommand extends GpmCommand
         $incompatibleTarget = $incompatible['target'] ?? '';
         $isMajorMinorUpgrade = $preflight['is_major_minor_upgrade'] ?? null;
         if ($isMajorMinorUpgrade === null && $this->upgrader) {
-            $local = $this->upgrader->getLocalVersion();
-            $remote = $this->upgrader->getRemoteVersion();
-            $localParts = explode('.', $local);
-            $remoteParts = explode('.', $remote);
-
-            $localMajor = (int)($localParts[0] ?? 0);
-            $localMinor = (int)($localParts[1] ?? 0);
-            $remoteMajor = (int)($remoteParts[0] ?? 0);
-            $remoteMinor = (int)($remoteParts[1] ?? 0);
-
-            $isMajorMinorUpgrade = ($localMajor !== $remoteMajor) || ($localMinor !== $remoteMinor);
+            $isMajorMinorUpgrade = Upgrader::family($this->upgrader->getLocalVersion())
+                !== Upgrader::family($this->upgrader->getRemoteVersion());
         }
         $isMajorMinorUpgrade = (bool)$isMajorMinorUpgrade;
 

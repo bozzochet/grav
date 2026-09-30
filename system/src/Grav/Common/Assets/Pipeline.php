@@ -17,7 +17,7 @@ use Grav\Common\Grav;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
 use Grav\Framework\Object\PropertyObject;
-use tubalmartin\CssMin\Minifier as CSSMinifier;
+use Wikimedia\Minify\CSSMin;
 use JShrink\Minifier as JSMinifier;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use function array_key_exists;
@@ -35,13 +35,20 @@ class Pipeline extends PropertyObject
     protected const JS_MODULE_ASSET = 3;
 
     /** @const Regex to match CSS urls */
-    protected const CSS_URL_REGEX = '{url\(([\'\"]?)(.*?)\1\)|(@import)\s+([\'\"])(.*?)\4}';
+    protected const CSS_URL_REGEX = '{url\(\s*([\'\"]?)(.*?)\1\s*\)|(@import)\s+([\'\"])(.*?)\4}i';
 
     /** @const Regex to match JS imports */
     protected const JS_IMPORT_REGEX = '{import.+from\s?[\'|\"](.+?)[\'|\"]}';
 
     /** @const Regex to match CSS sourcemap comments */
     protected const CSS_SOURCEMAP_REGEX = '{\/\*# (.*?) \*\/}';
+
+    /**
+     * @const Regex matching, in order, a quoted CSS string, a bang-prefixed license comment, or
+     *        an ordinary comment. Strings come first so that comment markers inside a string are
+     *        never taken for a comment, and a quote inside a comment is never taken for a string.
+     */
+    protected const CSS_STRING_OR_COMMENT_REGEX = '~("(?:[^"\\\\\r\n]|\\\\(?:\r\n|.))*"|\'(?:[^\'\\\\\r\n]|\\\\(?:\r\n|.))*\')|(/\*!.*?\*/)|/\*.*?\*/~s';
 
     protected const FIRST_FORWARDSLASH_REGEX = '{^\/{1}\w}';
 
@@ -110,7 +117,7 @@ class Pipeline extends PropertyObject
      * @param array $assets
      * @param string $group
      * @param array $attributes
-     * @return bool|string     URL or generated content if available, else false
+     * @return string|false  Returns the rendered output, or false if no assets
      */
     public function renderCss($assets, $group, $attributes = [])
     {
@@ -124,6 +131,8 @@ class Pipeline extends PropertyObject
 
         // Store Attributes
         $this->attributes = array_merge(['type' => 'text/css', 'rel' => 'stylesheet'], $attributes);
+
+        $shouldMinify = $this->shouldMinify('css');
 
         // Compute uid based on assets and timestamp
         $json_assets = json_encode($assets);
@@ -140,13 +149,23 @@ class Pipeline extends PropertyObject
                 return false;
             }
 
-            // Concatenate files
-            $buffer = $this->gatherLinks($assets, self::CSS_ASSET);
+            if ($shouldMinify) {
+                $result = $this->gatherAndMinifyCss($assets);
 
-            // Minify if required
-            if ($this->shouldMinify('css')) {
-                $minifier = new CSSMinifier();
-                $buffer = $minifier->run($buffer);
+                if (empty($result['failed'])) {
+                    $buffer = $result['buffer'];
+                } else {
+                    // Bundling the assets that minified and rendering the failed
+                    // ones individually afterward would reorder them relative to
+                    // assets that succeeded but come later in $assets, which can
+                    // change which rule wins the CSS cascade. Fall back to the
+                    // whole group concatenated unminified, in its original order
+                    // instead - the same output css_minify: false produces for
+                    // these files - so the bundle still caches as one file.
+                    $buffer = $this->gatherLinks($assets, self::CSS_ASSET);
+                }
+            } else {
+                $buffer = $this->gatherLinks($assets, self::CSS_ASSET);
             }
 
             // Write file
@@ -172,8 +191,7 @@ class Pipeline extends PropertyObject
      * @param string $group
      * @param array $attributes
      * @param int $type
-     * @return array{output: string, failed: array}|string|false  Returns array with output and failed assets when minifying,
-     *                                                             string when not minifying, or false if no assets
+     * @return string|false
      */
     public function renderJs($assets, $group, $attributes = [], $type = self::JS_ASSET)
     {
@@ -194,33 +212,43 @@ class Pipeline extends PropertyObject
         }
 
         $shouldMinify = $this->shouldMinify('js');
-        $failedAssets = [];
 
-        // When minifying, process each file individually to isolate failures
-        if ($shouldMinify) {
-            $result = $this->gatherAndMinifyJs($assets, $type);
-            $buffer = $result['buffer'];
-            $failedAssets = $result['failed'];
-
-            // Compute uid based on successful assets only
-            $successfulAssets = array_diff_key($assets, array_flip(array_keys($failedAssets)));
-            $json_assets = json_encode($successfulAssets);
-        } else {
-            $buffer = $this->gatherLinks($assets, $type);
-            $json_assets = json_encode($assets);
-        }
-
+        // Compute uid based on all assets. A minify failure now falls back to
+        // the whole group rather than a partial bundle plus the failed assets
+        // rendered separately, so there is no "successful subset" to key on.
+        $json_assets = json_encode($assets);
         $uid = md5($json_assets . (int)$shouldMinify . $group);
         $file = $uid . '.js';
         $relative_path = "{$this->base_url}{$this->assets_url}/{$file}";
         $filepath = "{$this->assets_dir}/{$file}";
 
-        // Check for cached version (only if no failed assets, as cache key changes)
-        if (empty($failedAssets) && file_exists($filepath)) {
+        if (file_exists($filepath)) {
             $buffer = file_get_contents($filepath) . "\n";
-        } elseif (trim($buffer) !== '') {
+        } else {
+            if ($shouldMinify) {
+                $result = $this->gatherAndMinifyJs($assets, $type);
+
+                if (empty($result['failed'])) {
+                    $buffer = $result['buffer'];
+                } else {
+                    // Bundling the assets that minified and rendering the failed
+                    // ones individually afterward would move them after
+                    // everything that minified successfully, which changes
+                    // execution order - a dependency (e.g. jQuery) could end up
+                    // loading after code that expects it. Fall back to the whole
+                    // group concatenated unminified, in its original order
+                    // instead - the same output js_minify: false produces for
+                    // these files - so the bundle still caches as one file.
+                    $buffer = $this->gatherLinks($assets, $type);
+                }
+            } else {
+                $buffer = $this->gatherLinks($assets, $type);
+            }
+
             // Write file
-            file_put_contents($filepath, $buffer);
+            if (trim($buffer) !== '') {
+                file_put_contents($filepath, $buffer);
+            }
         }
 
         if (trim($buffer) === '') {
@@ -230,11 +258,6 @@ class Pipeline extends PropertyObject
         } else {
             $this->asset = $relative_path;
             $output = '<script src="' . $relative_path . $this->renderQueryString() . '"' . $this->renderAttributes() . BaseAsset::integrityHash($this->asset) . "></script>\n";
-        }
-
-        // Return array with failed assets if minifying, otherwise just the output string
-        if ($shouldMinify) {
-            return ['output' => $output, 'failed' => $failedAssets];
         }
 
         return $output;
@@ -270,7 +293,7 @@ class Pipeline extends PropertyObject
         // Find any css url() elements, grab the URLs and calculate an absolute path
         // Then replace the old url with the new one
         $file = (string)preg_replace_callback(self::CSS_URL_REGEX, function ($matches) use ($dir, $local) {
-            $isImport = count($matches) > 3 && $matches[3] === '@import';
+            $isImport = count($matches) > 3 && strtolower($matches[3]) === '@import';
 
             if ($isImport) {
                 $old_url = $matches[5];
@@ -278,8 +301,10 @@ class Pipeline extends PropertyObject
                 $old_url = $matches[2];
             }
  
-            // Ensure link is not rooted to web server, a data URL, or to a remote host
-            if (preg_match(self::FIRST_FORWARDSLASH_REGEX, $old_url) || Utils::startsWith($old_url, 'data:') || $this->isRemoteLink($old_url)) {
+            // Ensure link is not rooted to web server, a same-document fragment
+            // (e.g. `url(#linear-gradient)` referencing an inline SVG element),
+            // a URL with a scheme (data:, blob:, about: and the like), or a remote host
+            if ($old_url === '' || preg_match(self::FIRST_FORWARDSLASH_REGEX, $old_url) || Utils::startsWith($old_url, '#') || preg_match('{^[a-z][a-z0-9+.-]*:}i', $old_url) || $this->isRemoteLink($old_url)) {
                 return $matches[0];
             }
 
@@ -359,6 +384,134 @@ class Pipeline extends PropertyObject
     }
 
     /**
+     * Minify one CSS file.
+     *
+     * Wikimedia\Minify\CSSMin::minify() collapses whitespace and drops comments with plain
+     * regexes, so it does not know where a string starts or ends. Left to itself it would
+     * rewrite `content: "Hello, world"` to `content:"Hello,world"`, and it would empty out a
+     * string that happens to contain comment markers. Quoted strings are therefore lifted out
+     * first and put back afterwards, which also lets bang-prefixed license comments survive as
+     * they did under the previous minifier.
+     *
+     * Throws when the file can't be minified without changing its meaning, so the caller falls
+     * back to the unminified bundle.
+     *
+     * @param string $css
+     * @return string
+     * @throws \RuntimeException
+     */
+    private static function minifyCss(string $css): string
+    {
+        $preserved = [];
+
+        $stripped = preg_replace_callback(
+            self::CSS_STRING_OR_COMMENT_REGEX,
+            static function (array $matches) use (&$preserved): string {
+                $token = ($matches[1] ?? '') !== '' ? $matches[1] : ($matches[2] ?? '');
+                if ($token === '') {
+                    // An ordinary comment: drop it.
+                    return '';
+                }
+
+                $key = "\x01GRAVCSS" . count($preserved) . "\x01";
+                $preserved[$key] = $token;
+
+                return $key;
+            },
+            $css
+        );
+
+        // preg_replace_callback() returns null on a PCRE failure (backtrack limit and the like).
+        if ($stripped === null) {
+            throw new \RuntimeException('Could not scan the stylesheet: ' . preg_last_error_msg());
+        }
+
+        // Every well-formed string is lifted out by now, so a quote left over opens a string
+        // that never closes. Browsers end such a string at the line break; once minifying joins
+        // the lines it would swallow every rule after it instead.
+        if (strpbrk($stripped, '"\'') !== false) {
+            throw new \RuntimeException('Unterminated string');
+        }
+
+        $stripped = CSSMin::minify($stripped);
+        if (preg_last_error() !== PREG_NO_ERROR) {
+            throw new \RuntimeException('Could not minify the stylesheet: ' . preg_last_error_msg());
+        }
+
+        return $preserved === [] ? $stripped : strtr($stripped, $preserved);
+    }
+
+    /**
+     * Gather CSS files and minify each one individually.
+     * Files that fail minification are tracked and returned separately.
+     *
+     * @param array $assets Array of asset objects
+     * @return array{buffer: string, failed: array} Combined minified content and failed assets
+     */
+    private function gatherAndMinifyCss(array $assets): array
+    {
+        $buffer = '';
+        $failed = [];
+
+        /** @var Debugger $debugger */
+        $debugger = Grav::instance()['debugger'];
+
+        foreach ($assets as $key => $asset) {
+            $local = true;
+            $link = $asset->getAsset();
+            $relative_path = $link;
+
+            if (static::isRemoteLink($link)) {
+                $local = false;
+                if (str_starts_with((string) $link, '//')) {
+                    $link = 'http:' . $link;
+                }
+                $relative_dir = dirname((string) $relative_path);
+            } else {
+                // Fix to remove relative dir if grav is in one
+                if (($this->base_url !== '/') && Utils::startsWith($relative_path, $this->base_url)) {
+                    $base_url = '#' . preg_quote($this->base_url, '#') . '#';
+                    $relative_path = ltrim((string) preg_replace($base_url, '/', (string) $link, 1), '/');
+                }
+
+                $relative_dir = dirname((string) $relative_path);
+                $link = GRAV_ROOT . '/' . $relative_path;
+            }
+
+            $file = $this->fetch_command instanceof \Closure ? @$this->fetch_command->__invoke($link) : @file_get_contents($link);
+
+            // No file found, skip it...
+            if ($file === false) {
+                continue;
+            }
+
+            if ($this->css_rewrite) {
+                $file = $this->cssRewrite($file, $relative_dir, $local);
+            }
+
+            try {
+                $file = self::minifyCss($file) . PHP_EOL;
+                $buffer .= $file;
+            } catch (\Throwable $e) {
+                $failed[$key] = $asset;
+
+                $message = "CSS Minification failed for '{$asset->getAsset()}': {$e->getMessage()}";
+                $debugger->addMessage($message, 'error');
+                Grav::instance()['log']->error($message);
+            }
+        }
+
+        // moveImports() always prefixes its result with "\n\n" even when there
+        // were no @import statements to hoist. The original single-pass design
+        // ran the whole buffer through the minifier afterward, which collapsed
+        // that filler away; per-asset minification happens before this point
+        // now, so strip it here instead.
+        $buffer = ltrim($this->moveImports($buffer));
+
+        return ['buffer' => $buffer, 'failed' => $failed];
+    }
+
+    /**
      * Gather JS files and minify each one individually.
      * Files that fail minification are tracked and returned separately.
      *
@@ -416,8 +569,10 @@ class Pipeline extends PropertyObject
                 $file = JSMinifier::minify($file);
                 $file = rtrim($file) . PHP_EOL;
                 $buffer .= $file;
-            } catch (\Exception $e) {
-                // Track failed asset for individual rendering
+            } catch (\Throwable $e) {
+                // Track the failure so renderJs() can fall back to bundling the
+                // whole group unminified, in original order, instead of using
+                // this partial per-asset buffer.
                 $failed[$key] = $asset;
 
                 $message = "JS Minification failed for '{$asset->getAsset()}': {$e->getMessage()}";

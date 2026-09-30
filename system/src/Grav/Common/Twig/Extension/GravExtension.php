@@ -19,6 +19,7 @@ use Grav\Common\Inflector;
 use Grav\Common\Language\Language;
 use Grav\Common\Page\Collection;
 use Grav\Common\Page\Interfaces\PageInterface;
+use Grav\Common\Page\Markdown\MarkdownOutput;
 use Grav\Common\Page\Media;
 use Grav\Common\Scheduler\Cron;
 use Grav\Common\Security;
@@ -114,6 +115,7 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
         return [
             new TwigFilter('*ize', $this->inflectorFilter(...)),
             new TwigFilter('absolute_url', $this->absoluteUrlFilter(...)),
+            new TwigFilter('html_to_markdown', $this->htmlToMarkdownFilter(...)),
             new TwigFilter('contains', $this->containsFilter(...)),
             new TwigFilter('chunk_split', $this->chunkSplitFilter(...)),
             new TwigFilter('nicenumber', $this->niceNumberFunc(...)),
@@ -149,12 +151,12 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
             new TwigFilter('array_group_by', $this->arrayGroupByFilter(...), ['needs_is_sandboxed' => true]),
             new TwigFilter('basename', 'basename'),
             new TwigFilter('dirname', 'dirname'),
-            new TwigFilter('print_r', $this->printRGuarded(...), ['needs_environment' => true]),
-            new TwigFilter('yaml_encode', $this->yamlEncodeGuarded(...), ['needs_environment' => true]),
+            new TwigFilter('print_r', $this->printRGuarded(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
+            new TwigFilter('yaml_encode', $this->yamlEncodeGuarded(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
             // Overrides Twig core's `json_encode` filter so the sandbox guard
             // applies; the override wins because GravExtension is registered
             // after CoreExtension. (GHSA-mc5q-6hpj-rp7j)
-            new TwigFilter('json_encode', $this->jsonEncodeGuarded(...), ['needs_environment' => true]),
+            new TwigFilter('json_encode', $this->jsonEncodeGuarded(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
             new TwigFilter('yaml_decode', $this->yamlDecodeFilter(...)),
             new TwigFilter('nicecron', $this->niceCronFilter(...)),
             new TwigFilter('replace_last', $this->replaceLastFilter(...)),
@@ -165,12 +167,12 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
             new TwigFilter('ta', $this->translateArray(...)),
 
             // Casting values
-            new TwigFilter('string', $this->stringGuarded(...), ['needs_environment' => true]),
+            new TwigFilter('string', $this->stringGuarded(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
             new TwigFilter('int', $this->intFilter(...), ['is_safe' => ['all']]),
             new TwigFilter('bool', $this->boolFilter(...)),
             new TwigFilter('float', $this->floatFilter(...), ['is_safe' => ['all']]),
-            new TwigFilter('array', $this->arrayFilter(...)),
-            new TwigFilter('yaml', $this->yamlFilter(...)),
+            new TwigFilter('array', $this->arrayGuarded(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
+            new TwigFilter('yaml', $this->yamlGuarded(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
 
             // Object Types
             new TwigFilter('get_type', $this->getTypeFunc(...)),
@@ -181,9 +183,9 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
             new TwigFilter('array_diff', 'array_diff'),
 
             // Security fixes
-            new TwigFilter('filter', $this->filterFunc(...), ['needs_environment' => true]),
-            new TwigFilter('map', $this->mapFunc(...), ['needs_environment' => true]),
-            new TwigFilter('reduce', $this->reduceFunc(...), ['needs_environment' => true]),
+            new TwigFilter('filter', $this->filterFunc(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
+            new TwigFilter('map', $this->mapFunc(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
+            new TwigFilter('reduce', $this->reduceFunc(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
             new TwigFilter('find', $this->findFunc(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
             new TwigFilter('sort', $this->sortFunc(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
         ];
@@ -197,7 +199,7 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('array', $this->arrayFilter(...)),
+            new TwigFunction('array', $this->arrayGuarded(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
             new TwigFunction('array_key_value', $this->arrayKeyValueFunc(...)),
             new TwigFunction('array_key_exists', 'array_key_exists'),
             new TwigFunction('array_unique', 'array_unique'),
@@ -207,12 +209,17 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
             new TwigFunction('authorize', $this->authorize(...)),
             new TwigFunction('debug', $this->dump(...), ['needs_context' => true, 'needs_environment' => true]),
             new TwigFunction('dump', $this->dump(...), ['needs_context' => true, 'needs_environment' => true]),
-            new TwigFunction('vardump', $this->vardumpGuarded(...), ['needs_environment' => true]),
-            new TwigFunction('print_r', $this->printRGuarded(...), ['needs_environment' => true]),
+            new TwigFunction('vardump', $this->vardumpGuarded(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
+            new TwigFunction('print_r', $this->printRGuarded(...), ['needs_environment' => true, 'needs_is_sandboxed' => true]),
             new TwigFunction('http_response_code', 'http_response_code'),
             new TwigFunction('evaluate', $this->evaluateStringFunc(...), ['needs_context' => true]),
             new TwigFunction('evaluate_twig', $this->evaluateTwigFunc(...), ['needs_context' => true]),
             new TwigFunction('gist', $this->gistFunc(...)),
+            new TwigFunction('markdown_output', $this->markdownOutputFunc(...)),
+            new TwigFunction('markdown_frontmatter', $this->markdownFrontmatterFunc(...)),
+            new TwigFunction('markdown_body', $this->markdownBodyFunc(...)),
+            new TwigFunction('markdown_links', $this->markdownLinksFunc(...)),
+            new TwigFunction('markdown_url', $this->markdownUrlFunc(...)),
             new TwigFunction('nonce_field', $this->nonceFieldFunc(...)),
             new TwigFunction('pathinfo', 'pathinfo'),
             new TwigFunction('parseurl', 'parse_url'),
@@ -325,13 +332,24 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * unaffected.
      *
      * @param Environment $env
+     * @param bool $isSandboxed
      * @param mixed $var
      * @param string $filter
      * @param bool $reflective
      * @return void
      */
-    protected function assertSandboxDumpSafe(Environment $env, mixed $var, string $filter, bool $reflective): void
+    protected function assertSandboxDumpSafe(Environment $env, bool $isSandboxed, mixed $var, string $filter, bool $reflective): void
     {
+        // $isSandboxed comes from Twig's `needs_is_sandboxed` flag, which resolves
+        // the CALLING TEMPLATE's sandbox state. That matters because Grav never
+        // turns the sandbox on globally — GravSourcePolicy decides per template,
+        // so SandboxExtension::isSandboxed() with no Source argument is false for
+        // every render Grav performs, and asking it that way made this whole guard
+        // a no-op in production.
+        if (!$isSandboxed) {
+            return;
+        }
+
         // The SandboxExtension is only registered when security.twig_sandbox.enabled
         // is true. With the sandbox off there is nothing to enforce, so these dump
         // filters behave like their unguarded Twig counterparts. Calling
@@ -345,10 +363,6 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
 
         /** @var SandboxExtension $sandbox */
         $sandbox = $env->getExtension(SandboxExtension::class);
-        if (!$sandbox->isSandboxed()) {
-            return;
-        }
-
         $policy = $sandbox->getSecurityPolicy();
         $this->scanSandboxDump($policy instanceof GravSecurityPolicy ? $policy : null, $var, $filter, $reflective);
     }
@@ -404,9 +418,9 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * @param mixed $var
      * @return string
      */
-    public function printRGuarded(Environment $env, mixed $var)
+    public function printRGuarded(Environment $env, bool $isSandboxed, mixed $var)
     {
-        $this->assertSandboxDumpSafe($env, $var, 'print_r', true);
+        $this->assertSandboxDumpSafe($env, $isSandboxed, $var, 'print_r', true);
         return $this->print_r($var);
     }
 
@@ -415,9 +429,9 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * @param mixed $var
      * @return void
      */
-    public function vardumpGuarded(Environment $env, mixed $var)
+    public function vardumpGuarded(Environment $env, bool $isSandboxed, mixed $var)
     {
-        $this->assertSandboxDumpSafe($env, $var, 'vardump', true);
+        $this->assertSandboxDumpSafe($env, $isSandboxed, $var, 'vardump', true);
         $this->vardumpFunc($var);
     }
 
@@ -427,10 +441,115 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * @param int $inline
      * @return string
      */
-    public function yamlEncodeGuarded(Environment $env, $data, $inline = 10)
+    public function yamlEncodeGuarded(Environment $env, bool $isSandboxed, $data, $inline = 10)
     {
-        $this->assertSandboxDumpSafe($env, $data, 'yaml_encode', false);
+        $this->assertSandboxDumpSafe($env, $isSandboxed, $data, 'yaml_encode', false);
         return $this->yamlEncodeFilter($data, $inline);
+    }
+
+    /**
+     * Guarded override of the `array` filter and its identical function form.
+     *
+     * arrayFilter() converts an object without ever asking the sandbox: it calls
+     * toArray() directly, or falls back to `(array)`, which exposes private and
+     * protected state. Both routes walk past GravSecurityPolicy::checkMethodAllowed(),
+     * and `toarray` on a raw Config or Data object is deliberately absent from the
+     * allowlist (see SandboxDefaults::methods()). The `grav` global is the raw DI
+     * container, so `grav|array` returned Pimple's private $values — every resolved
+     * service, including the un-redacted Config that buildSandboxVars() replaces with
+     * a filtered facade for exactly this reason. (GHSA-59qm-58v5-gvc5)
+     *
+     * @param Environment $env
+     * @param bool $isSandboxed
+     * @param mixed $input
+     * @return array
+     */
+    public function arrayGuarded(Environment $env, bool $isSandboxed, mixed $input)
+    {
+        $this->assertSandboxCastSafe($env, $isSandboxed, $input);
+
+        return $this->arrayFilter($input);
+    }
+
+    /**
+     * Guarded override of the `yaml` filter.
+     *
+     * The serializing twin of `yaml_encode` and it needs the same guard: without one
+     * it prints whatever the casts above hand it. On its own it cannot leak an object
+     * (Symfony's dumper refuses object serialization outright), but it is the natural
+     * printer for an already-cast array. (GHSA-59qm-58v5-gvc5)
+     *
+     * @param Environment $env
+     * @param bool $isSandboxed
+     * @param array|object $value
+     * @param int|null $inline
+     * @param int|null $indent
+     * @return string
+     */
+    public function yamlGuarded(Environment $env, bool $isSandboxed, $value, $inline = null, $indent = null): string
+    {
+        $this->assertSandboxDumpSafe($env, $isSandboxed, $value, 'yaml', false);
+
+        return $this->yamlFilter($value, $inline, $indent);
+    }
+
+    /**
+     * Decide whether an object may be cast to an array inside sandboxed content.
+     *
+     * Unlike assertSandboxDumpSafe(), this asks the question the cast actually poses.
+     * isClassAllowed() only tests whether the CLASS appears in the method allowlist,
+     * and Grav\Common\Grav does appear there (for offsetexists / getversion / theme),
+     * so reusing that helper would let the container straight through. What matters is
+     * whether toArray() itself is permitted on this object, which is the same question
+     * Twig would ask for `{{ obj.toArray }}`.
+     *
+     * Permitted inside a sandboxed template:
+     *  - anything that is not an object;
+     *  - stdClass, whose `(array)` cast cannot expose state the policy meant to hide;
+     *  - an object whose toArray() the policy allows (the SandboxConfig facade, Uri);
+     *  - an allow-listed Iterator, where the cast is iterator_to_array().
+     *
+     * Everything else is refused, which soft-fails the render and logs the violation
+     * like any other sandbox block. A site that needs the cast on a particular class
+     * can re-add `toarray` for it under security.twig_sandbox.allowed_methods, which
+     * is additive over the shipped defaults.
+     *
+     * @param Environment $env
+     * @param bool $isSandboxed
+     * @param mixed $input
+     * @return void
+     */
+    protected function assertSandboxCastSafe(Environment $env, bool $isSandboxed, mixed $input): void
+    {
+        if (!$isSandboxed || !is_object($input) || $input instanceof \stdClass) {
+            return;
+        }
+
+        // See assertSandboxDumpSafe(): the SandboxExtension is only registered when
+        // security.twig_sandbox.enabled is true, and with the sandbox off there is
+        // nothing to enforce (getgrav/grav#4175).
+        if (!$env->hasExtension(SandboxExtension::class)) {
+            return;
+        }
+
+        /** @var SandboxExtension $sandbox */
+        $sandbox = $env->getExtension(SandboxExtension::class);
+        $policy = $sandbox->getSecurityPolicy();
+
+        if (method_exists($input, 'toArray')) {
+            $policy->checkMethodAllowed($input, 'toArray');
+
+            return;
+        }
+
+        if ($input instanceof Iterator && $policy instanceof GravSecurityPolicy && $policy->isClassAllowed($input)) {
+            return;
+        }
+
+        throw new SecurityNotAllowedFilterError(
+            sprintf('Filter "array" is not allowed on a "%s" object inside sandboxed content.', $input::class),
+            'array'
+        );
     }
 
     /**
@@ -442,9 +561,9 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * @param int $depth
      * @return string|false
      */
-    public function jsonEncodeGuarded(Environment $env, mixed $value, int $flags = 0, int $depth = 512)
+    public function jsonEncodeGuarded(Environment $env, bool $isSandboxed, mixed $value, int $flags = 0, int $depth = 512)
     {
-        $this->assertSandboxDumpSafe($env, $value, 'json_encode', false);
+        $this->assertSandboxDumpSafe($env, $isSandboxed, $value, 'json_encode', false);
         return json_encode($value, $flags, $depth);
     }
 
@@ -453,9 +572,9 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * @param mixed $value
      * @return string
      */
-    public function stringGuarded(Environment $env, mixed $value)
+    public function stringGuarded(Environment $env, bool $isSandboxed, mixed $value)
     {
-        $this->assertSandboxDumpSafe($env, $value, 'string', false);
+        $this->assertSandboxDumpSafe($env, $isSandboxed, $value, 'string', false);
         return $this->stringFilter($value);
     }
 
@@ -1201,11 +1320,15 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * @param  string $input  Resource to be located.
      * @param  bool   $domain True to include domain name.
      * @param  bool   $failGracefully If true, return URL even if the file does not exist.
+     * @param  string|bool|null $lang Language prefix for path input. Omit (or `false`) to keep the URL
+     *                                language-neutral, which is what assets need; `true` uses the active language;
+     *                                a language code such as `'de'` uses that one. Use it when linking to a
+     *                                language-sensitive route that isn't a page, e.g. `{{ url('/search', lang=true) }}`.
      * @return string|false      Returns url to the resource or null if resource was not found.
      */
-    public function urlFunc($input, $domain = false, $failGracefully = false)
+    public function urlFunc($input, $domain = false, $failGracefully = false, $lang = null)
     {
-        return Utils::url($input, $domain, $failGracefully);
+        return Utils::url($input, $domain, $failGracefully, $lang);
     }
 
     /**
@@ -2065,17 +2188,13 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * @return array|CallbackFilterIterator
      * @throws RuntimeError
      */
-    function filterFunc(Environment $env, $array, $arrow)
+    function filterFunc(Environment $env, bool $isSandboxed, $array, $arrow)
     {
         if (!$arrow instanceof \Closure && !is_string($arrow) || Utils::isDangerousFunction($arrow)) {
             throw new RuntimeError('Twig |filter("' . $arrow . '") is not allowed.');
         }
 
-        if ($array === null) {
-            $array = [];
-        }
-
-        return twig_array_filter($env, $array, $arrow);
+        return CoreExtension::filter($env, $isSandboxed, $array ?? [], $arrow);
     }
 
     /**
@@ -2085,17 +2204,13 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * @return array|CallbackFilterIterator
      * @throws RuntimeError
      */
-    function mapFunc(Environment $env, $array, $arrow)
+    function mapFunc(Environment $env, bool $isSandboxed, $array, $arrow)
     {
         if (!$arrow instanceof \Closure && !is_string($arrow) || Utils::isDangerousFunction($arrow)) {
             throw new RuntimeError('Twig |map("' . $arrow . '") is not allowed.');
         }
 
-        if ($array === null) {
-            $array = [];
-        }
-
-        return twig_array_map($env, $array, $arrow);
+        return CoreExtension::map($env, $isSandboxed, $array ?? [], $arrow);
     }
 
     /**
@@ -2105,17 +2220,13 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
      * @return array|CallbackFilterIterator
      * @throws RuntimeError
      */
-    function reduceFunc(Environment $env, $array, $arrow)
+    function reduceFunc(Environment $env, bool $isSandboxed, $array, $arrow, $initial = null)
     {
         if (!$arrow instanceof \Closure && !is_string($arrow) || Utils::isDangerousFunction($arrow)) {
             throw new RuntimeError('Twig |reduce("' . $arrow . '") is not allowed.');
         }
 
-        if ($array === null) {
-            $array = [];
-        }
-
-        return twig_array_map($env, $array, $arrow);
+        return CoreExtension::reduce($env, $isSandboxed, $array ?? [], $arrow, $initial);
     }
 
     /**
@@ -2170,5 +2281,71 @@ class GravExtension extends AbstractExtension implements GlobalsInterface
         }
 
         return CoreExtension::sort($env, $isSandboxed, $array ?? [], $arrow);
+    }
+
+    /**
+     * Convert a fragment of rendered HTML to Markdown.
+     *
+     * @param string|null $html
+     * @return string
+     */
+    public function htmlToMarkdownFilter($html): string
+    {
+        return $this->grav['markdown_output']->convert((string)$html);
+    }
+
+    /**
+     * The full Markdown document for a page: frontmatter, body and navigation links.
+     *
+     * @param PageInterface|null $page Defaults to the current page
+     * @return string
+     */
+    public function markdownOutputFunc(?PageInterface $page = null): string
+    {
+        return $this->grav['markdown_output']->render($page);
+    }
+
+    /**
+     * The YAML frontmatter block of a page's Markdown document.
+     *
+     * @param PageInterface|null $page Defaults to the current page
+     * @return string
+     */
+    public function markdownFrontmatterFunc(?PageInterface $page = null): string
+    {
+        return $this->grav['markdown_output']->frontmatter($page);
+    }
+
+    /**
+     * The Markdown body of a page: title, content and modules.
+     *
+     * @param PageInterface|null $page Defaults to the current page
+     * @return string
+     */
+    public function markdownBodyFunc(?PageInterface $page = null): string
+    {
+        return $this->grav['markdown_output']->body($page);
+    }
+
+    /**
+     * The navigation section of a page's Markdown document.
+     *
+     * @param PageInterface|null $page Defaults to the current page
+     * @return string
+     */
+    public function markdownLinksFunc(?PageInterface $page = null): string
+    {
+        return $this->grav['markdown_output']->links($page);
+    }
+
+    /**
+     * The absolute `.md` URL of a page.
+     *
+     * @param PageInterface|null $page Defaults to the current page
+     * @return string
+     */
+    public function markdownUrlFunc(?PageInterface $page = null): string
+    {
+        return $this->grav['markdown_output']->url($page);
     }
 }

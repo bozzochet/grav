@@ -10,8 +10,10 @@
 namespace Grav\Common\Page;
 
 use Exception;
+use Grav\Common\Assets;
 use Grav\Common\Cache;
 use Grav\Common\Config\Config;
+use Grav\Common\Page\Markdown\MarkdownOutput;
 use Grav\Common\Data\Blueprint;
 use Grav\Common\File\CompiledMarkdownFile;
 use Grav\Common\File\CompiledYamlFile;
@@ -22,12 +24,14 @@ use Grav\Common\Markdown\Parsedown;
 use Grav\Common\Markdown\ParsedownExtra;
 use Grav\Common\Page\Interfaces\PageCollectionInterface;
 use Grav\Common\Page\Interfaces\PageInterface;
+use Grav\Common\Media\MediaRouteUrls;
 use Grav\Common\Media\Traits\MediaTrait;
 use Grav\Common\Page\Markdown\Excerpts;
 use Grav\Common\Page\Traits\PageFormTrait;
 use Grav\Common\Security;
 use Grav\Common\Twig\Twig;
 use Grav\Common\Uri;
+use Grav\Common\User\Interfaces\UserInterface;
 use Grav\Common\Utils;
 use Grav\Common\Yaml;
 use Grav\Framework\Flex\Flex;
@@ -35,6 +39,7 @@ use InvalidArgumentException;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
 use SplFileInfo;
+use Throwable;
 use function dirname;
 use function in_array;
 use function is_array;
@@ -522,8 +527,34 @@ class Page implements PageInterface
         if (!$this->frontmatter) {
             $this->header();
         }
+        // A page that comes from the pages cache has its header but not the frontmatter text,
+        // which is left out of the cache (see freeFrontmatter()), so read it from the file.
+        if ($this->frontmatter === null && $this->header) {
+            $file = $this->file();
+            if ($file) {
+                $this->frontmatter = (string)$file->frontmatter();
+                $file->free();
+            }
+        }
 
         return $this->frontmatter;
+    }
+
+    /**
+     * Drop the raw frontmatter text kept next to the parsed header.
+     *
+     * Pages calls this before it caches the pages: the text is a second copy of the header,
+     * and frontmatter() reads it back from the file the first time it is asked for. A page
+     * without a file keeps its text, as there is nothing to read it back from.
+     *
+     * @return void
+     * @internal
+     */
+    public function freeFrontmatter(): void
+    {
+        if ($this->name) {
+            $this->frontmatter = null;
+        }
     }
 
     /**
@@ -550,8 +581,10 @@ class Page implements PageInterface
             $file = $this->file();
             if ($file) {
                 try {
-                    $this->frontmatter = $file->frontmatter();
                     $this->header = (object)$file->header();
+                    // A pages rebuild can reuse the header of an unchanged file without reading it;
+                    // frontmatter() then reads the text from the file if anything asks for it.
+                    $this->frontmatter = $file instanceof CompiledMarkdownFile && $file->isHeaderOnly() ? null : $file->frontmatter();
 
                     if (!Utils::isAdminPlugin()) {
                         // If there's a `frontmatter.yaml` file merge that in with the page header
@@ -751,6 +784,14 @@ class Page implements PageInterface
 
         // Set Content-Type header
         $headers['Content-Type'] = Utils::getMimeByExtension($format, 'text/html');
+        if ($format === MarkdownOutput::FORMAT && stripos($headers['Content-Type'], 'charset=') === false) {
+            // Markdown has no <meta charset>, so the header has to say it.
+            $headers['Content-Type'] .= '; charset=utf-8';
+        } elseif ($format === 'html' && MarkdownOutput::enabled() && $this->routable()) {
+            // Point agents at the Markdown version from the response itself,
+            // so it works whatever the theme puts in <head>.
+            $headers['Link'] = '<' . $grav['markdown_output']->url($this) . '>; rel="alternate"; type="text/markdown"';
+        }
 
         // Calculate Expires Headers if set to > 0
         if ($expires > 0) {
@@ -785,9 +826,21 @@ class Page implements PageInterface
             $headers['ETag'] = '1';
         }
 
-        // Set Vary: Accept-Encoding header
+        // Set Vary header
+        $vary = [];
         if ($grav['config']->get('system.pages.vary_accept_encoding', false)) {
-            $headers['Vary'] = 'Accept-Encoding';
+            $vary[] = 'Accept-Encoding';
+        }
+        // With Markdown output on, a URL without an extension answers either
+        // HTML or Markdown depending on the request's `Accept` header, so a
+        // shared cache must key on it or it hands an agent the HTML (and a
+        // browser the Markdown). The `.md` URL is its own resource and needs
+        // no such hint.
+        if (MarkdownOutput::enabled() && !$grav['uri']->extension()) {
+            $vary[] = 'Accept';
+        }
+        if ($vary) {
+            $headers['Vary'] = implode(', ', $vary);
         }
 
 
@@ -808,7 +861,9 @@ class Page implements PageInterface
     public function summary($size = null, $textOnly = false)
     {
         $config = (array)Grav::instance()['config']->get('site.summary');
-        if (isset($this->header->summary)) {
+        // `summary` in a page header is the summary settings. A page that uses
+        // it for its own lede text holds a string there, which is not settings.
+        if (isset($this->header->summary) && \is_array($this->header->summary)) {
             $config = array_merge($config, $this->header->summary);
         }
 
@@ -959,26 +1014,54 @@ class Page implements PageInterface
                 false
             );
 
+            // Editor-authored content Twig is sandboxed but still request-aware:
+            // authorize() and isajaxrequest() both answer for the current visitor, and
+            // plugins can allow-list more through the sandbox event. The page-content
+            // cache is keyed on page identity and the config checksum only, with no
+            // session, user or request dimension, so storing that render hands one
+            // visitor's output to the next. Cache the markdown, re-run the Twig every
+            // request, including editor-authored module bodies. (GHSA-pp89-h475-7gj6)
+            if ($process_twig) {
+                $never_cache_twig = true;
+            }
+
             // if no cached-content run everything
             if ($never_cache_twig) {
-                if ($this->content === false || $cache_enable === false) {
+                if ($twig_first && $process_twig) {
+                    // Twig first: its output is what Markdown parses, so there is no
+                    // Twig-free stage to cache. Both run on every request, from the
+                    // raw source, and whatever the cache holds for this page is ignored.
                     $this->content = $this->rawMarkdown();
                     Grav::instance()->fireEvent('onPageContentRaw', new Event(['page' => $this]));
 
+                    $this->processTwig();
                     if ($process_markdown) {
                         $this->processMarkdown();
                     }
 
                     // Content Processed but not cached yet
                     Grav::instance()->fireEvent('onPageContentProcessed', new Event(['page' => $this]));
+                } else {
+                    if ($this->content === false || $cache_enable === false) {
+                        $this->content = $this->rawMarkdown();
+                        Grav::instance()->fireEvent('onPageContentRaw', new Event(['page' => $this]));
 
-                    if ($cache_enable) {
-                        $this->cachePageContent();
+                        if ($process_markdown) {
+                            // Markdown must leave the Twig tags alone for the pass below.
+                            $this->processMarkdown($process_twig);
+                        }
+
+                        // Content Processed but not cached yet
+                        Grav::instance()->fireEvent('onPageContentProcessed', new Event(['page' => $this]));
+
+                        if ($cache_enable) {
+                            $this->cachePageContent();
+                        }
                     }
-                }
 
-                if ($process_twig) {
-                    $this->processTwig();
+                    if ($process_twig) {
+                        $this->processModuleTwig((bool)$cache_enable);
+                    }
                 }
             } else {
                 if ($this->content === false || $cache_enable === false) {
@@ -1167,6 +1250,143 @@ class Page implements PageInterface
     }
 
     /**
+     * Run the Twig pass of the content, reusing a cached module render where the modular page allows it.
+     *
+     * A module's Twig pass renders its body and its theme template, so its output can depend on
+     * the visitor, and it is never cached by default (GHSA-pp89-h475-7gj6). A modular page whose
+     * modules render the same for everyone can set `cache_modules: true` in its header; see
+     * moduleOutputCacheId() for the modules and requests that are still rendered every time.
+     *
+     * @param bool $cache_enable
+     * @return void
+     */
+    private function processModuleTwig(bool $cache_enable): void
+    {
+        $cache_id = $cache_enable ? $this->moduleOutputCacheId() : null;
+        if ($cache_id === null) {
+            $this->processTwig();
+
+            return;
+        }
+
+        $grav = Grav::instance();
+
+        /** @var Cache $cache */
+        $cache = $grav['cache'];
+        /** @var Twig $twig */
+        $twig = $grav['twig'];
+
+        try {
+            $template = $twig->getPageTwigTemplate($this);
+        } catch (Throwable) {
+            $this->processTwig();
+
+            return;
+        }
+
+        /** @var Assets $assets */
+        $assets = $grav['assets'];
+
+        $cached = $cache->fetch($cache_id);
+        if (is_array($cached) && isset($cached['content'], $cached['time']) && is_string($cached['content'])
+            && is_array($cached['assets'] ?? null) && $assets->canReplay($cached['assets'])
+            && $this->moduleTemplateIsFresh($twig, $template, (int)$cached['time'])
+        ) {
+            // Add the assets the module added when it rendered, in the same order.
+            $assets->replay($cached['assets']);
+            $this->content = $cached['content'];
+
+            return;
+        }
+
+        $keys = $assets->getAssetKeys();
+        $time = time();
+
+        $assets->startRecording();
+        try {
+            $this->processTwig();
+        } finally {
+            $added = $assets->stopRecording();
+        }
+
+        // Additions are replayed on a cache hit; a render that removed assets is not cached.
+        if (!array_diff($keys, $assets->getAssetKeys()) && $assets->canReplay($added)) {
+            $cache->save($cache_id, ['content' => $this->content, 'time' => $time, 'assets' => $added]);
+        }
+    }
+
+    /**
+     * Cache id for this module's rendered output, or null when it has to render on every request.
+     *
+     * The output is cached only when all of these hold:
+     * - the modular page that holds the module sets `cache_modules: true`;
+     * - neither page sets `never_cache_twig`, and neither has a form or an access rule;
+     * - the module body has no Twig of its own (it is request-aware even in the sandbox);
+     * - the request is a GET or HEAD from a visitor who is not logged in, so a logged-in
+     *   render is never stored and never served.
+     * The id covers the page and config (as the page content cache does), the language and the
+     * whole request URL, so pages that read the query or URL params keep one entry per URL.
+     * A stored render is used only while the module's template file is older than it; partials
+     * that template includes are not checked, so editing only a partial needs a cache clear.
+     *
+     * @return string|null
+     */
+    private function moduleOutputCacheId(): ?string
+    {
+        if (!$this->isModule()) {
+            return null;
+        }
+
+        $parent = $this->parent();
+        if (!$parent instanceof PageInterface || ($parent->header()->cache_modules ?? false) !== true) {
+            return null;
+        }
+
+        foreach ([$this->header(), $parent->header()] as $header) {
+            if (!empty($header->never_cache_twig) || isset($header->form) || isset($header->forms) || isset($header->access) || isset($header->login)) {
+                return null;
+            }
+        }
+
+        $body = (string)$this->content;
+        if (str_contains($body, '{{') || str_contains($body, '{%') || str_contains($body, '{#')) {
+            return null;
+        }
+
+        $grav = Grav::instance();
+        $method = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+        if ($method !== 'GET' && $method !== 'HEAD') {
+            return null;
+        }
+
+        $user = isset($grav['user']) ? $grav['user'] : null;
+        if ($user instanceof UserInterface && $user->authenticated) {
+            return null;
+        }
+
+        /** @var Uri $uri */
+        $uri = $grav['uri'];
+
+        // The request URI as sent: path, URL params, extension and query string.
+        return md5('module-output' . $this->getPageContentCacheKey($grav['config']) . '|' . $parent->path() . '|' . $grav['language']->getActive() . '|' . $uri->base() . '|' . $uri->uri());
+    }
+
+    /**
+     * @param Twig $twig
+     * @param string $template
+     * @param int $time
+     * @return bool
+     */
+    private function moduleTemplateIsFresh(Twig $twig, string $template, int $time): bool
+    {
+        try {
+            return $twig->twig()->getLoader()->isFresh($template, $time);
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
      * Fires the onPageContentProcessed event, and caches the page content using a unique ID for the page
      *
      * @return void
@@ -1190,10 +1410,12 @@ class Page implements PageInterface
      *
      * Matches the invalidation strategy Pages::buildPages() already uses for
      * the pages-index cache (Pages.php) — they should evict in lockstep.
+     * The version marker prevents a rendered modular response stored by older
+     * releases from surviving the request-aware Twig cache fix.
      */
     private function getPageContentCacheKey(Config $config): string
     {
-        return $this->getCacheKey() . ':cfg=' . (string) $config->checksum();
+        return $this->getCacheKey() . ':content-v2:cfg=' . (string) $config->checksum();
     }
 
     /**
@@ -1280,7 +1502,7 @@ class Page implements PageInterface
         $scope = array_shift($path);
 
         if ($name === 'frontmatter') {
-            return $this->frontmatter;
+            return $this->frontmatter();
         }
 
         if ($scope === 'header') {
@@ -1388,6 +1610,12 @@ class Page implements PageInterface
         $directory = $flex ? $flex->getDirectory('pages') : null;
         if (null !== $directory) {
             $directory->clearCache();
+        }
+
+        // And the regular pages cache, without waiting for the change check.
+        $pages = Grav::instance()['pages'] ?? null;
+        if ($pages instanceof Pages) {
+            $pages->markChanged();
         }
 
         $this->_original = null;
@@ -1602,6 +1830,10 @@ class Page implements PageInterface
 
         /** @var Media $media */
         $media = $this->getMedia();
+
+        // Applied here rather than in getMedia() because the media collection is
+        // cached, and the route depends on the active language and base route.
+        MediaRouteUrls::apply($this, $media);
 
         return $media;
     }
@@ -2107,9 +2339,12 @@ class Page implements PageInterface
      * @param bool $canonical    True to return the canonical URL
      * @param bool $include_base Include base url on multisite as well as language code
      * @param bool $raw_route
+     * @param string|null $extension An output format to link to (`md`, `rss`, `json`…) instead of the
+     *                               site's `append_url_extension`. The home page becomes `/index.<ext>`,
+     *                               since `/.<ext>` is a hidden file to every web server.
      * @return string The url.
      */
-    public function url($include_host = false, $canonical = false, $include_base = true, $raw_route = false)
+    public function url($include_host = false, $canonical = false, $include_base = true, $raw_route = false, $extension = null)
     {
         // Override any URL when external_url is set
         if (isset($this->external_url)) {
@@ -2145,9 +2380,14 @@ class Page implements PageInterface
             $route .= $this->route();
         }
 
+        $extension = is_string($extension) && $extension !== '' ? '.' . ltrim($extension, '.') : $this->urlExtension();
+        if ($extension !== '' && !$raw_route && $this->home()) {
+            $route = ($include_base ? $pages->baseRoute() : '') . '/index';
+        }
+
         /** @var Uri $uri */
         $uri = $grav['uri'];
-        $url = $uri->rootUrl($include_host) . '/' . trim((string) $route, '/') . $this->urlExtension();
+        $url = $uri->rootUrl($include_host) . '/' . trim((string) $route, '/') . $extension;
 
         return Uri::filterPath($url);
     }

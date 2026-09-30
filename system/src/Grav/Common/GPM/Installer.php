@@ -99,6 +99,17 @@ class Installer
             return false;
         }
 
+        // Package installs replace a directory or copy a theme in place. Core's
+        // sophisticated installer has its own ignore list; do not scan user data.
+        $isTheme = !empty($options['theme']) || preg_match('|/themes/[^/]+|ui', $install_path);
+        if (!$options['sophisticated']) {
+            $issue = self::getDestinationIssue($install_path, (bool) $isTheme);
+            if ($issue !== null) {
+                self::$error = $issue;
+                return false;
+            }
+        }
+
         // Create a tmp location
         $tmp_dir = Grav::instance()['locator']->findResource('tmp://', true, true);
         $tmp = $tmp_dir . '/Grav-' . uniqid('', false);
@@ -138,9 +149,6 @@ class Installer
         }
 
         if (!$options['sophisticated']) {
-            $isTheme = $options['theme'] ?? false;
-            // Make sure that themes are always being copied, even if option was not set!
-            $isTheme = $isTheme || preg_match('|/themes/[^/]+|ui', $install_path);
             if ($isTheme) {
                 self::copyInstall($extracted, $install_path);
             } else {
@@ -548,8 +556,7 @@ class Installer
                     }
                 }
             } else {
-                @unlink($path);
-                @copy($file->getPathname(), $path);
+                self::replaceFile($file->getPathname(), $path);
             }
         }
 
@@ -561,6 +568,48 @@ class Installer
         }
 
         return true;
+    }
+
+    /**
+     * Replace a file without deleting the original first, so a failed replace keeps the old copy.
+     *
+     * Unlinking first loses index.php on Windows: the request running the upgrade
+     * holds it open, so the unlink is only pending, the copy onto the pending name
+     * fails, and the file vanishes when the request ends. Kept in step with
+     * Grav\Installer\Install::replaceFile(), which is the copy that runs during a
+     * core upgrade.
+     *
+     * @param string $source
+     * @param string $target
+     * @return bool False when the original was left in place.
+     */
+    public static function replaceFile(string $source, string $target): bool
+    {
+        // Replace a symlink (bin/grav sandbox) with the file itself; never write through it.
+        if (is_link($target)) {
+            $link = readlink($target);
+            @unlink($target);
+            if (@copy($source, $target)) {
+                return true;
+            }
+            if ($link !== false) {
+                @symlink($link, $target);
+            }
+
+            return false;
+        }
+
+        // Write beside the target and rename over it, which swaps it in atomically.
+        $tmp = dirname($target) . DS . '.' . basename($target) . '.' . uniqid('', false) . '.tmp';
+        if (@copy($source, $tmp)) {
+            if (@rename($tmp, $target)) {
+                return true;
+            }
+            @unlink($tmp);
+        }
+
+        // Windows refuses the rename while the target is open; overwriting it in place may still work.
+        return @copy($source, $target);
     }
 
     /**
@@ -665,6 +714,56 @@ class Installer
         }
 
         return $result;
+    }
+
+    /**
+     * Explain why replacing a package would fail before downloading or deleting it.
+     * Symlink targets are never traversed. Theme installs also overwrite files in place.
+     */
+    public static function getDestinationIssue(string $destination, bool $overwriteFiles = false): ?string
+    {
+        clearstatcache();
+        if (is_link($destination)) {
+            return 'Symbolic link: update its target separately.';
+        }
+        if (file_exists($destination) && !is_dir($destination)) {
+            return "Not a directory: {$destination}";
+        }
+
+        $parent = dirname($destination);
+        while (!file_exists($parent) && dirname($parent) !== $parent) {
+            $parent = dirname($parent);
+        }
+        if (!is_dir($parent) || !is_writable($parent) || (PHP_OS_FAMILY !== 'Windows' && !is_executable($parent))) {
+            return "Parent directory is not writable or accessible: {$parent}";
+        }
+        if (!is_dir($destination)) {
+            return null;
+        }
+
+        $directories = [$destination];
+        while ($directories) {
+            $directory = array_pop($directories);
+            if (!is_readable($directory) || !is_writable($directory) || (PHP_OS_FAMILY !== 'Windows' && !is_executable($directory))) {
+                return "Directory is not readable, writable or accessible: {$directory}";
+            }
+            try {
+                foreach (new DirectoryIterator($directory) as $entry) {
+                    if ($entry->isDot() || $entry->isLink()) {
+                        continue;
+                    }
+                    if ($entry->isDir()) {
+                        $directories[] = $entry->getPathname();
+                    } elseif ($overwriteFiles && !$entry->isWritable()) {
+                        return 'File cannot be overwritten: ' . $entry->getPathname();
+                    }
+                }
+            } catch (\UnexpectedValueException $e) {
+                return "Directory cannot be inspected: {$directory}";
+            }
+        }
+
+        return null;
     }
 
     /**

@@ -9,6 +9,8 @@
 
 namespace Grav\Common;
 
+use Clockwork\Authentication\AuthenticatorInterface;
+use Clockwork\Authentication\SimpleAuthenticator;
 use Clockwork\Clockwork;
 use Clockwork\DataSource\MonologDataSource;
 use Clockwork\DataSource\PsrMessageDataSource;
@@ -28,6 +30,7 @@ use DebugBar\DebugBar;
 use DebugBar\DebugBarException;
 use DebugBar\JavascriptRenderer;
 use Grav\Common\Config\Config;
+use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Processors\ProcessorInterface;
 use Grav\Common\Twig\TwigClockworkDataSource;
 use Grav\Framework\Psr7\Response;
@@ -183,6 +186,7 @@ class Debugger
             if ($clockwork) {
                 $log = $this->grav['log'];
                 $clockwork->setStorage(new FileStorage('cache://clockwork'));
+                $clockwork->authenticator($this->debuggerAuthenticator());
                 if (extension_loaded('xdebug')) {
                     $clockwork->addDataSource(new XdebugDataSource());
                 }
@@ -307,13 +311,26 @@ class Debugger
 
         $clockwork->timeline()->finalize($request->getAttribute('request_time'));
 
+        // Credentials are never worth recording. Grav's session cookie value *is*
+        // the PHP session id, so a stored copy is a replayable login for anyone who
+        // can read the profile back, and the same goes for an API token. Replace
+        // them with a marker -- which still shows whether one was sent -- whatever
+        // `censored` is set to.
+        $censored = 'CENSORED';
+        $request = $request
+            ->withCookieParams([$censored => ''])
+            ->withHeader('cookie', $censored);
+
+        foreach (['authorization', 'x-api-token'] as $header) {
+            if ($request->hasHeader($header)) {
+                $request = $request->withHeader($header, $censored);
+            }
+        }
+
         if ($this->censored) {
-            $censored = 'CENSORED';
             $request = $request
-                ->withCookieParams([$censored => ''])
                 ->withUploadedFiles([])
-                ->withHeader('cookie', $censored);
-            $request = $request->withParsedBody([$censored => '']);
+                ->withParsedBody([$censored => '']);
         }
 
         $clockwork->addDataSource(new PsrMessageDataSource($request, $response));
@@ -343,6 +360,30 @@ class Debugger
         ];
 
         $path = $request->getUri()->getPath();
+
+        // Clockwork's own auth handshake: a client POSTs the password here and
+        // sends the token it gets back as `X-Clockwork-Auth` on later reads.
+        if ($request->getMethod() === 'POST' && str_contains($path, '/__clockwork/auth')) {
+            $token = $clockwork->authenticator()->attempt($this->debuggerCredentials($request));
+
+            return new Response($token ? 200 : 403, $headers, json_encode(['token' => $token], JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR));
+        }
+
+        // This endpoint answers during bootstrap, before plugins, session and
+        // accounts exist, so there is no Grav user to authorize against. Every
+        // read therefore requires the configured system.debugger.token.
+        if (!$this->isDebuggerRequestAuthorized($request)) {
+            $configured = (string)$this->config->get('system.debugger.token', '') !== '';
+            $response = [
+                'message' => $configured
+                    ? 'Debugger metadata requires authentication: send the configured `system.debugger.token` as `X-Clockwork-Auth`.'
+                    : 'Debugger metadata requires authentication: set `system.debugger.token` and send it as `X-Clockwork-Auth`. Profiler data is unreadable, including from the local machine, until a token is configured.',
+                'requires' => $clockwork->authenticator()->requires()
+            ];
+
+            return new Response(403, $headers, json_encode($response, JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR));
+        }
+
         $clockworkDataUri = '#/__clockwork(?:/(?<id>[0-9-]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
         if (preg_match($clockworkDataUri, $path, $matches) === false) {
             $response = ['message' => 'Bad Input'];
@@ -356,17 +397,28 @@ class Debugger
 
         $storage = $clockwork->getStorage();
 
-        if ($direction === 'previous') {
-            $data = $storage->previous($id, $count);
-        } elseif ($direction === 'next') {
-            $data = $storage->next($id, $count);
-        } elseif ($direction === 'latest' || $id === 'latest') {
-            $data = $storage->latest();
-        } else {
-            $data = $storage->find($id);
+        // Nothing profiled yet — a fresh install, or the first request after
+        // `bin/grav clear` — means `cache://clockwork/index` does not exist, and
+        // Clockwork's FileStorage fopen()s it unguarded. That warning becomes an
+        // ErrorException under the error handler, so a request that should just
+        // report "no data yet" came back as a 500 instead of the 404 below.
+        try {
+            if ($direction === 'previous') {
+                $data = $storage->previous($id, $count);
+            } elseif ($direction === 'next') {
+                $data = $storage->next($id, $count);
+            } elseif ($direction === 'latest' || $id === 'latest') {
+                $data = $storage->latest();
+            } else {
+                $data = $storage->find($id);
+            }
+        } catch (Throwable) {
+            $data = null;
         }
 
-        if (preg_match('#(?<id>[0-9-]+|latest)/extended#', $path)) {
+        // `latest()` returns false rather than null on empty storage, which
+        // extendRequest() would reject on its `?Request` parameter.
+        if ($data && preg_match('#(?<id>[0-9-]+|latest)/extended#', $path)) {
             $clockwork->extendRequest($data);
         }
 
@@ -379,6 +431,95 @@ class Debugger
         $data = is_array($data) ? array_map(static fn($item) => $item->toArray(), $data) : $data->toArray();
 
         return new Response(200, $headers, json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * Authenticator guarding the `/__clockwork/` metadata endpoint.
+     *
+     * Clockwork's default is a NullAuthenticator, which waves every caller
+     * through. When no `system.debugger.token` is configured we hand back an
+     * authenticator holding an unguessable one-shot secret, and reads fail closed.
+     *
+     * @return AuthenticatorInterface
+     */
+    protected function debuggerAuthenticator(): AuthenticatorInterface
+    {
+        $token = (string)$this->config->get('system.debugger.token', '');
+
+        return new SimpleAuthenticator($token !== '' ? $token : bin2hex(random_bytes(32)));
+    }
+
+    /**
+     * Whether the caller may read stored profiler metadata.
+     *
+     * @param RequestInterface $request
+     * @return bool
+     */
+    protected function isDebuggerRequestAuthorized(RequestInterface $request): bool
+    {
+        $token = (string)$this->config->get('system.debugger.token', '');
+        $presented = $request->getHeaderLine('X-Clockwork-Auth');
+
+        // The TCP peer may be a same-host HTTP reverse proxy, so REMOTE_ADDR being
+        // loopback does not prove that the client is local. Fail closed unless the
+        // operator configured a token and the caller supplied a valid credential.
+        if ($token === '' || $presented === '') {
+            return false;
+        }
+
+        // Accept the raw token (scripts, same-origin admin clients) as well as the
+        // hashed one Clockwork's extension gets back from /__clockwork/auth.
+        return hash_equals($token, $presented)
+            || $this->clockwork->authenticator()->check($presented) === true;
+    }
+
+    /**
+     * Credentials posted to `/__clockwork/auth`.
+     *
+     * @param RequestInterface $request
+     * @return array
+     */
+    protected function debuggerCredentials(RequestInterface $request): array
+    {
+        // The Clockwork browser extension posts the password as multipart/form-data,
+        // which only ever shows up in the parsed body ($_POST), never as a raw JSON
+        // or query-string body. Read that first, then fall back to the raw body for
+        // scripts posting JSON or application/x-www-form-urlencoded.
+        $data = $request instanceof ServerRequestInterface ? $request->getParsedBody() : null;
+        if (!is_array($data) || $data === []) {
+            $body = (string)$request->getBody();
+            $data = json_decode($body, true);
+            if (!is_array($data)) {
+                $data = [];
+                parse_str($body, $data);
+            }
+        }
+        if ($data === [] && !empty($_POST)) {
+            $data = $_POST;
+        }
+
+        return [
+            'username' => (string)($data['username'] ?? ''),
+            'password' => (string)($data['password'] ?? '')
+        ];
+    }
+
+    /**
+     * Whether the request came from the machine Grav itself runs on.
+     *
+     * Reads REMOTE_ADDR only, on purpose: the `system.http_x_forwarded` headers
+     * are supplied by the client and would let anyone claim to be local.
+     *
+     * @param RequestInterface $request
+     * @return bool
+     */
+    protected function isLoopbackRequest(RequestInterface $request): bool
+    {
+        $remote = $request instanceof ServerRequestInterface
+            ? ($request->getServerParams()['REMOTE_ADDR'] ?? '')
+            : ($_SERVER['REMOTE_ADDR'] ?? '');
+
+        return in_array($remote, ['127.0.0.1', '::1'], true);
     }
 
     /**
@@ -481,6 +622,28 @@ class Debugger
     }
 
     /**
+     * Whether Flex should wrap each rendered object and collection in an HTML comment
+     * naming it, so the source of a block can be found in the page markup.
+     *
+     * Off unless the debugger is on and `system.debugger.flex_render_hints` is enabled,
+     * and never for a non-HTML response (JSON, RSS, Atom, XML, Markdown), where a
+     * comment marker corrupts the output.
+     *
+     * @return bool
+     */
+    public function flexRenderHints(): bool
+    {
+        if (!$this->enabled || !$this->config || !$this->config->get('system.debugger.flex_render_hints', false)) {
+            return false;
+        }
+
+        $page = $this->grav->offsetExists('page') ? $this->grav['page'] : null;
+        $format = $page instanceof PageInterface ? $page->templateFormat() : Utils::getPageFormat();
+
+        return $format === 'html';
+    }
+
+    /**
      * Add the debugger assets to the Grav Assets
      *
      * @return $this
@@ -507,7 +670,8 @@ class Debugger
                 $assets->addCss('/system/assets/debugger/clockwork.css');
                 $assets->addJs('/system/assets/debugger/clockwork.js', [
                     'id' => 'clockwork-script',
-                    'data-route' => $route
+                    'data-route' => $route,
+                    'pipeline' => false
                 ]);
             }
 
@@ -588,9 +752,21 @@ class Debugger
     public function render()
     {
         if ($this->enabled && $this->debugbar) {
-            // Only add assets if Page is HTML
+            // The bar is HTML injected into the response body, and the renderer that
+            // produces it only exists once addAssets() has run -- so there is nothing
+            // to inject on a response that never got that far. Test for that before
+            // asking for `page`: a request that returns early from InitializeProcessor
+            // (the trailing slash redirect, for one) never resolved a page, and
+            // resolving one here would build the pages index and run the
+            // onPageFallBackUrl hooks this late, against plugin services that
+            // onPluginsInitialized never got to register -- Login's `user` among them.
+            if (!$this->renderer || !$this->grav->initialized('page')) {
+                return $this;
+            }
+
+            // Only render the bar if the page is HTML.
             $page = $this->grav['page'];
-            if (!$this->renderer || $page->templateFormat() !== 'html') {
+            if (!$page instanceof PageInterface || $page->templateFormat() !== 'html') {
                 return $this;
             }
 
@@ -1003,6 +1179,7 @@ class Debugger
         // Filter arguments.
         $cut = 0;
         $previous = null;
+        $templateLocation = null;
         foreach ($backtrace as $i => &$current) {
             if (isset($current['args'])) {
                 $args = [];
@@ -1041,6 +1218,19 @@ class Debugger
 
             if ($object instanceof Template) {
                 $file = $current['file'] ?? null;
+                // Twig can invoke generated templates through vendor frames
+                // that are removed below. Keep their source location so notices
+                // from different templates are not grouped at the PHP helper.
+                if ($templateLocation === null && $object->getSourceContext()->getPath()) {
+                    $templateLine = 1;
+                    foreach ($object->getDebugInfo() as $codeLine => $sourceLine) {
+                        if ($codeLine <= ($previous['line'] ?? $current['line'] ?? 0)) {
+                            $templateLine = $sourceLine;
+                            break;
+                        }
+                    }
+                    $templateLocation = ['file' => $object->getSourceContext()->getPath(), 'line' => $templateLine];
+                }
 
                 if (preg_match('`(Template.php|TemplateWrapper.php)$`', (string) $file)) {
                     $current = null;
@@ -1122,10 +1312,11 @@ class Debugger
         $current = reset($backtrace);
 
         // If the issue happened inside twig file, change the file and line to match that file.
-        $file = $current['twig']['file'] ?? '';
+        $location = $current['twig'] ?? $templateLocation;
+        $file = $location['file'] ?? '';
         if ($file) {
             $errfile = $file;
-            $errline = $current['twig']['line'] ?? 0;
+            $errline = $location['line'] ?? 0;
         }
 
         $deprecation = [
@@ -1137,7 +1328,17 @@ class Debugger
             'count' => 1
         ];
 
-        $this->deprecations[] = $deprecation;
+        // Keep one trace per source location. A page-tree rebuild can emit the
+        // same notice thousands of times; retaining and rendering every trace
+        // can make the debug response much larger than the page itself. Resolve
+        // YAML and Twig locations above before grouping, so different source
+        // documents are still reported separately.
+        $key = serialize([$scope, $errstr, $errfile, $errline]);
+        if (isset($this->deprecations[$key])) {
+            ++$this->deprecations[$key]['count'];
+        } else {
+            $this->deprecations[$key] = $deprecation;
+        }
 
         // Do not pass forward.
         return true;
@@ -1215,6 +1416,7 @@ class Debugger
             'message' => $deprecated['message'],
             'file' => $deprecated['file'],
             'line' => $deprecated['line'],
+            'count' => $deprecated['count'] > 1 ? $deprecated['count'] : null,
             'trace' => $trace
         ];
 

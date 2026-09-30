@@ -40,7 +40,7 @@ home:
 pages:
   type: regular                                  # EXPERIMENTAL: Page type: regular or flex
   dirs: ['page://']                              # Advanced functionality, allows for multiple page paths
-  lazy_index: false                              # EXPERIMENTAL opt-in: hydrate pages, routes and taxonomy on demand from a per-page index (SQLite/YetiSQL) instead of one big cache blob; falls back automatically when unavailable
+  lazy_index: auto                               # Load pages, routes and taxonomy on demand from a per-page index (SQLite/YetiSQL) instead of one big cache blob: true, false, or auto (on for sites with 1,000 pages or more). Falls back to the blob automatically when no database engine is available
   theme: quark2                                  # Default theme (defaults to "quark2" theme)
   order:
     by: default                                  # Order pages by "default", "alpha" or "date"
@@ -53,6 +53,7 @@ pages:
     short: 'jS M Y'                              # Short date format
     long: 'F jS \a\t g:ia'                       # Long date format
   publish_dates: true                            # automatically publish/unpublish based on dates
+  media_route_urls: false                        # Link page media through the page route instead of its path on disk, so plugins can apply the page's `access` rules to it. Half of a two-part change, and deliberately not exposed in the admin panel: set this BEFORE uncommenting the `user/pages` deny rule in .htaccess (or your webserver-configs equivalent), because enabling that rule on its own turns every media URL on the site into a 403
   process:
     markdown: true                               # Process Markdown
     # NOTE: If you override this `process:` block in user/config/system.yaml,
@@ -99,6 +100,13 @@ pages:
       attributes: false                          # A `{.class #id}` line after a table sets attributes on the table
       multiline: false                           # A row ending in `\` continues into the next line (multi-line cells)
   types: [html,htm,xml,txt,json,rss,atom]        # list of valid page types
+  markdown_output:                               # Serve any page as Markdown for AI agents and other text clients
+    enabled: true                                # Answer `<route>.md` URLs and `Accept: text/markdown` requests with Markdown
+    frontmatter: true                            # Start the Markdown with a YAML block: title, url, date, description, taxonomy
+    links: true                                  # End the Markdown with links to the parent, neighbouring and child pages
+    max_links: 100                               # Most child pages listed in that navigation section (0 for no limit)
+    absolute_urls: true                          # Turn root-relative links and images into absolute URLs
+    token_header: true                           # Send an `X-Markdown-Tokens` header with an estimated token count
   append_url_extension: ''                       # Append page's extension in Page urls (e.g. '.html' results in /path/page.html)
   expires: 604800                                # Page expires time in seconds (604800 seconds = 7 days)
   cache_control:                                 # Can be blank for no setting, or a valid `cache-control` text value
@@ -116,6 +124,7 @@ pages:
   frontmatter:
     process_twig: false                          # Process Twig in frontmatter. Also gated by security.twig_content.process_enabled; when the gate is off, requested frontmatter Twig is blocked and reported in the Admin "Twig in Content" report.
     ignore_fields: ['form','forms']              # Fields that might contain Twig variables and should not be processed
+    native_yaml: false                           # Parse frontmatter with the faster libyaml extension when installed. Unquoted dates stay text and yes/no become true/false
 
 cache:
   enabled: true                                  # Set to true to enable caching
@@ -127,7 +136,7 @@ cache:
   purge_at: '0 4 * * *'                          # How often to purge old file cache (using new scheduler)
   clear_at: '0 3 * * *'                           # How often to clear cache (using new scheduler)
   clear_job_type: 'standard'                     # Type to clear when processing the scheduled clear job `standard`|`all`
-  clear_images_by_default: false                 # By default grav does not include processed images in cache clear, this can be enabled
+  clear_images_by_default: false                 # Processed images survive every cache clear and Grav update unless this is on; `bin/grav cache --images-only` always removes them
   cli_compatibility: false                       # Ensures only non-volatile drivers are used (file, redis, memcached, etc.)
   lifetime: 604800                               # Lifetime of cached data in seconds (0 = infinite)
   purge_max_age_days: 30                         # Maximum age of cache items in days before they are purged
@@ -179,19 +188,22 @@ debugger:
   enabled: false                                 # Enable Grav debugger and following settings
   provider: clockwork                            # Debugger provider: debugbar | clockwork
   censored: false                                # Censor potentially sensitive information (POST parameters, cookies, files, configuration and most array/object data in log messages)
+  token: ''                                      # Shared secret required as `X-Clockwork-Auth` to read `/__clockwork/` profiler data. Empty denies all profiler-data reads
+  flex_render_hints: false                       # Wrap every rendered Flex object and collection in an HTML comment naming it (HTML pages only)
   shutdown:
     close_connection: true                       # Close the connection before calling onShutdown(). false for debugging
 
 images:
   adapter: gd                                    # Image adapter to use: gd | imagick
   default_image_quality: 85                      # Default image quality to use when resampling images (85%)
+  progressive_jpeg: true                         # Save resized and cached JPEGs as progressive, so they appear whole and sharpen rather than filling in a line at a time
   cache_all: false                               # Cache all image by default
-  cache_perms: '0755'                            # MUST BE IN QUOTES!! Default cache folder perms. Usually '0755' or '0775'
+  cache_perms: '0775'                            # MUST BE IN QUOTES!! Default cache folder perms. Usually '0775' (the umask still applies) or '0755'
   debug: false                                   # Show an overlay over images indicating the pixel depth of the image when working with retina for example
   auto_fix_orientation: true                     # Automatically fix the image orientation based on the Exif data
   seofriendly: false                             # SEO-friendly processed image names
   url_actions: false                             # Allow URL query-based image transforms (e.g. `image.jpg?resize=600,400`). Off by default; normal Twig/Markdown resizing is unaffected
-  max_pixels: 25000000                           # Total-pixel ceiling (width*height) for URL-based resize actions. Requests above this are refused. 0 disables the check
+  max_pixels: 25000000                           # Total-pixel ceiling (width*height) for source images and URL-based resize output. 0 disables the check
   cls:                                           # Cumulative Layout Shift: See https://web.dev/optimize-cls/
     auto_sizes: false                            # Automatically add height/width to image
     aspect_ratio: false                          # Reserve space with aspect ratio style
@@ -216,9 +228,10 @@ media:
 session:
   enabled: true                                  # Enable Session support
   initialize: true                               # Initialize session from Grav (if false, plugin needs to start the session)
+  lazy: false                                    # Start the session only when the request brings a session cookie or something is stored in the session (a login, a form, a message). Anonymous page views then send no session cookie (unless a plugin stores something on every view), so a proxy or CDN can cache them. Opt-in: data a plugin writes straight to $_SESSION, or after the response was sent, is not kept for a visitor without a session
   read_and_close: false                          # Release the session lock right after the initial read (read-only start); the first write re-acquires it. Lets requests sharing a session id run concurrently instead of serializing on PHP's per-session lock. Opt-in: read-modify-write across a request is no longer atomic.
   timeout: 1800                                  # Timeout in seconds
-  name: grav-site                                # Name prefix of the session cookie. Use alphanumeric, dashes or underscores only. Do not use dots in the session name
+  name: grav-site                                # Name prefix of the session cookie. Use alphanumeric, dashes or underscores only. Do not use dots in the session name. A `__Secure-` prefix requires HTTPS; a `__Host-` prefix additionally forces no cookie domain and a site-wide path
   uniqueness: path                               # Should sessions be `path` based or `security.salt` based
   secure: false                                  # Set session secure. If true, indicates that communication for this cookie must be over an encrypted transmission. Enable this only on sites that run exclusively on HTTPS
   secure_https: true                             # Set session secure on HTTPS but not on HTTP. Has no effect if you have `session.secure: true`. Set to false if your site jumps between HTTP and HTTPS.

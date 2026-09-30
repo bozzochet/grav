@@ -72,7 +72,13 @@ trait MediaFileTrait
             $this->reset();
         }
 
-        return $this->get('url') ?? $this->get('filepath');
+        // The file on disk wins over a `url` override. The override (the page
+        // route from `pages.media_route_urls`, or a media proxy) is where the file
+        // is linked, not where it is: `Grav::fallbackUrl()` serves the file from
+        // here, so returning the override 404'd every name that URL-encodes.
+        // Media with no local file (an external URL) still returns the URL.
+        // getgrav/grav#4332.
+        return $this->get('filepath') ?? $this->get('url');
     }
 
     /**
@@ -103,18 +109,42 @@ trait MediaFileTrait
      * Return URL to file.
      *
      * @param bool $reset
+     * @param bool $include_host Prepend the scheme and host, as `page.url(true)` does
      * @return string
      */
-    public function url($reset = true)
+    public function url($reset = true, $include_host = false)
     {
         $url = $this->get('url');
         if ($url) {
-            return $url;
+            return $this->withHost((string)$url, $include_host);
         }
 
         $path = $this->relativePath($reset);
 
-        return trim($this->getGrav()['base_url'] . '/' . $this->urlQuerystring($path), '\\');
+        return $this->withHost(trim($this->getGrav()['base_url'] . '/' . $this->urlQuerystring($path), '\\'), $include_host);
+    }
+
+    /**
+     * Prepend the scheme and host to a root-relative URL when `$include_host` is
+     * set, the way `page.url(true)` builds its URL.
+     *
+     * A root-relative URL, the file's own or a `url` override (the page route
+     * from `pages.media_route_urls`, or a media proxy), already carries the
+     * site's base path, so only the host is added. `Uri::base()` is also where
+     * a `custom_base_url` host lands. Absolute and protocol-relative URLs are
+     * returned as they are.
+     *
+     * @param string $url
+     * @param bool $include_host
+     * @return string
+     */
+    protected function withHost(string $url, $include_host): string
+    {
+        if ($include_host && str_starts_with($url, '/') && !str_starts_with($url, '//')) {
+            return $this->getGrav()['uri']->base() . $url;
+        }
+
+        return $url;
     }
 
     /**

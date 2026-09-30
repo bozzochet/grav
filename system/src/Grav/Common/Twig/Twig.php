@@ -9,8 +9,10 @@
 
 namespace Grav\Common\Twig;
 
+use Closure;
 use Grav\Common\Debugger;
 use Grav\Common\Grav;
+use Grav\Common\Page\Markdown\MarkdownOutput;
 use Grav\Common\Config\Config;
 use Grav\Common\Language\Language;
 use Grav\Common\Language\LanguageCodes;
@@ -28,6 +30,8 @@ use Grav\Common\Twig\Extension\GravExtension;
 use Grav\Common\Utils;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use RocketTheme\Toolbox\Event\Event;
+use ReflectionException;
+use ReflectionFunction;
 use RuntimeException;
 use Twig\Cache\FilesystemCache;
 use Twig\DeferredExtension\DeferredExtension;
@@ -151,6 +155,13 @@ class Twig
             $this->twig_paths = array_merge($this->twig_paths, $core_templates);
 
             $this->loader = new FilesystemLoader($this->twig_paths);
+
+            // The same core templates under `@grav`, so a theme or plugin can
+            // `{% include '@grav/partials/metadata.html.twig' %}` or extend one
+            // instead of copying it to add a line. In the main namespace a
+            // theme file of the same name shadows the core one and there is
+            // no other way to reach it.
+            $this->loader->setPaths($core_templates, 'grav');
 
             // Register all other prefixes as namespaces in twig
             foreach ($locator->getPaths('theme') as $prefix => $_) {
@@ -285,6 +296,9 @@ class Twig
             // are sandboxed; theme files on disk are always trusted. This means
             // we don't need to toggle the sandbox around specific render calls,
             // and {% include %}ing a theme partial from editor content is safe.
+            // GravSourcePolicy also makes that decision at compile time (a
+            // getgrav/Twig fork feature), so theme and plugin files compile
+            // without any sandbox checks at all.
             if ($config->get('security.twig_sandbox.enabled', true)) {
                 $this->twig->addExtension(new SandboxExtension(
                     Security::buildTwigSandboxPolicy(),
@@ -847,6 +861,18 @@ class Twig
         // TODO: no longer needed in Twig 3.
         /** @var ExistsLoaderInterface $loader */
         $loader = $this->twig->getLoader();
+
+        // Markdown output never falls back to an HTML template: a client that
+        // asked for Markdown must not be handed the theme's HTML page. The
+        // theme may provide `<template>.md.twig` or `default.md.twig`; core
+        // ships the latter. Modules are left out on purpose: they keep
+        // rendering through their HTML module template, and the Markdown
+        // document converts that output, the same way it treats the page's
+        // own content.
+        if ($extension === MarkdownOutput::FORMAT && !$page->isModule() && MarkdownOutput::enabled()) {
+            return $loader->exists($template_file) ? $template_file : 'default' . $twig_extension;
+        }
+
         if ($loader->exists($template_file)) {
             // template.xxx.twig
             $page_template = $template_file;
@@ -891,14 +917,26 @@ class Twig
      * - Twig 2.x/3.x (< 3.9): Uses EscaperExtension::setEscaper()
      * - Twig 3.9+: Uses EscaperRuntime::setEscaper()
      *
+     * The callable may take either the historic Grav signature,
+     * function($twig, $string, $charset), or the Twig 3.9+ runtime signature,
+     * function($string, $charset). Both keep working wherever this runs.
+     *
      * @param string $strategy The escaper strategy name (e.g., 'yaml', 'json')
-     * @param callable $callable The escaper callable: function($twig, $string, $charset)
+     * @param callable $callable The escaper callable
      * @return void
      */
     public function setEscaper(string $strategy, callable $callable): void
     {
-        // Twig 3.9+ moved setEscaper to EscaperRuntime
+        // Twig 3.9+ moved setEscaper to EscaperRuntime, which calls the escaper
+        // with ($string, $charset) and not the ($twig, $string, $charset) this
+        // method has always documented. Adapt rather than break the callers.
         if (class_exists(EscaperRuntime::class)) {
+            $twig = $this->twig;
+            if ($this->escaperExpectsEnvironment($callable)) {
+                $original = $callable;
+                $callable = static fn ($string, $charset) => $original($twig, $string, $charset);
+            }
+
             $this->twig->getRuntime(EscaperRuntime::class)->setEscaper($strategy, $callable);
             return;
         }
@@ -911,6 +949,25 @@ class Twig
 
         // Twig 1.x fallback (uses CoreExtension)
         $this->twig->getExtension(CoreExtension::class)->setEscaper($strategy, $callable);
+    }
+
+    /**
+     * Whether an escaper callable takes the Twig environment as its first
+     * argument. Anything declaring three or more parameters does; two-parameter
+     * and variadic callables are passed straight through.
+     *
+     * @param callable $callable
+     * @return bool
+     */
+    protected function escaperExpectsEnvironment(callable $callable): bool
+    {
+        try {
+            $reflection = new ReflectionFunction(Closure::fromCallable($callable));
+        } catch (ReflectionException $e) {
+            return false;
+        }
+
+        return $reflection->getNumberOfParameters() >= 3;
     }
 
 }

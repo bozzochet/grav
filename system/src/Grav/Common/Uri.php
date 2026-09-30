@@ -193,7 +193,17 @@ class Uri implements \Stringable
 
         $this->url = $this->base . $this->uri;
 
-        $uri = Utils::replaceFirstOccurrence(static::filterPath($this->root), '', $this->url);
+        // Strip the root only where it ends a path segment. A raw prefix match made a
+        // custom base of `/act` also match `/action-bar`, leaving `ion-bar` (#3057). The
+        // query string is part of $this->url, so `?` ends the root too, and a request
+        // that is not under the root at all keeps its path relative to the site's base.
+        $root = rtrim(static::filterPath($this->root), '/');
+        $next = substr($this->url, strlen($root), 1);
+        if (str_starts_with($this->url, $root) && ($next === '' || strpbrk($next, '/?#') !== false)) {
+            $uri = substr($this->url, strlen($root));
+        } else {
+            $uri = Utils::replaceFirstOccurrence($this->base, '', $this->url);
+        }
 
         // remove the setup.php based base if set:
         $setup_base = $grav['pages']->base();
@@ -698,6 +708,22 @@ class Uri implements \Stringable
     {
         $forwarded = (array)Grav::instance()['config']->get('system.http_x_forwarded', []);
 
+        // Request variables come from $_SERVER, which every SAPI populates.
+        // getenv() answers only where the SAPI provides a hook for it: PHP's
+        // built-in server has none, and some CGI/FastCGI hosts do not answer
+        // either, so every caller used to come back as UNKNOWN there. getenv()
+        // stays as the fallback, including when $_SERVER carries the name with
+        // an empty or non-string value, so nothing changes on a host where
+        // getenv() already worked.
+        $server = static function (string $name): string {
+            $value = $_SERVER[$name] ?? null;
+            if (!is_string($value) || $value === '') {
+                $value = getenv($name);
+            }
+
+            return is_string($value) ? $value : '';
+        };
+
         // Each forwarded header is opt-in. Defaults ship as false in Grav 2.0:
         // only enable for a header when the request genuinely comes through a
         // proxy that sets and overwrites it (e.g. cf_connecting_ip behind
@@ -706,25 +732,25 @@ class Uri implements \Stringable
         // throttling, banning, or audit logging.
         $candidates = [];
 
-        if (!empty($forwarded['client_ip']) && getenv('HTTP_CLIENT_IP')) {
-            $candidates[] = getenv('HTTP_CLIENT_IP');
+        if (!empty($forwarded['client_ip']) && $server('HTTP_CLIENT_IP')) {
+            $candidates[] = $server('HTTP_CLIENT_IP');
         }
-        if (!empty($forwarded['cf_connecting_ip']) && getenv('HTTP_CF_CONNECTING_IP')) {
-            $candidates[] = getenv('HTTP_CF_CONNECTING_IP');
+        if (!empty($forwarded['cf_connecting_ip']) && $server('HTTP_CF_CONNECTING_IP')) {
+            $candidates[] = $server('HTTP_CF_CONNECTING_IP');
         }
         if (!empty($forwarded['ip'])) {
-            if (getenv('HTTP_X_FORWARDED_FOR')) {
-                $ips = array_map('trim', explode(',', getenv('HTTP_X_FORWARDED_FOR')));
+            if ($server('HTTP_X_FORWARDED_FOR')) {
+                $ips = array_map('trim', explode(',', $server('HTTP_X_FORWARDED_FOR')));
                 $candidates[] = array_shift($ips);
             }
-            if (getenv('HTTP_X_FORWARDED')) {
-                $candidates[] = getenv('HTTP_X_FORWARDED');
+            if ($server('HTTP_X_FORWARDED')) {
+                $candidates[] = $server('HTTP_X_FORWARDED');
             }
-            if (getenv('HTTP_FORWARDED_FOR')) {
-                $candidates[] = getenv('HTTP_FORWARDED_FOR');
+            if ($server('HTTP_FORWARDED_FOR')) {
+                $candidates[] = $server('HTTP_FORWARDED_FOR');
             }
-            if (getenv('HTTP_FORWARDED')) {
-                $candidates[] = getenv('HTTP_FORWARDED');
+            if ($server('HTTP_FORWARDED')) {
+                $candidates[] = $server('HTTP_FORWARDED');
             }
         }
 
@@ -734,7 +760,7 @@ class Uri implements \Stringable
             }
         }
 
-        $remote = getenv('REMOTE_ADDR');
+        $remote = $server('REMOTE_ADDR');
 
         return $remote && filter_var($remote, FILTER_VALIDATE_IP) ? $remote : 'UNKNOWN';
     }
@@ -778,6 +804,16 @@ class Uri implements \Stringable
      */
     public static function isExternal($url)
     {
+        // Cheap rejects first: this runs on every Utils::url() call and the overwhelmingly common input is a
+        // site-relative path with no scheme at all, which the scheme list below would test sixteen times over.
+        $first = $url[0] ?? '';
+        if ($first === '/') {
+            return str_starts_with($url, '//');
+        }
+        if ($first === '' || !str_contains($url, ':')) {
+            return false;
+        }
+
         return (str_starts_with($url, 'http://') || str_starts_with($url, 'https://') || str_starts_with($url, '//') || str_starts_with($url, 'mailto:') || str_starts_with($url, 'tel:') || str_starts_with($url, 'ftp://') || str_starts_with($url, 'ftps://') || str_starts_with($url, 'news:') || str_starts_with($url, 'irc:') || str_starts_with($url, 'gopher:') || str_starts_with($url, 'nntp:') || str_starts_with($url, 'feed:') || str_starts_with($url, 'cvs:') || str_starts_with($url, 'ssh:') || str_starts_with($url, 'git:') || str_starts_with($url, 'svn:') || str_starts_with($url, 'hg:'));
     }
 

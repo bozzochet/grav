@@ -35,6 +35,9 @@ xss_dangerous_tags:
   - script
   - embed
   - object
+  - iframe
+  - frame
+  - frameset
   - ilayer
   - layer
   - bgsound
@@ -106,10 +109,10 @@ sanitize_svg: true
 #   1. twig_content.process_enabled — the master gate. If false, page-content
 #      Twig is not parsed at all. `process: { twig: true }` in frontmatter
 #      and `system.pages.frontmatter.process_twig` in system.yaml are both
-#      ignored. Default false on fresh 2.0 installs — sites that need Twig
-#      in content must opt in. This gate also provides the per-page default
-#      for `process.twig`: flipping it on is sufficient for Twig in content
-#      to render across the site (per-page frontmatter still overrides).
+#      ignored. Ships enabled since 2.0.19 — set it to false to close Twig
+#      in content site-wide. This gate also provides the per-page default
+#      for `process.twig`, so with it on, Twig in content renders across the
+#      site with no frontmatter at all (per-page frontmatter still overrides).
 #   2. twig_sandbox.enabled — when the gate is open, restricts what page-
 #      content Twig can do (allowlisted tags / filters / functions / methods
 #      / properties below). Violations soft-fail with a placeholder + a
@@ -130,8 +133,8 @@ sanitize_svg: true
 # SandboxConfig facade with config_denied_paths redaction applied.
 twig_content:
   process_enabled: true
-  editor_enabled: true
-  config_access: true
+  editor_enabled: false
+  config_access: false
 
 twig_sandbox:
   enabled: true
@@ -180,11 +183,15 @@ read_file:
   # Streams that read_file may resolve. Defaults cover content-reading needs
   # (active theme, all themes, page tree, user data) without exposing
   # accounts, configs, logs, cache, vendor, system, etc. Add more carefully.
+  # `user-data` is deliberately absent: user://data is application state (form
+  # submissions, scheduler history, notifications), not content, and a page
+  # editor is not granted read access to it. A site that genuinely keeps
+  # includable content there can add it back, accepting that everything else
+  # under user://data becomes readable at the same time.
   allowed_streams:
     - theme
     - themes
     - page
-    - user-data
   # File extensions read_file will read. Restricted to text/content formats
   # by design — adding `php`, `yaml`, `env`, `htaccess`, etc. here is a
   # foot-gun and not recommended.

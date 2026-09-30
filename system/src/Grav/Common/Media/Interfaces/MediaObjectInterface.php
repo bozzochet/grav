@@ -126,6 +126,13 @@ interface MediaObjectInterface extends \Grav\Framework\Media\Interfaces\MediaObj
     public function reset();
 
     /**
+     * Get the HTML attributes set on this medium.
+     *
+     * @return array
+     */
+    public function getAttributes();
+
+    /**
      * Add custom attribute to medium.
      *
      * @param string $attribute
@@ -207,7 +214,7 @@ interface MediaObjectInterface extends \Grav\Framework\Media\Interfaces\MediaObj
      * Allow any action to be called on this medium from twig or markdown
      *
      * @param string $method
-     * @return $this
+     * @return $this|null
      */
     #[\ReturnTypeWillChange]
     public function __call($method, mixed $args);

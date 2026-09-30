@@ -29,6 +29,15 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
     /** @var array */
     protected $filter = ['validation' => true, 'xss_check' => true];
 
+    /**
+     * Provenance of the directives this schema resolves. Defaults to trusted for
+     * file-compiled config blueprints; {@see Blueprint} lowers it for page-authored
+     * forms. See {@see Blueprint::$trusted}.
+     *
+     * @var bool
+     */
+    protected $trusted = true;
+
     /** @var array */
     protected $ignoreFormKeys = [
         'title' => true,
@@ -274,6 +283,26 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
                 continue;
             }
 
+            // A well-formed submission nests its data; a flat dot-notation key such as
+            // `access.admin.super` only appears when a caller tries to address a child
+            // path directly. The guard above is keyed on a field's own path, so a flat
+            // key resolves to no rule at all and slips past it, and FlexObject::update()
+            // then expands it again via setNestedProperty(), writing straight into a
+            // subtree the blueprint disabled or gated with `security@`. Drop the key
+            // when any ancestor path is disabled or ignored, so the per-field guard
+            // holds whichever shape the data arrives in. (GHSA-mwjj-r7vm-pgqm)
+            if (null === $rule && str_contains($key, '.')) {
+                $ancestor = $key;
+                while (false !== $pos = strrpos($ancestor, '.')) {
+                    $ancestor = substr($ancestor, 0, $pos);
+                    $item = $this->items[$parent . $ancestor] ?? null;
+                    if (!empty($item['disabled']) || !empty($item['validate']['ignore'])) {
+                        unset($results[$key]);
+                        continue 2;
+                    }
+                }
+            }
+
             if (null === $field) {
                 if ($missingValuesAsNull) {
                     $results[$key] = null;
@@ -452,10 +481,54 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
         $value = $call['params'];
 
         $default = $field[$property] ?? null;
-        $config = Grav::instance()['config']->get($value, $default);
+        $config = Blueprint::readDynamicConfig((string) $value, $default, $this->trusted);
 
         if (null !== $config) {
             $field[$property] = $config;
         }
+    }
+
+    /**
+     * The toolbox resolves `data-*@` here with no guard at all, a second time
+     * after {@see Blueprint::init()} already resolved it behind
+     * {@see Blueprint::isSafeDynamicCall()}. Apply the same guard so a
+     * page-authored form cannot reach an arbitrary function through
+     * getDefaults(), validate() or filter().
+     *
+     * @param array $field
+     * @param string $property
+     * @param array $call
+     * @return void
+     */
+    protected function dynamicData(array &$field, $property, array $call)
+    {
+        $params = $call['params'];
+
+        if (is_array($params)) {
+            $function = array_shift($params);
+        } else {
+            $function = $params;
+            $params = [];
+        }
+
+        if (!Blueprint::isSafeDynamicCall($function, $params, $this->trusted)) {
+            return;
+        }
+
+        parent::dynamicData($field, $property, $call);
+    }
+
+    /**
+     * Declare whether the directives this schema resolves came from an author
+     * controlled source. {@see Blueprint::initInternals()} sets it.
+     *
+     * @param bool $trusted
+     * @return $this
+     */
+    public function setTrusted(bool $trusted)
+    {
+        $this->trusted = $trusted;
+
+        return $this;
     }
 }

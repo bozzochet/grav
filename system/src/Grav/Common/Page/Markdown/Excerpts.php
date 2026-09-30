@@ -10,6 +10,7 @@
 namespace Grav\Common\Page\Markdown;
 
 use Grav\Common\Grav;
+use Grav\Common\Media\Interfaces\ImageMediaInterface;
 use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Page\Medium\Link;
 use Grav\Common\Page\Pages;
@@ -194,7 +195,7 @@ class Excerpts
         if (!empty($url_parts['stream'])) {
             $filename = $url_parts['scheme'] . '://' . ($url_parts['path'] ?? '');
 
-            $media = $this->page->getMedia();
+            $media = $this->page->media();
         } else {
             $grav = Grav::instance();
             /** @var Pages $pages */
@@ -211,8 +212,10 @@ class Excerpts
 
                 // Get the local path to page media if possible.
                 if ($this->page && $folder === $this->page->url(false, false, false)) {
-                    // Get the media objects for this page.
-                    $media = $this->page->getMedia();
+                    // Get the media objects for this page. media() rather than
+                    // getMedia(), because media() is where `pages.media_route_urls`
+                    // gives each file its route URL. getgrav/grav#4298.
+                    $media = $this->page->media();
                 } else {
                     // see if this is an external page to this one
                     $base_url = rtrim($grav['base_url_relative'] . $pages->base(), '/');
@@ -220,7 +223,7 @@ class Excerpts
 
                     $ext_page = $pages->find($page_route, true);
                     if ($ext_page) {
-                        $media = $ext_page->getMedia();
+                        $media = $ext_page->media();
                     } else {
                         $grav->fireEvent('onMediaLocate', new Event(['route' => $page_route, 'media' => &$media]));
                     }
@@ -230,9 +233,10 @@ class Excerpts
 
         // If there is a media file that matches the path referenced..
         if ($media && $filename && isset($media[$filename])) {
-            // Get the medium object.
+            // Work on a copy: the page's medium is shared by every embed of the
+            // file, and actions like the querystring outlive reset().
             /** @var Medium $medium */
-            $medium = $media[$filename];
+            $medium = $media[$filename]->copy();
 
             // Process operations
             $medium = $this->processMediaActions($medium, $url_parts);
@@ -293,9 +297,27 @@ class Excerpts
                 || Medium::isAllowedAction((string) $action['method'])
         ));
 
+        // `system.images.defaults` is image configuration, so it must only be
+        // applied to image media. Applying it to audio, video or a document
+        // replaced the player or download with a linked thumbnail (`link`) and
+        // pushed the HTML attributes through the medium's `__call()` URL
+        // passthrough, which appended them to the querystring instead.
+        // Individual defaults are also checked against the medium: an SVG or an
+        // animated GIF is an image but has no decoding()/fetchpriority(), and
+        // would leak those the same way. getgrav/grav#4264.
         $defaults = $this->config['images']['defaults'] ?? [];
-        if (count($defaults)) {
+        if (count($defaults) && $medium instanceof ImageMediaInterface) {
+            // An image manipulation such as `resize` is not a real method, it is
+            // dispatched by ImageMediaTrait::__call() off its own allowlist, so ask
+            // for that too. Without it every processing default was silently dropped.
+            // getgrav/grav#4282.
+            $magic = property_exists($medium, 'magic_actions') ? (array) $medium::$magic_actions : [];
+
             foreach ($defaults as $method => $params) {
+                if (!method_exists($medium, (string) $method) && !in_array((string) $method, $magic, true)) {
+                    continue;
+                }
+
                 if (array_search($method, array_column($actions, 'method')) === false) {
                     $actions[] = [
                         'method' => $method,

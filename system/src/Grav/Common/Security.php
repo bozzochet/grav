@@ -281,21 +281,25 @@ class Security
         // does when it decodes the same bytes, so the detector goes on to inspect
         // the markup the parser will actually build, and no new false positives
         // appear for legitimately mis-encoded content.
-        if (!preg_match('//u', $string)) {
-            $previous = mb_substitute_character();
-            mb_substitute_character(0xFFFD);
-            $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
-            mb_substitute_character($previous);
-        }
+        $string = static::toValidUtf8($string);
 
         // Keep a copy of the original string before cleaning up
         $orig = $string;
 
-        // URL decode
-        $string = urldecode($string);
+        // URL decode. `%ff` decodes to a raw byte that is not valid UTF-8, which
+        // would blank the string at the next /u call, so normalize again here:
+        // the up-front pass only covers bytes that were in the input.
+        $string = static::toValidUtf8(urldecode($string));
 
-        // Convert Hexadecimals
-        $string = (string)preg_replace_callback('!(&#|\\\)[xX]([0-9a-fA-F]+);?!u', static fn($m) => chr(hexdec((string) $m[2])), $string);
+        // Convert Hexadecimals. A hex reference names a code point, not a byte:
+        // chr() turned `&#xff;` into a lone 0xFF byte, which blanked the decoded
+        // copy the same way and hid the scheme it had just decoded.
+        $string = (string)preg_replace_callback('!(&#|\\\)[xX]([0-9a-fA-F]+);?!u', static function ($m) {
+            $hex = ltrim((string) $m[2], '0');
+            $char = strlen($hex) <= 6 ? mb_chr((int) hexdec($hex === '' ? '0' : $hex), 'UTF-8') : false;
+
+            return $char === false ? "\u{FFFD}" : $char;
+        }, $string);
 
         // Clean up entities
         $string = preg_replace('!(&#[0-9]+);?!u', '$1;', $string);
@@ -303,9 +307,45 @@ class Security
         // Decode entities
         $string = html_entity_decode((string) $string, ENT_NOQUOTES | ENT_HTML5, 'UTF-8');
 
+        // Removing *every* whitespace character is far too blunt for the
+        // protocol rule: it manufactures scheme-looking sequences out of
+        // ordinary prose. A paragraph ending in a colon glues onto the next
+        // one, so a Hungarian sentence like "...legismertebb mondata:" became
+        // `mondata:Ez...` and tripped the `data:` protocol (premium#619), and
+        // the same strip defeats the `\S` guard that is supposed to require a
+        // URI body — "metadata: value" collapses to "metadata:value".
+        //
+        // A URL parser only ever discards tab, LF and CR from inside a URL
+        // (WHATWG URL, "URL code points" cleanup), so those are the only
+        // characters that can hide a scheme, e.g. `java&#10;script:alert(1)`.
+        // A space cannot: `java script:` is not a scheme to any browser.
+        // Strip exactly what the parser strips and nothing more. Built before
+        // the general whitespace pass below, which would have already turned
+        // those characters into spaces.
+        $url_stripped = preg_replace('![\x00\x09\x0A\x0D]!u', '', (string) $string);
+
         // Strip whitespace characters
         $string = preg_replace('!\s!u', ' ', $string);
         $stripped = preg_replace('!\s!u', '', (string) $string);
+
+        $protocol_alt = implode('|', array_map('preg_quote', $invalid_protocols, ['#']));
+
+        // Same protocol rule, run against $url_stripped, with a stricter left
+        // boundary: whitespace and a full stop are rejected as well as word
+        // characters. Removing tab/LF/CR joins a line-ending colon to the next
+        // line, so prose like "See the data:\nbelow" would otherwise read as
+        // `data:below`. Nothing is lost: a scheme that survives that strip is
+        // sitting in a URL position, so what precedes it is a real delimiter
+        // (`"`, `'`, `=`, `(`, `<`, `,`) or the start of the string — never a
+        // space or the end of a sentence.
+        $protocol_url_regex = '#(?<![a-z0-9\s.])(' . $protocol_alt . ')(:|\&\#58)\S.*?#iUu';
+
+        // The `\S` guard above keeps prose like "metadata: value" out, but a
+        // browser happily runs `href="javascript: alert(1)"`: the space is part
+        // of the script body, not the scheme. Inside an attribute value (right
+        // after `=`, optionally quoted) there is no prose to protect, so accept
+        // whitespace after the colon there.
+        $protocol_attr_regex = '#=\s*[\"\'`]?\s*(' . $protocol_alt . ')(:|\&\#58)\s+\S#iu';
 
         // Set the patterns we'll test against
         $patterns = [
@@ -346,7 +386,19 @@ class Security
             // and returning null. Anchoring the quoted-value alternatives to
             // `=\s*"..."` consumes such a quote as an ordinary char instead, so
             // the scan still reaches the handler. (GHSA-vfmf-q6x9-cw96)
-            'on_events' => '#<(?:=\s*"[^"]*"|=\s*\'[^\']*\'|[^>])*?(?:[\s\x00-\x20\"\'\/]|=\s*"[^"]*"|=\s*\'[^\']*\')on\s*[a-z]+\s*=#iu',
+            //
+            // Two narrowings keep that scan linear without changing what it can
+            // match (grav#4291). A quoted value is only taken as one unit when it
+            // contains a `>`, the one thing single characters cannot step over;
+            // offering every `='...'` both ways gave the engine two paths through
+            // each one, so a heredoc of INI/dconf lines in a code block (`<<` opens
+            // a "tag" that runs to the next `>`) went exponential, hit
+            // PREG_BACKTRACK_LIMIT_ERROR, and the fail-closed check blocked the
+            // save. And a single character step now stops at `<` too: a match that
+            // stepped over a `<` also exists starting at that `<`, so nothing is
+            // lost, and each `<` in a long code sample no longer rescans the rest
+            // of the page.
+            'on_events' => '#<(?:=\s*"[^">]*>[^"]*"|=\s*\'[^\'>]*>[^\']*\'|[^<>])*?(?:[\s\x00-\x20\"\'\/]|=\s*"[^"]*"|=\s*\'[^\']*\')on\s*[a-z]+\s*=#iu',
 
             // xmlns namespace declarations. Split out from on_events (which it
             // historically shared a regex with) so the render-time output scan
@@ -355,10 +407,21 @@ class Security
             // for post-render HTML blanks pages that merely display an icon. It
             // stays on by default for raw-input sanitization (it follows the
             // on_events toggle below). Same quote-aware tag-body scan as on_events.
-            'xmlns' => '#<(?:=\s*"[^"]*"|=\s*\'[^\']*\'|[^>])*?(?:[\s\x00-\x20\"\'\/]|=\s*"[^"]*"|=\s*\'[^\']*\')xmlns\s*=#iu',
+            'xmlns' => '#<(?:=\s*"[^">]*>[^"]*"|=\s*\'[^\'>]*>[^\']*\'|[^<>])*?(?:[\s\x00-\x20\"\'\/]|=\s*"[^"]*"|=\s*\'[^\']*\')xmlns\s*=#iu',
 
             // Match javascript:, livescript:, vbscript:, mocha:, feed: and data: protocols
-            'invalid_protocols' => '#(' . implode('|', array_map('preg_quote', $invalid_protocols, ['#'])) . ')(:|\&\#58)\S.*?#iUu',
+            //
+            // The leading lookbehind is what keeps ordinary words out of this.
+            // A scheme is only a scheme at the start of a URL, so the character
+            // in front of it is always a delimiter — a quote, `=`, `(`, `,`, a
+            // space, a tag boundary — never a letter or digit. Without the
+            // lookbehind every word ending in a protocol name matched: the
+            // Hungarian "mondata:" and the English "metadata:" both carry
+            // `data:`, and "newsfeed:" carries `feed:` (premium#619). Prefixing
+            // a letter also breaks the payload for real — `xjavascript:alert(1)`
+            // is an unknown scheme and does nothing in an href — so nothing is
+            // lost by requiring the boundary.
+            'invalid_protocols' => '#(?<![a-z0-9])(' . $protocol_alt . ')(:|\&\#58)\S.*?#iUu',
 
             // Match -moz-bindings
             'moz_binding' => '#-moz-binding[a-z\x00-\x20]*:#u',
@@ -378,6 +441,13 @@ class Security
                 // or contain 'on'
                 if ($name === 'on_events' || $name === 'xmlns') {
                     if (static::patternMatches($regex, (string) $string) || static::patternMatches($regex, $orig)) {
+                        return $name;
+                    }
+                } elseif ($name === 'invalid_protocols') {
+                    // Uses the URL-parser-faithful strip instead of the
+                    // all-whitespace one, which invented `data:`/`feed:` hits in
+                    // plain prose. See $url_stripped and $protocol_url_regex.
+                    if (static::patternMatches($regex, (string) $string) || static::patternMatches($protocol_url_regex, (string) $url_stripped) || static::patternMatches($protocol_attr_regex, (string) $url_stripped) || static::patternMatches($regex, $orig)) {
                         return $name;
                     }
                 } else {
@@ -432,6 +502,26 @@ class Security
         }
 
         return true;
+    }
+
+    /**
+     * Replace invalid UTF-8 with U+FFFD, as a browser does when it decodes the
+     * same bytes. Every detector pattern is /u, and PCRE will not run a /u
+     * pattern (or a /u preg_replace) on invalid UTF-8, so this has to hold after
+     * every decode step that can produce raw bytes, not only on the input.
+     */
+    private static function toValidUtf8(string $string): string
+    {
+        if (preg_match('//u', $string)) {
+            return $string;
+        }
+
+        $previous = mb_substitute_character();
+        mb_substitute_character(0xFFFD);
+        $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        mb_substitute_character($previous);
+
+        return $string;
     }
 
     /**
@@ -660,7 +750,20 @@ class Security
             );
         }
 
-        self::$twigSandboxPolicy = new GravSecurityPolicy($tags, $filters, $methods, $properties, $functions);
+        // The subtraction above keeps the effective allowlist honest for the admin
+        // diagnostic, but the policy also carries the denials so they are enforced
+        // by type at call time — a denial can then never be silently dropped by a
+        // mis-cased class name or re-granted through an allowed parent class or
+        // interface the object also satisfies.
+        self::$twigSandboxPolicy = new GravSecurityPolicy(
+            $tags,
+            $filters,
+            $methods,
+            $properties,
+            $functions,
+            deniedMethods: self::normalizeMethodsMap($deniedMethods, true),
+            deniedProperties: self::normalizeMethodsMap($deniedProperties, false)
+        );
         self::$twigSandboxPolicyKey = $cacheKey;
 
         return self::$twigSandboxPolicy;
@@ -767,14 +870,25 @@ class Security
      * old effective set with zero behaviour change: anything that was blocked
      * before stays blocked, anything allowed before stays allowed.
      *
+     * A list written for the additive model is not a replacement list, and must
+     * not be read as one: denying every default it omits would block most of
+     * the sandbox. That happens whenever this runs after the move, which it does
+     * on a site's first upgrade when its versions.yaml predates it (a fresh
+     * install recorded a stale GRAV_SCHEMA, and a site migrated from 1.7 carries
+     * its 1.7 schema). A replacement list was the defaults with some removed, so
+     * it is made of defaults; an additive list is made of additions. A list whose
+     * entries are mostly not defaults is therefore skipped. Pass false for
+     * $skipAdditionLists to get the plan the older, unguarded planner made.
+     *
      * Pure and side-effect free so the installer step stays thin and this is
      * unit-testable. Returns only the `denied_*` keys that need entries; a site
      * that never customised the allowlists yields an empty array (no-op).
      *
      * @param array<string,mixed> $userSandbox The user's `security.twig_sandbox` subtree.
+     * @param bool $skipAdditionLists Leave lists made mostly of non-defaults alone.
      * @return array<string, array<int,mixed>> denied_<type> => additions.
      */
-    public static function planSandboxDefaultsMigration(array $userSandbox): array
+    public static function planSandboxDefaultsMigration(array $userSandbox, bool $skipAdditionLists = true): array
     {
         $out = [];
         $defaults = SandboxDefaults::all();
@@ -784,6 +898,9 @@ class Security
                 continue; // list untouched → additive default already reproduces it
             }
             $userSet = self::lowerSet($userSandbox["allowed_{$type}"]);
+            if ($skipAdditionLists && self::isAdditionsList(array_keys($userSet), array_keys(self::lowerSet($defaults[$type])))) {
+                continue;
+            }
             $missing = [];
             foreach ($defaults[$type] as $member) {
                 if (!isset($userSet[strtolower($member)])) {
@@ -801,6 +918,9 @@ class Security
             }
             $defMap = self::normalizeMethodsMap($defaults[$type], $lowercase);
             $userMap = self::normalizeMethodsMap($userSandbox["allowed_{$type}"], $lowercase);
+            if ($skipAdditionLists && self::isAdditionsList(self::flattenMethodsMap($userMap), self::flattenMethodsMap($defMap))) {
+                continue;
+            }
             $rows = [];
             foreach ($defMap as $class => $defMembers) {
                 $missing = array_values(array_diff($defMembers, $userMap[$class] ?? []));
@@ -810,6 +930,35 @@ class Security
             }
             if ($rows) {
                 $out["denied_{$type}"] = $rows;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * Whether more of a list's entries are additions than defaults.
+     *
+     * @param string[] $members
+     * @param string[] $defaults
+     */
+    private static function isAdditionsList(array $members, array $defaults): bool
+    {
+        $known = count(array_intersect($members, $defaults));
+
+        return count($members) - $known > $known;
+    }
+
+    /**
+     * @param array<string,string[]> $map class => members
+     * @return string[] `class::member` entries
+     */
+    private static function flattenMethodsMap(array $map): array
+    {
+        $out = [];
+        foreach ($map as $class => $members) {
+            foreach ($members as $member) {
+                $out[] = $class . '::' . $member;
             }
         }
 
@@ -917,8 +1066,20 @@ class Security
             return $map;
         }
         $denied = self::normalizeMethodsMap($deniedRows, $lowercase);
+
+        // Class names are matched case-insensitively: PHP treats them that way,
+        // and so does the instanceof check in GravSecurityPolicy that enforces the
+        // result, so the denial side must not be stricter than either. Map a
+        // lowercased class name back to the real, correctly-cased map key so the
+        // key actually removed still resolves for reflection and the sentinels.
+        $realClass = [];
+        foreach (array_keys($map) as $key) {
+            $realClass[strtolower($key)] = $key;
+        }
+
         foreach ($denied as $class => $members) {
-            if (!isset($map[$class])) {
+            $class = $realClass[strtolower($class)] ?? null;
+            if ($class === null) {
                 continue;
             }
             if (in_array('*', $members, true)) {
@@ -2016,9 +2177,17 @@ class Security
             Folder::create($dir);
         }
 
-        // Atomic write: stage to a temp file, fsync via rename.
+        // Atomic write: stage to a temp file, fsync via rename. The temp file is
+        // created under a 0077 umask so it is never readable by other users, not
+        // even between the write and the chmod() below.
         $tmp = $path . '.tmp';
-        if (@file_put_contents($tmp, $contents, LOCK_EX) === false) {
+        $umask = umask(0077);
+        try {
+            $written = @file_put_contents($tmp, $contents, LOCK_EX);
+        } finally {
+            umask($umask);
+        }
+        if ($written === false) {
             throw new RuntimeException('Failed to write nonce key file');
         }
         @chmod($tmp, 0600);

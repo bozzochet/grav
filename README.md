@@ -1,18 +1,3 @@
-# Customized (fork) repo for Grav
-
-It contains, under `user/`, my full website (started using https://github.com/getgrav/grav-skeleton-onepage-site as template).
-
-It also contains (in the root dir):
-* `LEGGIMI`
-* `install.sh`
-* `install_composer.sh`
-* `install_plugins.sh`
-* `remove_plugins.sh`
-
-few scripts (to deply the website automatically) a dedicated readme (`LEGGIMI`, in italian...) file.
-
----
-
 # ![](https://avatars1.githubusercontent.com/u/8237355?v=2&s=50) Grav
 
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)

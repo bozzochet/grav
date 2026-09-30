@@ -11,8 +11,10 @@ namespace Grav\Common\Config;
 
 use BadMethodCallException;
 use Exception;
+use Grav\Common\Grav;
 use RocketTheme\Toolbox\File\PhpFile;
 use RuntimeException;
+use Throwable;
 use function filter_var;
 use function function_exists;
 use function get_class;
@@ -48,6 +50,9 @@ abstract class CompiledBase
 
     /** @var mixed  Configuration object. */
     protected $object;
+
+    /** @var array<string,true> Compiled files waiting to be compiled into OPcache at shutdown. */
+    private static $precompile = [];
 
     /**
      * @param  string $cacheFolder  Cache folder to be used.
@@ -228,10 +233,32 @@ abstract class CompiledBase
      *
      * @param  string  $filename
      * @return void
-     * @throws RuntimeException
      * @internal
      */
     protected function saveCompiledFile($filename)
+    {
+        $saved = $this->writeCompiledFile($filename, fn() => [
+            '@class' => static::class,
+            'timestamp' => time(),
+            'checksum' => $this->checksum(),
+            'files' => $this->files,
+            'data' => $this->getState()
+        ]);
+
+        if ($saved) {
+            $this->modified();
+        }
+    }
+
+    /**
+     * Write a compiled PHP file unless another process is already writing it.
+     *
+     * @param string $filename
+     * @param callable(): array $payload Builds the data to store, called only once the lock is held.
+     * @return bool True if the file was written.
+     * @internal
+     */
+    protected function writeCompiledFile(string $filename, callable $payload): bool
     {
         $file = PhpFile::instance($filename);
 
@@ -244,25 +271,78 @@ abstract class CompiledBase
 
         if ($file->locked() === false) {
             // File was already locked by another process.
-            return;
+            return false;
         }
 
-        $cache = [
-            '@class' => static::class,
-            'timestamp' => time(),
-            'checksum' => $this->checksum(),
-            'files' => $this->files,
-            'data' => $this->getState()
-        ];
+        // The compiled file is a cache and can always be rebuilt from the source
+        // YAML. If it cannot be written we serve the request from the freshly
+        // parsed files instead of taking the whole site down: this runs during
+        // config init, before the logger, the error handler and the Problems
+        // plugin exist, so an exception here 500s every route including /admin
+        // and leaves no in-browser way back. (#4260)
+        try {
+            $file->save($payload());
+            $file->unlock();
 
-        $file->save($cache);
-        $file->unlock();
+            $this->preloadOpcodeCache($file);
 
-        $this->preloadOpcodeCache($file);
+            $file->free();
 
-        $file->free();
+            return true;
+        } catch (Throwable $e) {
+            static::logCacheWriteFailure($filename, $e->getMessage());
 
-        $this->modified();
+            $file->unlock();
+            $file->free();
+
+            return false;
+        }
+    }
+
+    /**
+     * Record that a compiled cache file could not be written and that the request
+     * is being served uncached.
+     *
+     * Degrading is the right behaviour, but doing it silently hides what is
+     * almost always a directory permission problem, so name the directory and say
+     * what is wrong with it. The logger is resolved defensively and the whole
+     * call is guarded, so reporting a degraded cache can never itself become the
+     * fatal we are recovering from.
+     *
+     * @param string $filename Cache file that could not be written.
+     * @param string $reason   Failure reported by the writer.
+     * @return void
+     */
+    public static function logCacheWriteFailure(string $filename, string $reason): void
+    {
+        $dir = dirname($filename);
+        if (!is_dir($dir)) {
+            $hint = sprintf('the directory %s does not exist', $dir);
+        } elseif (!is_writable($dir)) {
+            $hint = sprintf('the directory %s is not writable by the web server user', $dir);
+        } else {
+            $hint = sprintf('the directory %s is writable, so the file itself may be owned by another user', $dir);
+        }
+
+        $message = sprintf(
+            'Could not write compiled cache %s (%s) - %s. Serving this request uncached.',
+            $filename,
+            $reason,
+            $hint
+        );
+
+        try {
+            $log = Grav::instance()['log'] ?? null;
+            if ($log) {
+                $log->warning($message);
+
+                return;
+            }
+        } catch (Throwable) {
+            // Logging is best-effort: never let it mask the recovery it reports.
+        }
+
+        error_log('Grav: ' . $message);
     }
 
     /**
@@ -275,6 +355,11 @@ abstract class CompiledBase
 
     /**
      * Ensure compiled cache file is primed into OPcache when available.
+     *
+     * The old bytecode is invalidated straight away, so no request can run a stale copy. The
+     * new file is compiled into OPcache by precompilePending(), which Grav calls at shutdown
+     * after the response has been sent, instead of in the middle of the request that built it.
+     * If shutdown does not run, the first request that includes the file compiles it.
      */
     protected function preloadOpcodeCache(PhpFile $file): void
     {
@@ -291,7 +376,25 @@ abstract class CompiledBase
         @opcache_invalidate($filename, true);
 
         if (function_exists('opcache_compile_file')) {
-            @opcache_compile_file($filename);
+            self::$precompile[$filename] = true;
+        }
+    }
+
+    /**
+     * Compile the compiled files written during this request into OPcache.
+     *
+     * @return void
+     */
+    public static function precompilePending(): void
+    {
+        $files = self::$precompile;
+        self::$precompile = [];
+
+        foreach (array_keys($files) as $filename) {
+            if (is_file($filename)) {
+                // Silence errors for restricted functions while keeping best effort behavior.
+                @opcache_compile_file($filename);
+            }
         }
     }
 

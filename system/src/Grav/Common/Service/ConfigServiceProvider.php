@@ -10,6 +10,8 @@
 namespace Grav\Common\Service;
 
 use DirectoryIterator;
+use Grav\Common\File\CompiledMarkdownFile;
+use Grav\Common\Config\CompiledBase;
 use Grav\Common\Config\CompiledBlueprints;
 use Grav\Common\Config\CompiledConfig;
 use Grav\Common\Config\CompiledLanguages;
@@ -23,6 +25,7 @@ use Pimple\ServiceProviderInterface;
 use RocketTheme\Toolbox\File\PhpFile;
 use RocketTheme\Toolbox\File\YamlFile;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
+use Throwable;
 
 /**
  * Class ConfigServiceProvider
@@ -58,6 +61,7 @@ class ConfigServiceProvider implements ServiceProviderInterface
             if (!$config->get('system.strict_mode.yaml_compat', true)) {
                 YamlFile::globalSettings(['compat' => false, 'native' => true]);
             }
+            CompiledMarkdownFile::$nativeYaml = (bool) $config->get('system.pages.frontmatter.native_yaml', false);
 
             // The file lists used to build the configuration are validated before the
             // configuration itself is available, so the staleness tolerance they use is
@@ -420,17 +424,28 @@ class ConfigServiceProvider implements ServiceProviderInterface
             'files' => $files,
         ];
 
+        $cacheFile = "{$cacheDir}/filelist-{$type}-{$environment}.php";
+
         // Ensure cache directory exists
-        if (!is_dir($cacheDir)) {
-            mkdir($cacheDir, 0775, true);
+        if (!is_dir($cacheDir) && !@mkdir($cacheDir, 0775, true) && !is_dir($cacheDir)) {
+            CompiledBase::logCacheWriteFailure($cacheFile, 'directory could not be created');
+
+            return;
         }
 
-        $cacheFile = "{$cacheDir}/filelist-{$type}-{$environment}.php";
-        $file = PhpFile::instance($cacheFile);
-        $file->save($cache);
-        $file->free();
+        // The file list is a cache and can always be rebuilt by rescanning. If it
+        // cannot be written, serve the request uncached rather than taking the
+        // whole site down, and do not record it as loaded so that nothing tries
+        // to rewrite it later in the request. (#4260)
+        try {
+            $file = PhpFile::instance($cacheFile);
+            $file->save($cache);
+            $file->free();
 
-        static::$loadedFileLists[$type] = ['file' => $cacheFile, 'cache' => $cache];
+            static::$loadedFileLists[$type] = ['file' => $cacheFile, 'cache' => $cache];
+        } catch (Throwable $e) {
+            CompiledBase::logCacheWriteFailure($cacheFile, $e->getMessage());
+        }
     }
 
     /**
@@ -448,11 +463,17 @@ class ConfigServiceProvider implements ServiceProviderInterface
             $cache = $info['cache'];
             if ((int)($cache['check_interval'] ?? 0) !== $interval) {
                 $cache['check_interval'] = $interval;
-                $file = PhpFile::instance($info['file']);
-                $file->save($cache);
-                $file->free();
 
-                static::$loadedFileLists[$type]['cache'] = $cache;
+                // Same cache, same window, same reasoning as saveCachedFileList().
+                try {
+                    $file = PhpFile::instance($info['file']);
+                    $file->save($cache);
+                    $file->free();
+
+                    static::$loadedFileLists[$type]['cache'] = $cache;
+                } catch (Throwable $e) {
+                    CompiledBase::logCacheWriteFailure($info['file'], $e->getMessage());
+                }
             }
         }
     }

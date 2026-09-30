@@ -10,11 +10,13 @@
 namespace Grav\Common;
 
 use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use Grav\Common\Flex\Types\Pages\PageObject;
 use Grav\Common\Helpers\Truncator;
 use Grav\Common\Page\Interfaces\PageInterface;
+use Grav\Common\Page\Markdown\MarkdownOutput;
 use Grav\Common\Markdown\Parsedown;
 use Grav\Common\Markdown\ParsedownExtra;
 use Grav\Common\Page\Markdown\Excerpts;
@@ -37,7 +39,11 @@ use function in_array;
 use function is_array;
 use function is_callable;
 use function is_string;
+use function str_contains;
+use function str_starts_with;
+use function strcspn;
 use function strlen;
+use function substr;
 
 /**
  * Class Utils
@@ -56,11 +62,14 @@ abstract class Utils
      * Simple helper method to make getting a Grav URL easier
      *
      * @param string|object $input
-     * @param bool $domain
-     * @param bool $fail_gracefully
+     * @param bool $domain Include the hostname in the returned URL.
+     * @param bool $fail_gracefully Return a best-effort URL instead of `false` when the target cannot be resolved.
+     * @param string|bool|null $lang Language prefix for path input. `null`/`false` keeps the URL language-neutral,
+     *                               which is what asset URLs need; `true` uses the active language; a language code
+     *                               such as `'de'` uses that language. Streams and external URLs are never prefixed.
      * @return string|false
      */
-    public static function url($input, $domain = false, $fail_gracefully = false)
+    public static function url($input, $domain = false, $fail_gracefully = false, $lang = null)
     {
         if ((!is_string($input) && !is_callable([$input, '__toString'])) || !trim($input)) {
             if ($fail_gracefully) {
@@ -82,7 +91,8 @@ abstract class Utils
         $uri = $grav['uri'];
 
         $resource = false;
-        if (static::contains((string)$input, '://')) {
+        $prefix = '';
+        if (str_contains($input, '://')) {
             // Url contains a scheme (https:// , user:// etc).
             /** @var UniformResourceLocator $locator */
             $locator = $grav['locator'];
@@ -136,22 +146,39 @@ abstract class Utils
             }
         } else {
             // Just a path.
-            /** @var Pages $pages */
-            $pages = $grav['pages'];
-
-            // Is this a page?
-            $page = $pages->find($input, true);
-            if ($page && $page->routable()) {
-                return $page->url($domain);
+            //
+            // Strip the Grav root before anything else. Routes never carry it, so doing this first is both what
+            // lets `/subdir/blog` resolve to the `blog` page on a subfolder install, and cheaper than the old
+            // preg_quote()/preg_match() pair that ran on every call.
+            $root = $uri->rootUrl();
+            if ($root !== '' && str_starts_with($input, $root)) {
+                $rest = substr($input, strlen($root));
+                // Only strip on a segment boundary, otherwise `/subdir2/sub` loses its `/subdir` prefix. The old
+                // pattern was unanchored, so `/images/subdir/foo.png` had its middle segment cut out instead.
+                if ($rest === '' || $rest[0] === '/') {
+                    $input = $rest;
+                }
             }
 
-            $root = preg_quote($uri->rootUrl(), '#');
-            $pattern = '#(' . $root . '$|' . $root . '/)#';
-            if (!empty($root) && preg_match($pattern, $input, $matches)) {
-                $input = static::replaceFirstOccurrence($matches[0], '', $input);
+            // Only an absolute path can be a page route: routes are always stored with a leading slash, so the
+            // lookup could never match for a relative path, which is resolved from the Grav root instead. Asset
+            // URLs dominate a render and are mostly relative, so skipping the miss is worth the check.
+            if ($input !== '' && $input[0] === '/') {
+                // Split off any query string or fragment so `/blog?page=2` and `/blog#intro` still resolve to the
+                // `blog` page instead of silently falling through to a raw, language-less path.
+                $split = strcspn($input, '?#');
+                $route = substr($input, 0, $split);
+
+                /** @var Pages $pages */
+                $pages = $grav['pages'];
+
+                $page = $pages->find($route, true);
+                if ($page && $page->routable()) {
+                    return static::pageUrl($page, $domain, $lang) . substr($input, $split);
+                }
             }
 
-            $input = ltrim($input, '/');
+            $prefix = static::languagePrefix($lang);
             $resource = $input;
         }
 
@@ -161,7 +188,70 @@ abstract class Utils
 
         $domain = $domain ?: $grav['config']->get('system.absolute_urls', false);
 
-        return rtrim($uri->rootUrl($domain), '/') . '/' . ($resource ?: '');
+        return rtrim($uri->rootUrl($domain), '/') . $prefix . '/' . ltrim((string)($resource ?: ''), '/');
+    }
+
+    /**
+     * Build the URL for a resolved page, honouring an explicitly requested language.
+     *
+     * `Page::url()` always uses the active language, so it can answer everything except a caller that asked for a
+     * specific one. Note that only the language *prefix* is switched here: the route itself is still the active
+     * language's slug, same as `Pages::url($route, $lang)`.
+     *
+     * @param PageInterface $page
+     * @param bool $domain
+     * @param string|bool|null $lang
+     * @return string
+     */
+    protected static function pageUrl($page, $domain, $lang)
+    {
+        if (!is_string($lang)) {
+            // No specific language asked for: Page::url() already uses the active one.
+            return $page->url($domain);
+        }
+
+        // `external_url` overrides site routing entirely, exactly as Page::url() does. Read it from the header
+        // rather than testing the built URL, which would also match a site URL under `system.absolute_urls`.
+        $header = $page->header();
+        $external = is_object($header) ? ($header->external_url ?? null) : null;
+        if ($external) {
+            return trim((string)$external);
+        }
+
+        $grav = Grav::instance();
+
+        /** @var Pages $pages */
+        $pages = $grav['pages'];
+
+        /** @var Uri $uri */
+        $uri = $grav['uri'];
+
+        $domain = $domain ?: $grav['config']->get('system.absolute_urls', false);
+        $route = $pages->baseRoute($lang) . $page->route();
+
+        return Uri::filterPath($uri->rootUrl($domain) . '/' . trim((string)$route, '/') . $page->urlExtension());
+    }
+
+    /**
+     * Resolve the language prefix to prepend to a non-page path.
+     *
+     * Defaults to no prefix, because the plain-path branch of `url()` is what asset URLs go through and those must
+     * stay language-neutral. Callers linking to a language-sensitive route that isn't a page (a plugin route such
+     * as `/search`, a form action) opt in with `$lang`.
+     *
+     * @param string|bool|null $lang
+     * @return string
+     */
+    protected static function languagePrefix($lang)
+    {
+        if ($lang === null || $lang === false) {
+            return '';
+        }
+
+        /** @var Pages $pages */
+        $pages = Grav::instance()['pages'];
+
+        return $pages->baseRoute(is_string($lang) ? $lang : null);
     }
 
     /**
@@ -841,12 +931,21 @@ abstract class Utils
      */
     public static function getMimeByExtension($extension, $default = 'application/octet-stream')
     {
-        $extension = strtolower($extension);
+        $extension = strtolower((string)$extension);
+        if ($extension === '') {
+            return $default;
+        }
+
+        // A site's own `media.types.<ext>.mime` wins, so the type served for an output
+        // format such as `rss` or `atom` can be changed without a plugin.
+        $media_types = Grav::instance()['config']->get('media.types');
+        $mimetype = $media_types[$extension]['mime'] ?? null;
+        if (is_string($mimetype) && $mimetype !== '') {
+            return $mimetype;
+        }
 
         // look for some standard types
         switch ($extension) {
-            case null:
-                return $default;
             case 'json':
                 return 'application/json';
             case 'html':
@@ -857,11 +956,11 @@ abstract class Utils
                 return 'application/rss+xml';
             case 'xml':
                 return 'application/xml';
+            case MarkdownOutput::FORMAT:
+                return MarkdownOutput::MIME;
         }
 
-        $media_types = Grav::instance()['config']->get('media.types');
-
-        return $media_types[$extension]['mime'] ?? $default;
+        return $default;
     }
 
     /**
@@ -933,6 +1032,8 @@ abstract class Utils
                 return 'rss';
             case 'application/xml':
                 return 'xml';
+            case MarkdownOutput::MIME:
+                return MarkdownOutput::FORMAT;
         }
 
         $media_types = (array)Grav::instance()['config']->get('media.types');
@@ -1021,8 +1122,14 @@ abstract class Utils
      */
     public static function checkFilename($filename): bool
     {
-        $dangerous_extensions = Grav::instance()['config']->get('security.uploads_dangerous_extensions', []);
-        $extension = mb_strtolower(static::pathinfo($filename, PATHINFO_EXTENSION));
+        // The PHP-executable extensions are always dangerous, even if a site's config drops them.
+        $dangerous_extensions = array_merge(
+            ['php', 'php2', 'php3', 'php4', 'php5', 'php7', 'php8', 'phar', 'phtml', 'pht', 'phtm', 'phps'],
+            array_map('mb_strtolower', (array) Grav::instance()['config']->get('security.uploads_dangerous_extensions', []))
+        );
+        // Check every dot-separated part after the base name, not just the last one: servers that map
+        // handlers with AddHandler run `evil.php.jpg` as PHP.
+        $extensions = array_map('mb_strtolower', array_slice(explode('.', (string) $filename), 1));
 
         return !(
             // Empty filenames are not allowed.
@@ -1038,8 +1145,8 @@ abstract class Utils
             // (GHSA-76qg-8r9h-pxxr). `'` is intentionally allowed — it is common in
             // legitimate names and not needed to break out of an HTML tag.
             || strtr($filename, '<>"', '___') !== $filename
-            // File extension should not be part of configured dangerous extensions
-            || in_array($extension, $dangerous_extensions)
+            // No extension in the filename should be a dangerous one
+            || array_intersect($extensions, $dangerous_extensions)
         );
     }
 
@@ -1377,13 +1484,31 @@ abstract class Utils
     /**
      * Get the timestamp of a date
      *
-     * @param string $date a String expressed in the system.pages.dateformat.default format, with fallback to a
-     *                     strtotime argument
+     * @param string|int|float|DateTimeInterface $date a String expressed in the system.pages.dateformat.default
+     *                     format, with fallback to a strtotime argument. An unquoted YAML date header such as
+     *                     `date: 2022-01-06` never reaches us as a string: the YAML parser reads it as a date and
+     *                     hands over a Unix timestamp, which strtotime() then misreads as a year in the far future.
      * @param string|null $format a date format to use if possible
      * @return int the timestamp
      */
     public static function date2timestamp($date, $format = null)
     {
+        if ($date instanceof DateTimeInterface) {
+            return $date->getTimestamp();
+        }
+
+        if (is_int($date) || is_float($date)) {
+            $date = (string) (int) $date;
+
+            // `date: 20220106` arrives as the number the author typed, and the
+            // parsing below already reads it correctly as a date, so only a
+            // number that cannot be one is treated as a timestamp.
+            $ymd = DateTime::createFromFormat('!Ymd', $date);
+            if ($ymd === false || $ymd->format('Ymd') !== $date) {
+                return (int) $date;
+            }
+        }
+
         $config = Grav::instance()['config'];
         $dateformat = $format ?: $config->get('system.pages.dateformat.default');
 
@@ -1457,6 +1582,10 @@ abstract class Utils
         $grav = Grav::instance();
 
         $username = isset($grav['user']) ? $grav['user']->username : '';
+        // A nonce is tied to the session, so a session that waits for its first write starts now.
+        if (isset($grav['session']) && $grav['session'] instanceof Session) {
+            $grav['session']->startPending();
+        }
         $token = session_id();
         $i = self::nonceTick();
 
@@ -2013,6 +2142,13 @@ abstract class Utils
 
         // put them back at the front
         $types = array_merge(['html', 'htm'], $types);
+
+        // Markdown output for agents adds `.md` as a page type without anyone
+        // having to edit their `pages.types` list. It goes last so it never
+        // wins an ambiguous `Accept` negotiation.
+        if (MarkdownOutput::enabled() && !in_array(MarkdownOutput::FORMAT, $types, true)) {
+            $types[] = MarkdownOutput::FORMAT;
+        }
 
         return $types;
     }

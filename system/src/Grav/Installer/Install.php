@@ -344,6 +344,7 @@ ERR;
         }
 
         $installResult = false;
+        $rootFiles = [];
 
         try {
             if (null === $this->updater) {
@@ -366,10 +367,17 @@ ERR;
             }
             $this->relayProgress('installing', 'Running Grav standard installer...', null);
 
+            // Top-level files are replaced below by this (new) installer rather than
+            // by the already-loaded Installer class, whose older versions unlink a
+            // file before copying the new one in. On Windows that loses index.php:
+            // it is held open by the request running the upgrade, so the unlink is
+            // only pending, the copy fails, and the file vanishes when the request ends.
+            $rootFiles = $this->packageRootFiles();
+
             $installResult = Installer::install(
                 $this->zip ?? '',
                 GRAV_ROOT,
-                ['sophisticated' => true, 'overwrite' => true, 'ignore_symlinks' => true, 'ignores' => $this->ignores],
+                ['sophisticated' => true, 'overwrite' => true, 'ignore_symlinks' => true, 'ignores' => array_merge($this->ignores, $rootFiles)],
                 $this->location,
                 !($this->zip && is_file($this->zip))
             );
@@ -398,6 +406,71 @@ ERR;
 
             throw new RuntimeException($message);
         }
+
+        foreach ($rootFiles as $name) {
+            if (!self::replaceFile($this->location . DS . $name, GRAV_ROOT . DS . $name)) {
+                $message = sprintf('Could not replace %s, so the previous copy was kept. Copy %s from the update package by hand to finish the upgrade.', $name, $name);
+                $this->relayProgress('warning', $message, null);
+                $this->logInstallError($message);
+            }
+        }
+    }
+
+    /**
+     * Regular files at the top of the update package, minus the ones the upgrade must not touch.
+     *
+     * @return string[]
+     */
+    private function packageRootFiles(): array
+    {
+        $files = [];
+        foreach (new \DirectoryIterator((string) $this->location) as $file) {
+            $name = $file->getFilename();
+            if ($file->isFile() && !$file->isLink() && !in_array($name, $this->ignores, true)) {
+                $files[] = $name;
+            }
+        }
+
+        return $files;
+    }
+
+    /**
+     * Replace a file without deleting the original first, so a failed replace keeps the old copy.
+     *
+     * Kept in step with Installer::replaceFile(). This copy is the one that runs
+     * during an upgrade, because the Installer class loaded then is the old one.
+     *
+     * @param string $source
+     * @param string $target
+     * @return bool False when the original was left in place.
+     */
+    private static function replaceFile(string $source, string $target): bool
+    {
+        // Replace a symlink (bin/grav sandbox) with the file itself; never write through it.
+        if (is_link($target)) {
+            $link = readlink($target);
+            @unlink($target);
+            if (@copy($source, $target)) {
+                return true;
+            }
+            if ($link !== false) {
+                @symlink($link, $target);
+            }
+
+            return false;
+        }
+
+        // Write beside the target and rename over it, which swaps it in atomically.
+        $tmp = dirname($target) . DS . '.' . basename($target) . '.' . uniqid('', false) . '.tmp';
+        if (@copy($source, $tmp)) {
+            if (@rename($tmp, $target)) {
+                return true;
+            }
+            @unlink($tmp);
+        }
+
+        // Windows refuses the rename while the target is open; overwriting it in place may still work.
+        return @copy($source, $target);
     }
 
     /**
@@ -653,7 +726,15 @@ ERR;
         return $report;
     }
 
-    private function isMajorMinorUpgrade(string $targetVersion): bool
+    /**
+     * Whether the upgrade crosses a release family, which turns on the stricter checks
+     * (pending package updates, packages not marked compatible). Before 2.0 a family is
+     * major.minor, because 1.8 was a breaking line. From 2.0 on a minor release is an
+     * ordinary upgrade and only a new major counts. The rule is repeated here instead of
+     * calling Upgrader::family(), because this class runs from the update package while
+     * the rest of the code is still the installed version.
+     */
+    private function isMajorMinorUpgrade(string $targetVersion, ?string $currentVersion = null): bool
     {
         // An unreadable target version must never be treated as a major/minor upgrade,
         // otherwise it parses to 0.0 and wrongly triggers the incompatible-package gate.
@@ -661,10 +742,14 @@ ERR;
             return false;
         }
 
-        [$currentMajor, $currentMinor] = array_map('intval', array_pad(explode('.', GRAV_VERSION), 2, 0));
+        [$currentMajor, $currentMinor] = array_map('intval', array_pad(explode('.', $currentVersion ?? GRAV_VERSION), 2, 0));
         [$targetMajor, $targetMinor] = array_map('intval', array_pad(explode('.', $targetVersion), 2, 0));
 
-        return $currentMajor !== $targetMajor || $currentMinor !== $targetMinor;
+        if ($currentMajor !== $targetMajor) {
+            return true;
+        }
+
+        return $currentMajor < 2 && $currentMinor !== $targetMinor;
     }
 
     private function detectPendingPackageUpdates(): array
@@ -739,6 +824,18 @@ ERR;
                 ];
             }
         }
+
+        foreach ($pending as $slug => &$info) {
+            $destination = $scanRoot . '/user/' . $info['type'] . '/' . $slug;
+            // This installer can run against an older installed core during an upgrade.
+            $issue = method_exists(Installer::class, 'getDestinationIssue')
+                ? Installer::getDestinationIssue($destination, $info['type'] === 'themes')
+                : (is_link($destination) ? 'Symbolic link: update its target separately.' : null);
+            if ($issue !== null) {
+                $info['update_blocked'] = $issue;
+            }
+        }
+        unset($info);
 
         $this->relayProgress('initializing', sprintf('Detected %d updatable packages (including symlinks).', count($pending)), null);
 

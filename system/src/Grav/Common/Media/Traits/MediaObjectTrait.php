@@ -13,6 +13,7 @@ use Grav\Common\Data\Data;
 use Grav\Common\Media\Interfaces\MediaFileInterface;
 use Grav\Common\Media\Interfaces\MediaLinkInterface;
 use Grav\Common\Media\Interfaces\MediaObjectInterface;
+use Grav\Common\Page\Medium\Medium;
 use Grav\Common\Page\Medium\ThumbnailImageMedium;
 use Grav\Common\Utils;
 use function count;
@@ -343,6 +344,16 @@ trait MediaObjectTrait
     }
 
     /**
+     * Get the HTML attributes set on this medium.
+     *
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
      * Reset medium.
      *
      * @return $this
@@ -465,7 +476,7 @@ trait MediaObjectTrait
      * @param bool $reset
      * @return string
      */
-    abstract public function url($reset = true);
+    abstract public function url($reset = true, $include_host = false);
 
     /**
      * Turn the current Medium into a Link
@@ -480,8 +491,13 @@ trait MediaObjectTrait
             $this->display('source');
         }
 
-        foreach ($this->attributes as $key => $value) {
-            empty($attributes['data-' . $key]) && $attributes['data-' . $key] = $value;
+        // The image's own HTML attributes stay on the image; Link re-applies them to
+        // the medium it wraps. Only the dimensions are also mirrored onto the anchor,
+        // which is what lightbox scripts read. getgrav/grav#4282.
+        foreach (['width', 'height'] as $key) {
+            if (isset($this->attributes[$key])) {
+                empty($attributes['data-' . $key]) && $attributes['data-' . $key] = $this->attributes[$key];
+            }
         }
 
         empty($attributes['href']) && $attributes['href'] = $this->url();
@@ -628,7 +644,7 @@ trait MediaObjectTrait
      *
      * @param string $method
      * @param array $args
-     * @return $this
+     * @return $this|null
      */
     #[\ReturnTypeWillChange]
     public function __call($method, $args)
@@ -642,6 +658,17 @@ trait MediaObjectTrait
 
                 return rawurlencode($a);
             }, $args));
+        } elseif ($count === 0 && !Medium::isAllowedAction((string)$method)) {
+            // Twig resolves `{{ image.copyright }}` for a key that is missing from
+            // the medium's `.meta.yaml` by falling through to __call(), so an
+            // unknown bare name used to be appended to the querystring and rewrote
+            // the `src` of the image for every visitor. A zero-argument name that
+            // is not a documented media action now reads as an absent property and
+            // returns null, matching what `{{ image['copyright'] }}` already does.
+            // Documented actions still pass through, and so does everything called
+            // with arguments — including the empty-argument form Markdown uses for
+            // flag-style params such as `![](img.png?myflag)`. getgrav/grav#4301.
+            return null;
         }
 
         if (!empty($method)) {
@@ -716,6 +743,16 @@ trait MediaObjectTrait
                     break;
                 }
             }
+        }
+
+        // A thumbnail made from the medium's own file is that same file, so it is
+        // linked the same way: a `url` override on the medium (the page route from
+        // `pages.media_route_urls`, or a media proxy) applies to it too. Without
+        // this the image inside a `lightbox` or `link` pointed at the file on
+        // disk. getgrav/grav#4298.
+        $thumbnail = $this->_thumbnail;
+        if ($thumbnail && $thumbnail->get('filepath') === $this->get('filepath')) {
+            $thumbnail->set('url', $this->get('url'));
         }
 
         return $this->_thumbnail;

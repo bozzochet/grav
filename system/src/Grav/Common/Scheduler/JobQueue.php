@@ -9,6 +9,8 @@
 
 namespace Grav\Common\Scheduler;
 
+use Grav\Common\Filesystem\Folder;
+use Grav\Common\Grav;
 use Grav\Common\Security;
 use RocketTheme\Toolbox\File\JsonFile;
 use RuntimeException;
@@ -59,9 +61,12 @@ class JobQueue
             $this->queuePath . '/completed',
         ];
         
+        // Folder::create() leaves the mode to the umask like every other Grav
+        // folder, so a group-writable install stays writable for both the web
+        // and the CLI user (#4295).
         foreach ($dirs as $dir) {
             if (!file_exists($dir)) {
-                mkdir($dir, 0755, true);
+                Folder::create($dir);
             }
         }
     }
@@ -492,16 +497,41 @@ class JobQueue
             // serialized state.
         }
 
-        // Create a new job from command
-        if (isset($item['command'])) {
-            $args = $item['arguments'] ?? [];
-            $job = new Job($item['command'], $args, $item['job_id']);
-            return $job;
+        // The structured-fields rebuild below is only a rebuild, never a source of
+        // new commands: `command` in a queue file is unsigned, so a plain string
+        // there would hand Job::exec() an arbitrary PHP callable and reopen the
+        // RCE the HMAC above closes (GHSA-vj3m-2g9h-vm4p). Rebuild the job by
+        // looking its id up in the operator-configured schedule instead — a queue
+        // file can pick which job runs, it cannot invent one.
+        $jobId = $item['job_id'] ?? null;
+        if (is_string($jobId) && $jobId !== '') {
+            $job = $this->findScheduledJob($jobId);
+            if ($job !== null) {
+                return $job;
+            }
         }
 
         return null;
     }
     
+    /**
+     * Look a job up by id in the operator-configured schedule.
+     *
+     * Used to rebuild a queue item whose signed payload is missing or invalid.
+     * Only jobs the operator actually registered are returned, so an attacker who
+     * can drop a JSON file into the queue directory can at most re-run something
+     * the site was already configured to run.
+     *
+     * @param string $jobId
+     * @return Job|null
+     */
+    protected function findScheduledJob(string $jobId): ?Job
+    {
+        $scheduler = Grav::instance()['scheduler'] ?? null;
+
+        return $scheduler instanceof Scheduler ? $scheduler->getJob($jobId) : null;
+    }
+
     /**
      * Calculate retry time with exponential backoff
      * 

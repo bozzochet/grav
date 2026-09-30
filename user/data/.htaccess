@@ -4,19 +4,14 @@
 # SVG stays blocked as a stored-XSS vector; .css/.js are served per project
 # policy despite the same risk on this user-writable folder.
 # Defense-in-depth backup for the rules in the site root .htaccess.
-<IfModule mod_authz_core.c>
-    Require all denied
+#
+# mod_alias, not `Require` or mod_rewrite. `Require` is AuthConfig-class and
+# returns 500 for this whole folder on a host that grants only `AllowOverride
+# FileInfo` (getgrav/grav#4309, #4311). mod_alias is FileInfo-class, leaves the
+# root's rewrite rules in force here, and merges into subfolders, so a subfolder
+# with its own RewriteEngine cannot switch it off.
+#
+# Keep the extension list in sync with the root's user/data rule.
+<IfModule mod_alias.c>
+    RedirectMatch 403 (?i)^(?!.*\.(jpe?g|png|gif|webp|avif|bmp|ico|mp4|webm|ogg|ogv|mov|mp3|wav|m4a|flac|pdf|woff2|woff|ttf|otf|eot|css|js)$)
 </IfModule>
-<IfModule !mod_authz_core.c>
-    Order allow,deny
-    Deny from all
-</IfModule>
-<FilesMatch "(?i)\.(jpe?g|png|gif|webp|avif|bmp|ico|mp4|webm|ogg|ogv|mov|mp3|wav|m4a|flac|pdf|woff2|woff|ttf|otf|eot|css|js)$">
-    <IfModule mod_authz_core.c>
-        Require all granted
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Allow from all
-    </IfModule>
-</FilesMatch>
