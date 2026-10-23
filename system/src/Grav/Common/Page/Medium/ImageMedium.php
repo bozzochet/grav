@@ -20,6 +20,7 @@ use Grav\Common\Media\Traits\ImageFetchPriorityTrait;
 use Grav\Common\Media\Traits\ImageMediaTrait;
 use Grav\Common\Utils;
 use Gregwar\Image\Image;
+use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use function func_get_args;
 use function in_array;
@@ -143,6 +144,13 @@ class ImageMedium extends Medium implements ImageMediaInterface, ImageManipulate
         $this->auto_sizes = $config->get('system.images.cls.auto_sizes', false);
         $this->aspect_ratio = $config->get('system.images.cls.aspect_ratio', false);
         $this->retina_scale = $config->get('system.images.cls.retina_scale', 1);
+
+        // Lets a plugin queue actions on every image once it is back to the original,
+        // for example from the image's own metadata.
+        $grav = $this->getGrav();
+        if ($grav['events']->hasListeners('onImageMediumReset')) {
+            $grav->fireEvent('onImageMediumReset', new Event(['medium' => $this]));
+        }
 
         return $this;
     }
@@ -444,7 +452,17 @@ class ImageMedium extends Medium implements ImageMediaInterface, ImageManipulate
     public function addFrame(int $border = 10, string $color = '0x000000')
     {
       if($border > 0 && preg_match('/^0x[a-f0-9]{6}$/i', $color)) { // $border must be an integer and bigger than 0; $color must be formatted as an HEX value (0x??????).
+        // `watermark_all` stamps the framed image once, when it is saved below,
+        // not the image inside the frame as well. The image is opened first
+        // because opening it reads `watermark_all` again.
+        $stampFrame = false;
+        if ($this->getGrav()['config']->get('system.images.watermark.watermark_all', false)) {
+            $this->cache();
+            $stampFrame = !$this->watermarked;
+            $this->watermark = false;
+        }
         $image = ImageFile::open($this->path());
+        $this->watermark = $stampFrame;
       }
       else {
         return $this;

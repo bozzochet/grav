@@ -9,6 +9,7 @@
 
 namespace Grav\Common\Page;
 
+use Grav\Common\Config\Env;
 use Throwable;
 
 /**
@@ -100,7 +101,7 @@ final class PageIndexStore
     {
         // Explicit override, mainly for testing the fallback engine and for
         // hosts where the native driver misbehaves.
-        $forced = getenv('GRAV_PAGES_INDEX_ENGINE');
+        $forced = Env::get('GRAV_PAGES_INDEX_ENGINE');
         if ($forced === 'sqlite' || $forced === 'yetisql') {
             if ($forced === 'sqlite' && extension_loaded('pdo_sqlite')) {
                 return 'sqlite';
@@ -436,7 +437,7 @@ final class PageIndexStore
      */
     public function rebuild(string $cacheId, array $sections): bool
     {
-        $tmp = $this->file . '.tmp.' . getmypid();
+        $tmp = $this->file . '.tmp.' . bin2hex(random_bytes(6));
 
         try {
             $pdo = self::connect($this->engine, $tmp);

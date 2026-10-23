@@ -636,7 +636,7 @@ class Job
                     $output_mode = $this->outputMode === 'append' ? FILE_APPEND | LOCK_EX : LOCK_EX;
                     $timestamp = (new DateTime('now'))->format('c');
                     $output = $timestamp . "\n" . str_pad('', strlen($timestamp), '>') . "\n" . $this->output;
-                    file_put_contents($file, $output, $output_mode);
+                    file_put_contents(self::resolveOutputPath($file), $output, $output_mode);
                 } catch (Throwable $e) {
                     $this->logPostRunFailure('write output to ' . $file, $e);
                 }
@@ -708,6 +708,31 @@ class Job
     }
 
     /**
+     * Turn a job's output file into a real path. A stream such as `log://job.out` is
+     * resolved, since PHP refuses LOCK_EX on stream wrappers, and the old relative
+     * `logs/job.out` form goes to the logs folder wherever GRAV_LOG_PATH puts it (#4344).
+     *
+     * @param string $file
+     * @return string
+     */
+    private static function resolveOutputPath(string $file): string
+    {
+        if (str_starts_with($file, 'logs/')) {
+            $file = 'log://' . substr($file, 5);
+        }
+
+        if (str_contains($file, '://')) {
+            $locator = Grav::instance()['locator'] ?? null;
+            $path = $locator ? $locator->findResource($file, true, true) : false;
+            if ($path) {
+                return $path;
+            }
+        }
+
+        return $file;
+    }
+
+    /**
      * Create the job lock file.
      *
      * @return bool True if the lock was taken, or if no lock is configured.
@@ -752,7 +777,6 @@ class Job
      * Execute a callable job.
      *
      * @return string
-     * @throws RuntimeException
      */
     private function exec()
     {
@@ -761,7 +785,9 @@ class Job
         try {
             $return_data = call_user_func_array($this->command, $this->args);
             $this->successful = true;
-        } catch (RuntimeException $e) {
+        } catch (\Throwable $e) {
+            // Any failure, not only a RuntimeException: one that escaped here used to end the
+            // whole scheduler run, so the jobs after it never ran and no job states were saved.
             $return_data = $e->getMessage();
             $this->successful = false;
         }

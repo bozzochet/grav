@@ -1,3 +1,80 @@
+# v2.2.12
+## 10/22/2026
+
+1. [](#improved)
+    * The scheduler webhook now also runs jobs that missed their time since the last call, so a site pinged hourly (or late) no longer skips jobs set for another minute. Add `?mode=due` for the old behaviour. The scheduler health check now warns when a job is behind schedule, instead of five minutes after the last run [getgrav/grav-plugin-scheduler-webhook#9](https://github.com/getgrav/grav-plugin-scheduler-webhook/issues/9)
+2. [](#bugfix)
+    * Admin listings of a folder with thousands of pages no longer reload the folder once for every page in it, which made them slow and could run out of memory with caching on [getgrav/grav-plugin-admin2#200](https://github.com/getgrav/grav-plugin-admin2/issues/200)
+    * A scheduled backup no longer fails with "ZipArchive::close(): Unexpected length of data" when another job changes a file in the site while the backup is being written. The backup is built again (up to three tries), and if it still can't be written, it is marked as failed while the rest of the scheduler run carries on. A failing job used to stop the whole run, so the jobs after it never ran and none of their results were saved
+
+# v2.2.11
+## 10/19/2026
+
+1. [](#bugfix)
+    * A licence key saved with a stray space in the product slug or the key itself (` lightbox-gallery`, for example) now works for installs and updates. Spaces are trimmed when a key is saved, and keys already saved that way are read correctly
+    * An image pasted into the editor as inline data (a `data:` image) now shows on the frontend. Grav was turning the `+` characters in the image data into spaces, which also affected image paths with a `+` in them such as `a+b.png` [getgrav/grav-premium-issues#628](https://github.com/getgrav/grav-premium-issues/issues/628)
+
+# v2.2.10
+## 10/16/2026
+
+1. [](#bugfix)
+    * With `images.watermark.watermark_all` on, every image now gets the watermark, not only images with a resize or other action. A 1x image made from an `@2x` file and a framed image are stamped once, and retina alternatives are kept. Thanks @HawkForge [#4359](https://github.com/getgrav/grav/issues/4359) [#4360](https://github.com/getgrav/grav/pull/4360)
+    * A remote CSS or JS file in the asset pipeline (a CDN stylesheet, for example) now gives up after 5 seconds if its server doesn't answer (set with the new `assets.pipeline_remote_timeout` option in `system.yaml`), instead of holding the page until PHP's `max_execution_time` ends it with a 503. When a remote file can't be downloaded, its group is not cached: that request renders each file as its own tag, and the next request tries the download again
+
+# v2.2.9
+## 10/14/2026
+
+1. [](#bugfix)
+    * Adding an environment folder such as `user/env/<host>/` no longer creates a new security key for that host, which broke forms and sessions signed with the old one. The key stays in `user/config`, and a copy an earlier version put in an environment folder is moved there
+    * A plugin or theme zipped from inside its own folder, or a zip made on macOS with a `__MACOSX` folder, now installs with `bin/gpm direct-install` and the admin's install-from-zip instead of failing with "Not a valid Grav package". Thanks @wakqasahmed [#2688](https://github.com/getgrav/grav/issues/2688) [#4357](https://github.com/getgrav/grav/pull/4357)
+    * Sites on PHP-FPM pools that disable `getmypid()` (a common hardening) no longer fail when the page index is rebuilt: its temporary database file is named with a random string instead of the process id. The scheduler's `whoami()` also checks for `get_current_user()` before calling it
+
+# v2.2.8
+## 10/13/2026
+
+1. [](#new)
+    * Plugins can react when an image is loaded with the new `onImageMediumReset` event, for example to queue a watermark or other action on every image from its own metadata
+2. [](#bugfix)
+    * Setting only `watermark_all` for images in `system.yaml` no longer removes the watermark image, position and scale settings, and the watermark settings can now be edited in the Admin under Images
+
+# v2.2.7
+## 10/13/2026
+
+1. [](#bugfix)
+    * The scheduler log no longer gets two lines written every minute when no job was due; runs that do work still log their full detail. Thanks @onetrev [#4355](https://github.com/getgrav/grav/issues/4355)
+    * The compiled config, blueprints and languages caches are written to a temporary file and moved into place, and a damaged one is rebuilt, so a request arriving while the cache is being rewritten no longer fails with a blank error page. Thanks @omega8cc [#4356](https://github.com/getgrav/grav/issues/4356)
+    * The scheduler's run summary in `scheduler.log` counted each successful job twice
+
+# v2.2.6
+## 10/09/2026
+
+1. [](#bugfix)
+    * With the logs or cache folder moved by `GRAV_LOG_PATH` or `GRAV_CACHE_PATH`, the cache and backup jobs write their output to the moved logs folder, a job's `output:` can be a `log://` path, and `bin/grav cache-cleanup` and the GPM permission check find the moved cache folder. Thanks @onetrev [#4344](https://github.com/getgrav/grav/issues/4344)
+    * Scheduler history files older than the `retention_days` setting are now deleted, instead of collecting forever [#4344](https://github.com/getgrav/grav/issues/4344)
+
+# v2.2.5
+## 10/06/2026
+
+1. [](#improved)
+    * Twig in page content can use the `guard` tag to check that a function, filter or test exists before calling it [#4341](https://github.com/getgrav/grav/issues/4341)
+2. [](#bugfix)
+    * Folder settings in a `.env` file, such as `GRAV_BACKUP_PATH` and `GRAV_TMP_PATH`, now apply on hosts that turn off PHP's `putenv()` for web requests, and no longer write an error to the log on every request [#4344](https://github.com/getgrav/grav/issues/4344)
+    * An SVG with only a viewBox now reports its real width and height, a viewBox separated by commas is understood, and a relative width such as `100%` is no longer read as 100 pixels [#4347](https://github.com/getgrav/grav/issues/4347)
+    * A redirect with a status code followed by a query string, such as `/new[301]?a=1&b=2`, is now sent with that status code and without the `[301]` in the address, instead of as a 302 to an address containing it [#3320](https://github.com/getgrav/grav/issues/3320) [#4343](https://github.com/getgrav/grav/issues/4343)
+    * A page's group permissions now deny every letter after a `-` up to the next `+`, so `-c+r-ud`, which the Admin saves for create, update and delete denied, no longer allows delete [#4340](https://github.com/getgrav/grav/issues/4340)
+    * Query parameters reach the Admin and API on web servers that rewrite to `index.php` without passing the query string on, such as an nginx `try_files` line missing `?$query_string`, so switching the editor to another language no longer loads the default language's page [#4338](https://github.com/getgrav/grav/discussions/4338)
+    * A form field directive written in page frontmatter can now only check whether its Flex object exists; directives in blueprint files are unchanged
+    * The current page address no longer includes the visitor's HTTP Basic username and password when it is printed or turned into an array, and `Uri::user()` and `Uri::password()` are empty for the current request
+
+# v2.2.4
+## 10/01/2026
+
+1. [](#bugfix)
+    * A page's Markdown version (`<route>.md`) and `llms-full.txt` include the full page again on sites running the Archives plugin, instead of only a title and navigation links [#4339](https://github.com/getgrav/grav/issues/4339)
+    * An uploaded SVG whose doctype declares entities is no longer emptied by the sanitizer (rhukster/dom-sanitizer 1.0.19)
+    * A multisite that keeps each site in `user/env/<host>/` loads its theme, plugin and media files again. The bundled server configs protect `config/`, `accounts/` and `data/` inside each env folder the same way they protect them in `user/`, and the upgrade updates an existing `.htaccess`, and the `user/env/.htaccess` an earlier upgrade added, to match. Sites on nginx, Caddy, lighttpd or IIS need to copy the new rules from `webserver-configs/` by hand [#4335](https://github.com/getgrav/grav/issues/4335)
+    * Saving a page whose blueprint has a list containing only an `elements` field no longer fails with an error, and the fields inside each element now belong to their list item instead of the top of the blueprint, where they could clash with a field of the same name (rockettheme/toolbox 2.0.1) [#4337](https://github.com/getgrav/grav/issues/4337)
+
 # v2.2.3
 ## 09/29/2026
 

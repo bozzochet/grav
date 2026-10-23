@@ -709,6 +709,11 @@ class FlexDirectory implements FlexDirectoryInterface
 
             if ($row instanceof FlexObjectInterface) {
                 $object = $row;
+                // Keep objects that came from the cache as well, like the ones
+                // read from storage below. Otherwise every getObject() of the
+                // same key unserializes a fresh copy (a page's parent() and
+                // route() ask for the parent once per child).
+                $this->objects[$storageKey] = $object;
             } else {
                 if ($row === null) {
                     $debugger->addMessage(sprintf('Flex: Object %s was not found from %s storage', $storageKey, $this->type), 'debug');
@@ -979,6 +984,14 @@ class FlexDirectory implements FlexDirectoryInterface
             $not = true;
         }
         $method = trim((string) $method);
+
+        // A directive written in page frontmatter is not trusted, and may only ask
+        // whether the object exists. Any other method could change or remove the
+        // object. A directive from a blueprint file may call any method, the same
+        // rule dynamicDataField() applies to its callables.
+        if (!($call['trusted'] ?? false) && (strtolower($method) !== 'exists' || $params)) {
+            return;
+        }
 
         if ($object && method_exists($object, $method)) {
             $value = $object->{$method}(...$params);
