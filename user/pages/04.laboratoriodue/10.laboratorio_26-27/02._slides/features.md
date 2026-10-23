@@ -13,29 +13,29 @@ features:
         header: 'Segnale e DAQ'
         text: null
         url: laboratorio_26-27/_slides/Segnale.pdf
-visible: false
----
-<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Test auto-valutazione (con risposte)'
         text: null
-        url: laboratorio_25-26/_slides/Questionario_risposte.pdf
+        url: laboratorio_26-27/_slides/Questionario_risposte.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 0: "Vocale WhatsApp"'
         text: null
-        url: laboratorio_25-26/_slides/Esp0_Audio.pdf
+        url: laboratorio_26-27/_slides/Esp0_Audio.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Amplificatore operazionale'
         text: null
-        url: laboratorio_25-26/_slides/Operazionali.pdf
+        url: laboratorio_26-27/_slides/Operazionali.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 1: "Operazionali"'
         text: null
-        url: laboratorio_25-26/_slides/Esp1_Operazionale.pdf
+        url: laboratorio_26-27/_slides/Esp1_Operazionale.pdf
+visible: false
+---
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: Transistor
