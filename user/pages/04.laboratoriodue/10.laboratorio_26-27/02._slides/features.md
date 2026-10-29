@@ -33,34 +33,35 @@ features:
         header: 'Esperienza 1: "Operazionali"'
         text: null
         url: laboratorio_26-27/_slides/Esp1_Operazionale.pdf
-visible: false
----
-<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: Transistor
         text: null
-        url: laboratorio_25-26/_slides/Transistor.pdf
+        url: laboratorio_26-27/_slides/Transistor.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Montaggio LED'
         text: null
-        url: laboratorio_25-26/_slides/MontaggioLED.pdf
+        url: laboratorio_26-27/_slides/MontaggioLED.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'LM35'
         text: null
-        url: laboratorio_25-26/_slides/LM35.pdf
+        url: laboratorio_26-27/_slides/LM35.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 2: "Flash ADC + LM35"'
         text: null
-        url: laboratorio_25-26/_slides/Esp2_FlashADC-LM35.pdf
+        url: laboratorio_26-27/_slides/Esp2_FlashADC-LM35.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: Fotodiodo
         text: null
-        url: laboratorio_25-26/_slides/FotodiodoLED.pdf
+        url: laboratorio_26-27/_slides/FotodiodoLED.pdf
+
+visible: false
+---
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 3: "Fotodiodo e misura di g"'
