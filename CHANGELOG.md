@@ -1,3 +1,30 @@
+# v2.2.15
+## 10/27/2026
+
+1. [](#bugfix)
+    * A scheduler custom job or backup profile added in the admin and saved without being filled in no longer breaks the scheduler: it is skipped, so the other jobs still run and the job list, health check and webhook keep working [getgrav/grav-plugin-scheduler-webhook#10](https://github.com/getgrav/grav-plugin-scheduler-webhook/issues/10)
+    * A new backup profile's default schedule runs once at 3:00 instead of every minute from 3:00 to 3:59, and a job whose Extra Arguments field is saved empty no longer fails
+    * The scheduler's custom job placeholders read as examples (`e.g. bin/grav`) instead of looking like values already filled in, and Run At saves the every-minute schedule it shows when left as is
+
+# v2.2.14
+## 10/26/2026
+
+1. [](#improved)
+    * Disabled plugins are no longer loaded, so a disabled plugin with code that doesn't work on this version of Grav can't take the site down, and requests do less work. A disabled plugin is still listed with its settings, and its class still loads if another plugin asks for it. Thanks @NoNoNo [#4374](https://github.com/getgrav/grav/issues/4374)
+2. [](#bugfix)
+    * CSS with a long quoted string or comment (such as an inlined data: URI) minifies again instead of failing with a PCRE error, and a very large data: URI no longer empties the whole stylesheet from the bundle. Thanks @NoNoNo [#4372](https://github.com/getgrav/grav/issues/4372)
+    * Inline JavaScript added with `loading: 'inline'` no longer renders a stray `inline` attribute on its script tag, and an inline JS module keeps its code when the pipeline is off. Thanks @NoNoNo [#4373](https://github.com/getgrav/grav/issues/4373)
+
+# v2.2.13
+## 10/23/2026
+
+1. [](#bugfix)
+    * [security] A field in a page's Flex form override keeps the stricter rules for dynamic options after it is merged into the directory blueprint, however it is renamed or numbered. Thanks @soquip
+    * [security] Page content is now checked for unsafe markup as though its Twig runs, even when Twig is off for that page, since a later move or rename can turn it into a module. Thanks @vLWa7ch
+    * [security] Flex user accounts: an account without super-admin access can no longer edit or delete a super-admin account through a Flex form, and a submitted password hash is ignored when an account is saved. Thanks @manus-pi
+    * [security] Flex page storage now refuses a folder, template or language that is not a plain name. Thanks @shm0x00
+    * [security] Images referenced by stream URI in page content, the watermark image and `media_directory()` now only come from media folders (pages, images, media, themes, plugins), configurable with the new `security.media.allowed_roots` setting. Thanks @123abab123789
+
 # v2.2.12
 ## 10/22/2026
 
