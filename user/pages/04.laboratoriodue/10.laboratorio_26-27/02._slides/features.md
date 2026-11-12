@@ -58,20 +58,19 @@ features:
         header: Fotodiodo
         text: null
         url: laboratorio_26-27/_slides/FotodiodoLED.pdf
-
-visible: false
----
-<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Esperienza 3: "Fotodiodo e misura di g"'
         text: null
-        url: laboratorio_25-26/_slides/Esp3_Fotodiodo.pdf
+        url: laboratorio_26-27/_slides/Esp3_Fotodiodo.pdf
     -
         icon: 'fa fa-file-pdf-o'
         header: 'Elettronica Digitale'
         text: null
-        url: laboratorio_25-26/_slides/ElettronicaDigitale.pdf
+        url: laboratorio_26-27/_slides/ElettronicaDigitale.pdf
+visible: false
+---
+<!---
     -
         icon: 'fa fa-file-pdf-o'
         header: 'FPGA + Esperienza 4'
